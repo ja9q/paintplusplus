@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "PaintModel.h"
 #include "CanvasWidget.h"
 #include "ColorWidget.h"
@@ -8,6 +7,7 @@
 #include <QScrollArea>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QMenuBar>
 #include <QToolBar>
 #include <QGroupBox>
 #include <QDebug>
