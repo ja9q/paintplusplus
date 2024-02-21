@@ -17,7 +17,8 @@ SOURCES += \
     ToolSettingWidget.cpp \
     User.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    test.cpp
 
 HEADERS += \
     BaseTool.h \
@@ -27,7 +28,8 @@ HEADERS += \
     PaintModel.h \
     ToolSettingWidget.h \
     User.h \
-    mainwindow.h
+    mainwindow.h \
+    test.h
 
 FORMS +=
 
