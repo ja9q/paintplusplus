@@ -24,6 +24,9 @@ public:
     // Getter for the canvas
     CanvasWidget* getCanvas();
 
+    // Getter for the current tool
+    BaseTool* getCurrentTool() const;
+
     // set the color
     void setColor(QColor a_color, int a_which);
     void fillCanvas();

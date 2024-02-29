@@ -34,6 +34,7 @@ private:
     int m_opacity;  // the opacity (transparency/alpha value) of the line
 
     QPointF m_lastPoint;    // The last point drawn on the canvas; needed for drawing dragged lines
+
 };
 
 #endif // DRAWTOOL_H

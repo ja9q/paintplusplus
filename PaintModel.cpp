@@ -70,6 +70,10 @@ CanvasWidget* PaintModel::getCanvas()
     return &m_canvas;
 }
 
+BaseTool* PaintModel::getCurrentTool() const
+{
+    return m_user.getCurrentTool();
+}
 
 void PaintModel::setColor(QColor a_color, int a_which) {
     m_user.setColor(a_color, a_which);

@@ -182,8 +182,10 @@ void MainWindow::setupToolSettings() {
     settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, settingsDock);
 
+    BaseTool* currentTool = m_model->getCurrentTool();
+
     // create and add the tool settings
-    m_toolSettings = new ToolSettingWidget();
+    m_toolSettings = new ToolSettingWidget(currentTool);
     settingsDock->setWidget(m_toolSettings);
 
     connect(m_toolSettings, &ToolSettingWidget::updateSetting, m_model, &PaintModel::updateToolSetting);

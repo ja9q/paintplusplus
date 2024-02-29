@@ -13,13 +13,13 @@
 #include "ToolSetting.h"
 
 // default constructor
-DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(255), m_color(0)
+DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(100), m_color(0)
     {}
 
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     BaseTool(a_name, {ToolSetting::SIZE}),
-    m_size(10), m_color(a_color), m_opacity(255) {
+    m_size(10), m_color(a_color), m_opacity(100) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
     }
@@ -68,17 +68,32 @@ RETURNS
 int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-    drawColor.setAlpha(m_opacity);
+    drawColor.setAlpha(m_opacity * 2.55);
+
+    // fill brush stencil with desired color
+    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32);
+    for (int i = 0; i < m_size; i++) {
+        for (int j = 0; j < m_size; j++) {
+            rawBrush.setPixelColor(i, j, drawColor);
+        }
+    }
+
+    // convert the QImage to a pixmap that the painter can use
+    QPixmap brush = QPixmap::fromImage(rawBrush);
+
+    QPointF drawPoint(a_point.x()-(m_size/2),a_point.y()-(m_size/2));
 
     // have a painter draw out this line
     QPainter painter(a_canvas);
 
-    // color and brush are currently hardcoded; modify later to communicate with user more
-    painter.setBrush(drawColor);
-    painter.setPen(QPen(painter.brush(), m_size, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
-    painter.drawPoint(a_point);
+
+    painter.drawPixmap(drawPoint, brush);
+
+
     painter.end();
-    m_lastPoint = a_point;
+
+    m_lastPoint = drawPoint;
+
 
     return 0;
 }
@@ -112,25 +127,43 @@ RETURNS
 int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-    drawColor.setAlpha((m_opacity*2.55));
+    drawColor.setAlpha((m_opacity*.255));
 
+    // fill brush stencil with desired color
+    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32);
 
+    rawBrush.fill(drawColor);
 
+    // convert the QImage to a pixmap that the painter can use
+    QPixmap brush = QPixmap::fromImage(rawBrush);
 
-    // define a painter path the connects the last drawn point to the new point
+    QPointF drawPoint(a_point.x()-(m_size/2),a_point.y()-(m_size/2));
+
+    // define a line between the last point and the current point
     QPainterPath line;
-    line.moveTo(m_lastPoint.x(), m_lastPoint.y());
-    line.lineTo(a_point.x(), a_point.y());
+    line.moveTo(m_lastPoint);
+    line.lineTo(drawPoint);
+
+    qreal length = line.length();
+    qreal pos = 0;
+    qreal percent = 0;
 
     // have a painter draw out this line
     QPainter painter(a_canvas);
+    while (pos < length){
+        percent = line.percentAtLength(pos);
 
-    // color and brush are currently hardcoded; modify later to communicate with user more
-    painter.setBrush(drawColor);
-    painter.setPen(QPen(painter.brush(), m_size, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
-    painter.drawPath(line);
+        painter.drawPixmap(line.pointAtPercent(percent), brush);
+
+        pos += .1;
+    }
+    painter.drawPixmap(drawPoint, brush);
+
     painter.end();
-    m_lastPoint = a_point;
+
+    m_lastPoint = drawPoint;
 
     return 0;
 }
+
+

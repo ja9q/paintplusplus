@@ -8,13 +8,14 @@
 #include <QWidget>
 #include <QGridLayout>
 #include "ToolSetting.h"
+#include "BaseTool.h"
 
 class ToolSettingWidget : public QWidget
 {
     Q_OBJECT
 public:
     // Constructor
-    explicit ToolSettingWidget(QWidget *parent = nullptr);
+    explicit ToolSettingWidget(BaseTool* a_tool, QWidget *parent = nullptr);
 
 public slots:
     // Use a list sent from a tool to generate settings

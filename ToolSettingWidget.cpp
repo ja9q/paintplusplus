@@ -10,8 +10,9 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QCheckBox>
+#include "BaseTool.h"
 
-ToolSettingWidget::ToolSettingWidget(QWidget *parent)
+ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
     : QWidget{parent}
 {
     initSettingData();
@@ -21,7 +22,7 @@ ToolSettingWidget::ToolSettingWidget(QWidget *parent)
     m_layout = new QGridLayout();
     m_layout->setVerticalSpacing(5);
 
-    generateSettings({ToolSetting::SIZE, ToolSetting::OPACITY, ToolSetting::ANTIALIAS});
+    generateSettings(a_tool->getProperties());
 
     container->setLayout(m_layout);
 }
@@ -73,11 +74,11 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition) {
     } else {
         // otherwise, add a checkbox
         QCheckBox* checkbox = new QCheckBox();
+
+        // connect the checkbox and add it to the widget
         connect(checkbox, &QCheckBox::clicked, this, [=](){emit updateSetting(a_settingid, checkbox->isChecked());});
         m_layout->addWidget(checkbox, (2*a_hposition), 4, 1,1, Qt::AlignBottom);
     }
-
-
 }
 
 void ToolSettingWidget::clearSettings() {
