@@ -6,6 +6,7 @@
 #include "PaintModel.h"
 #include "CanvasWidget.h"
 #include "ColorWidget.h"
+#include "ToolSettingWidget.h"
 #include <QVBoxLayout>
 #include <QDockWidget>
 #include <QScrollArea>
@@ -180,6 +181,12 @@ void MainWindow::setupToolSettings() {
     QDockWidget* settingsDock = new QDockWidget(tr("Tool Settings"), this);
     settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, settingsDock);
+
+    // create and add the tool settings
+    m_toolSettings = new ToolSettingWidget();
+    settingsDock->setWidget(m_toolSettings);
+
+    connect(m_toolSettings, &ToolSettingWidget::updateSetting, m_model, &PaintModel::updateToolSetting);
 }
 
 /**/

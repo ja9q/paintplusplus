@@ -13,10 +13,7 @@ class BaseTool
 {
 public:
 
-    // Flags that mark certain
-    static const int MOD_SIZE = 0;      // Users can modify the size
-    static const int MOD_OPACITY = 1;   // Users can modify the opacity
-    static const int MOD_ANTIALIAS = 2; // Users can modify the antialiasing
+
 
     // Default constructor
     BaseTool();
@@ -28,7 +25,7 @@ public:
     QVector<int> getProperties() const;
 
     // Modify a tool's property (e.g. size, opacity)
-    void setProperty(const int a_propId, const int a_newValue);
+    virtual void setProperty(const int a_propId, const int a_newValue) = 0;
 
     // React to a click on the canvas
     virtual int processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;

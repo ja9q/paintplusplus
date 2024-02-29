@@ -10,6 +10,7 @@
 #include <QMenu>
 #include "PaintModel.h"
 #include "ColorWidget.h"
+#include "ToolSettingWidget.h"
 #include "BaseTool.h"
 
 class MainWindow : public QMainWindow
@@ -35,6 +36,7 @@ private slots:
 private:
     PaintModel *m_model;        // The information about the user and available brushes
     ColorWidget *m_colorPicker; // GUI component that lets the user change the brush color
+    ToolSettingWidget *m_toolSettings;
 
     QMenu *fileMenu;    // The File section of the file menu bar
     QMenu *editMenu;    // The Edit section of the file menu bar

@@ -82,3 +82,8 @@ void PaintModel::fillCanvas() {
 void PaintModel::clearCanvas() {
     m_canvas.fillCanvas(m_user.getColor(1));
 }
+
+void PaintModel::updateToolSetting(const int a_settingid, const int a_newValue) {
+    BaseTool* currentTool = m_user.getCurrentTool();
+    currentTool->setProperty(a_settingid, a_newValue);
+}

@@ -29,6 +29,9 @@ public:
     void fillCanvas();
     void clearCanvas();
 
+public slots:
+    void updateToolSetting(const int a_settingid, const int a_newValue);
+
 private:
     QVector<BaseTool*> m_tools; // The implemented tools
     User m_user;                // The user's chosen tool and colors

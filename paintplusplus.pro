@@ -14,6 +14,7 @@ SOURCES += \
     ColorWidget.cpp \
     DrawTool.cpp \
     PaintModel.cpp \
+    ToolSetting.cpp \
     ToolSettingWidget.cpp \
     User.cpp \
     main.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     ColorWidget.h \
     DrawTool.h \
     PaintModel.h \
+    ToolSetting.h \
     ToolSettingWidget.h \
     User.h \
     mainwindow.h \

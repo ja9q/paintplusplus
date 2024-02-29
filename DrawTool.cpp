@@ -10,6 +10,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include "BaseTool.h"
+#include "ToolSetting.h"
 
 // default constructor
 DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(255), m_color(0)
@@ -17,10 +18,24 @@ DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(255), m_color(0)
 
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
-    BaseTool(a_name, {BaseTool::MOD_SIZE}),
+    BaseTool(a_name, {ToolSetting::SIZE}),
     m_size(10), m_color(a_color), m_opacity(255) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
+    }
+}
+
+void DrawTool::setProperty(const int a_propId, const int a_newValue) {
+    switch(a_propId) {
+    case ToolSetting::SIZE:
+        m_size = a_newValue;
+        break;
+    case ToolSetting::OPACITY:
+        m_opacity = a_newValue;
+        break;
+    default:
+        qDebug() << "ERROR: tried to set incompatible property";
+        break;
     }
 }
 
@@ -53,6 +68,7 @@ RETURNS
 int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
+    drawColor.setAlpha(m_opacity);
 
     // have a painter draw out this line
     QPainter painter(a_canvas);
@@ -94,8 +110,12 @@ RETURNS
 */
 /**/
 int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
-    // set the user-set color to the brush color
+    // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
+    drawColor.setAlpha((m_opacity*2.55));
+
+
+
 
     // define a painter path the connects the last drawn point to the new point
     QPainterPath line;
@@ -107,7 +127,7 @@ int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor 
 
     // color and brush are currently hardcoded; modify later to communicate with user more
     painter.setBrush(drawColor);
-    painter.setPen(QPen(painter.brush(), 10, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
+    painter.setPen(QPen(painter.brush(), m_size, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
     painter.drawPath(line);
     painter.end();
     m_lastPoint = a_point;

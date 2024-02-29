@@ -7,7 +7,7 @@
 #define COLORWIDGET_H
 
 #include <QWidget>
-#include <QLineEdit>
+#include <QSpinBox>
 
 class ColorWidget : public QWidget
 {
@@ -17,9 +17,6 @@ public:
     explicit ColorWidget(QWidget *parent = nullptr);
 
 public slots:
-    // React to when an individual field has been changed
-    void signalNewColor();
-
     // React to when a color has been changed elsewhere.
     void updateColor(QColor a_newColor);
 
@@ -38,7 +35,7 @@ private:
 
 
     // Three text fields that allow for the color to be changed
-    QLineEdit* m_rgbEdit[RGB_SIZE];
+    QSpinBox* m_rgbEdit[RGB_SIZE];
 
     // Calculate the current color
     QColor getColor();

@@ -19,8 +19,8 @@ public:
     // get which color the tool uses
     int getColor() const;
 
-    // change the opacity
-    void setOpacity(const int a_newOpacity);
+    // Modify a tool's property (e.g. size, opacity)
+    void setProperty(const int a_propId, const int a_newValue);
 
     // react to a click
     int processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);

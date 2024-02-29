@@ -4,7 +4,8 @@
 
 #include "ColorWidget.h"
 
-#include <QLineEdit>
+#include <QWidget>
+#include <QSpinBox>
 #include <QIntValidator>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -38,8 +39,10 @@ ColorWidget::ColorWidget(QWidget *parent)
     : QWidget{parent}
 {
     // Set the width (height has to be adjusted in the main window)
-    setMinimumWidth(170);
+    setMinimumWidth(200);
     setMaximumWidth(200);
+
+    QWidget *container = new QWidget(this);
 
     // Set up a layout
     QGridLayout *layout = new QGridLayout;
@@ -50,42 +53,18 @@ ColorWidget::ColorWidget(QWidget *parent)
     // Create and label the textfields for the RGB values
     for (int i = 0 ; i < 3; i++)
     {
-        m_rgbEdit[i] = new QLineEdit("0");
-        m_rgbEdit[i]->setValidator(new QIntValidator(0,255, this));
+        m_rgbEdit[i] = new QSpinBox();
+        m_rgbEdit[i]->setMaximum(255);
+        m_rgbEdit[i]->setMinimum(0);
+        m_rgbEdit[i]->setValue(0);
         layout->addWidget(new QLabel(colorLabels[i]), 0, 2*i, 1, 1);
         layout->addWidget(m_rgbEdit[i], 0, (2*i)+1, 1, 1);
 
         // Connect the text field to update the color
-        connect(m_rgbEdit[i], &QLineEdit::editingFinished, this, &ColorWidget::signalNewColor);
+        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor());});
     }
 
-    setLayout(layout);
-}
-
-/**/
-/*
-void ColorWidget::signalNewColor()
-
-NAME
-
-    ColorWidget::signalNewColor - react to when the color has been changed here
-
-SYNOPSIS
-
-    void ColorWidget::signalNewColor()
-
-DESCRIPTION
-
-    Notify other objects that the color should be changed
-
-RETURNS
-
-    None
-
-*/
-/**/
-void ColorWidget::signalNewColor() {
-    emit valueChanged(getColor());
+    container->setLayout(layout);
 }
 
 /**/
@@ -114,9 +93,9 @@ RETURNS
 /**/
 void ColorWidget::updateColor(QColor a_newColor) {
     // Copy over the red, green, and blue values from the given color
-    m_rgbEdit[RED]->setText(QString::number(a_newColor.red()));
-    m_rgbEdit[GREEN]->setText(QString::number(a_newColor.green()));
-    m_rgbEdit[BLUE]->setText(QString::number(a_newColor.blue()));
+    m_rgbEdit[RED]->setValue(a_newColor.red());
+    m_rgbEdit[GREEN]->setValue(a_newColor.green());
+    m_rgbEdit[BLUE]->setValue(a_newColor.blue());
 }
 
 /**/
@@ -142,5 +121,5 @@ RETURNS
 */
 /**/
 QColor ColorWidget::getColor() {
-    return QColor(m_rgbEdit[RED]->displayText().toInt(), m_rgbEdit[GREEN]->displayText().toInt(), m_rgbEdit[BLUE]->displayText().toInt());
+    return QColor(m_rgbEdit[RED]->value(), m_rgbEdit[GREEN]->value(), m_rgbEdit[BLUE]->value());
 }
