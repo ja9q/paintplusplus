@@ -81,6 +81,12 @@ BaseTool* PaintModel::getCurrentTool() const
     return m_user.getCurrentTool();
 }
 
+
+void PaintModel::setToolType(int a_typeId) {
+    m_currentToolType = a_typeId;
+    m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
+}
+
 void PaintModel::setColor(QColor a_color, int a_which) {
     m_user.setColor(a_color, a_which);
 }

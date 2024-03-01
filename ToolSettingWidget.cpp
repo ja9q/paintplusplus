@@ -22,20 +22,23 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
     m_layout = new QGridLayout();
     m_layout->setVerticalSpacing(5);
 
-    generateSettings(a_tool->getProperties());
+    generateSettings(a_tool);
     qDebug() << a_tool->getProperties().size() ;
 
     container->setLayout(m_layout);
 }
 
-void ToolSettingWidget::generateSettings(QVector<int> a_properties)
+void ToolSettingWidget::generateSettings(BaseTool* a_tool)
 {
     clearSettings();
 
     int row = 0;
+    int currentValue = 0;
 
-    for (int setting : a_properties) {
-        formSetting(setting, row);
+    for (int setting : a_tool->getProperties()) {
+        currentValue = a_tool->getProperty(setting);
+
+        formSetting(setting, row, currentValue);
         row++;
     }
 }
@@ -43,10 +46,10 @@ void ToolSettingWidget::generateSettings(QVector<int> a_properties)
 void ToolSettingWidget::initSettingData() {
     m_settings.append(ToolSetting("Brush Size", 0, 200, false)); // [0] = ToolSetting::SIZE
     m_settings.append(ToolSetting("Opacity", 0, 100, false)); // [1] = ToolSetting::OPACITY
-    m_settings.append(ToolSetting("Antialiasing", 0, 1, true)); // [1] = ToolSetting::ANTIALIAS
+    m_settings.append(ToolSetting("Antialiasing", 0, 1, true)); // [2] = ToolSetting::ANTIALIAS
 }
 
-void ToolSettingWidget::formSetting(int a_settingid, int a_hposition) {
+void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_initValue) {
     ToolSetting setting = m_settings[a_settingid];
 
     // label the name of the item
@@ -65,6 +68,9 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition) {
         connect(slider, &QSlider::valueChanged, textField, &QSpinBox::setValue);
         connect(textField, &QSpinBox::valueChanged, slider, &QSlider::setValue);
 
+        // set the current value for the slider (the textfield will automatically adjust)
+        slider->setValue(a_initValue);
+
         // connect the setting to the rest of the program
         connect(slider, &QSlider::valueChanged, this, [=](){emit updateSetting(a_settingid, slider->value());});
 
@@ -76,6 +82,8 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition) {
         // otherwise, add a checkbox
         QCheckBox* checkbox = new QCheckBox();
 
+        checkbox->setChecked(a_initValue == 1);
+
         // connect the checkbox and add it to the widget
         connect(checkbox, &QCheckBox::clicked, this, [=](){emit updateSetting(a_settingid, checkbox->isChecked());});
         m_layout->addWidget(checkbox, (2*a_hposition), 4, 1,1, Qt::AlignBottom);
@@ -83,16 +91,11 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition) {
 }
 
 void ToolSettingWidget::clearSettings() {
-    QList< QWidget* > children;
+    QLayoutItem* cell;
 
-    // find child widgets and delete them until there are no more children
-    do
-    {
-        children = m_layout->findChildren<QWidget*>();
-        if (children.count() == 0)
-            break;
-        delete children.at(0);
+    // remove every widget in the layout
+    while (m_layout->count() > 0) {
+        cell = m_layout->itemAt(0);
+        delete cell->widget();
     }
-    while ( true );
-
 }

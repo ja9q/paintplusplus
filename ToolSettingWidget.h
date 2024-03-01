@@ -19,7 +19,7 @@ public:
 
 public slots:
     // Use a list sent from a tool to generate settings
-    void generateSettings(QVector<int> a_properties);
+    void generateSettings(BaseTool* a_tool);
 
 signals:
     updateSetting(const int a_setting, int a_newValue);
@@ -31,7 +31,7 @@ private:
 
     void initSettingData();
 
-    void formSetting(int a_settingid, int a_hposition);
+    void formSetting(int a_settingid, int a_hposition, int a_initValue);
 
     void clearSettings();
 };

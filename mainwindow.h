@@ -28,10 +28,12 @@ private slots:
     // React to when the color has been changed
     void updateColor(QColor a_newColor);
 
-    //void changeCurrentTool(BaseTool* a_newTool);
+    // React to when the tool type has changed
+    void changeToolType(const int a_newType);
 
-    // React to when the user chooses to clear the canvas
-    void clearCanvas();
+signals:
+    // Alert other parts of the GUI that there is a new tool
+    void changedCurrentTool(BaseTool* a_newTool);
 
 private:
     PaintModel *m_model;        // The information about the user and available brushes

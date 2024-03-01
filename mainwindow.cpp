@@ -91,30 +91,10 @@ void MainWindow::updateColor(QColor a_newColor) {
     m_model->setColor(a_newColor, 0);
 }
 
-/**/
-/*
-void MainWindow::clearCanvas()
+void MainWindow::changeToolType(const int a_newType) {
+    m_model->setToolType(a_newType);
 
-NAME
-
-    MainWindow::clearCanvas() - clear the canvas
-
-SYNOPSIS
-
-    void MainWindow::clearCanvas();
-
-DESCRIPTION
-
-    Clear the canvas
-
-RETURNS
-
-    None
-
-*/
-/**/
-void MainWindow::clearCanvas() {
-    m_model->clearCanvas();
+    emit changedCurrentTool(m_model->getCurrentTool());
 }
 
 /**/
@@ -189,6 +169,7 @@ void MainWindow::setupToolSettings() {
     settingsDock->setWidget(m_toolSettings);
 
     connect(m_toolSettings, &ToolSettingWidget::updateSetting, m_model, &PaintModel::updateToolSetting);
+    connect(this, &MainWindow::changedCurrentTool, m_toolSettings, &ToolSettingWidget::generateSettings);
 }
 
 /**/
@@ -217,6 +198,14 @@ void MainWindow::setupToolBar() {
     QToolBar* toolbar = new QToolBar();
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea);
+
+    QAction* pencil = new QAction(QString::fromStdString("Pencil"));
+    toolbar->addAction(pencil);
+    connect(pencil, &QAction::triggered, this, [=](){changeToolType(PaintModel::DRAWTOOL);});
+
+    QAction* eraser = new QAction(QString::fromStdString("Eraser"));
+    toolbar->addAction(eraser);
+    connect(eraser, &QAction::triggered, this, [=](){changeToolType(PaintModel::ERASETOOL);});
 }
 
 /**/
@@ -247,7 +236,7 @@ void MainWindow::setupMenu() {
 
     QAction* clearAction = new QAction(tr("&Clear Canvas"));
     clearAction->setShortcut(QKeySequence::Delete);
-    connect(clearAction, &QAction::triggered, this, &MainWindow::clearCanvas);
+    connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
     editMenu->addAction(clearAction);
 
 }

@@ -25,6 +25,20 @@ DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     }
 }
 
+int DrawTool::getProperty(const int a_propId) {
+    switch(a_propId) {
+    case ToolSetting::SIZE:
+        return m_size;
+        break;
+    case ToolSetting::OPACITY:
+        return m_opacity;
+        break;
+    default:
+        qDebug() << "ERROR: tried to set incompatible property";
+        break;
+    }
+}
+
 void DrawTool::setProperty(const int a_propId, const int a_newValue) {
     switch(a_propId) {
     case ToolSetting::SIZE:

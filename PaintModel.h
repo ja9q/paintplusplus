@@ -31,6 +31,9 @@ public:
     // Getter for the current tool
     BaseTool* getCurrentTool() const;
 
+    // set the toolType
+    void setToolType(int a_typeId);
+
     // set the color
     void setColor(QColor a_color, int a_which);
 

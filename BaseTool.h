@@ -24,6 +24,8 @@ public:
     // Getter for properties list
     QVector<int> getProperties() const;
 
+    virtual int getProperty(const int a_propId) = 0;
+
     // Modify a tool's property (e.g. size, opacity)
     virtual void setProperty(const int a_propId, const int a_newValue) = 0;
 

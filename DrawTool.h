@@ -19,6 +19,9 @@ public:
     // get which color the tool uses
     int getColor() const;
 
+    // Get the current value of a tool's property
+    int getProperty(const int a_propId);
+
     // Modify a tool's property (e.g. size, opacity)
     void setProperty(const int a_propId, const int a_newValue);
 
