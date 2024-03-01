@@ -23,6 +23,7 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
     m_layout->setVerticalSpacing(5);
 
     generateSettings(a_tool->getProperties());
+    qDebug() << a_tool->getProperties().size() ;
 
     container->setLayout(m_layout);
 }

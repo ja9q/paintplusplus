@@ -18,7 +18,7 @@ DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(100), m_color(0)
 
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
-    BaseTool(a_name, {ToolSetting::SIZE}),
+        BaseTool(a_name, {ToolSetting::SIZE, ToolSetting::OPACITY}),
     m_size(10), m_color(a_color), m_opacity(100) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
@@ -127,7 +127,7 @@ RETURNS
 int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-    drawColor.setAlpha((m_opacity*.255));
+    drawColor.setAlpha((m_opacity*2.55));
 
     // fill brush stencil with desired color
     QImage rawBrush(m_size, m_size, QImage::Format_ARGB32);

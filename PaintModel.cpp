@@ -32,10 +32,16 @@ RETURNS
 /**/
 PaintModel::PaintModel(QWidget *parent) :
     QObject{parent},
-    m_canvas(CanvasWidget(&m_user, parent))
+    m_canvas(CanvasWidget(&m_user, parent)),
+    m_currentToolType(PaintModel::DRAWTOOL)
 {
-    m_tools.append(new DrawTool());
-    m_user.setCurrentTool(m_tools[0]);
+    initTools();
+
+    for(int i = 0; i < TOOLCOUNT; i++) {
+        m_currentTool[i] = 0;
+    }
+
+    m_user.setCurrentTool(m_tools[m_currentToolType][0]);
 }
 
 // Destructor
@@ -90,4 +96,15 @@ void PaintModel::clearCanvas() {
 void PaintModel::updateToolSetting(const int a_settingid, const int a_newValue) {
     BaseTool* currentTool = m_user.getCurrentTool();
     currentTool->setProperty(a_settingid, a_newValue);
+}
+
+void PaintModel::initTools() {
+    // init the drawing tools
+    m_tools[PaintModel::DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0, {}));
+
+    // init the erase tools
+    m_tools[PaintModel::ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
+
+    // init the rest of the tools (they don't exist yet);
+
 }

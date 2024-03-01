@@ -3,6 +3,7 @@
 //
 
 #include "BaseTool.h"
+#include <QDebug>
 
 // Base tool default constructor
 BaseTool::BaseTool() {}
