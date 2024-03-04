@@ -112,5 +112,6 @@ void PaintModel::initTools() {
     m_tools[PaintModel::ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
 
     // init the rest of the tools (they don't exist yet);
+    m_tools[PaintModel::SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
 
 }

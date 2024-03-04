@@ -10,9 +10,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QWidget>
-#include <QLabel>
 #include <QPixmap>
-#include <QPainterPath>
 #include <QPainter>
 
 // Constructor
@@ -156,4 +154,6 @@ void CanvasWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     // Copy the values on the canvas onto the display
     painter.drawPixmap(0,0,QPixmap::fromImage(m_canvas));
+
+    painter.end();
 }

@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     BaseTool.cpp \
     CanvasWidget.cpp \
+    ColorPicker.cpp \
     ColorWidget.cpp \
     DrawTool.cpp \
     PaintModel.cpp \
@@ -18,20 +19,19 @@ SOURCES += \
     ToolSettingWidget.cpp \
     User.cpp \
     main.cpp \
-    mainwindow.cpp \
-    test.cpp
+    mainwindow.cpp
 
 HEADERS += \
     BaseTool.h \
     CanvasWidget.h \
+    ColorPicker.h \
     ColorWidget.h \
     DrawTool.h \
     PaintModel.h \
     ToolSetting.h \
     ToolSettingWidget.h \
     User.h \
-    mainwindow.h \
-    test.h
+    mainwindow.h
 
 FORMS +=
 

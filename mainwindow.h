@@ -40,8 +40,10 @@ private:
     ColorWidget *m_colorPicker; // GUI component that lets the user change the brush color
     ToolSettingWidget *m_toolSettings;
 
-    QMenu *fileMenu;    // The File section of the file menu bar
-    QMenu *editMenu;    // The Edit section of the file menu bar
+    QAction *m_toolButtons[PaintModel::TOOLCOUNT];    // The buttons to be added to the toolbar
+
+    QMenu *m_fileMenu;    // The File section of the file menu bar
+    QMenu *m_editMenu;    // The Edit section of the file menu bar
 
     void setupColorPicker();    // Prepare the color picker and its interactions
     void setupToolSettings();   // Prepare the tool settings and its interactions

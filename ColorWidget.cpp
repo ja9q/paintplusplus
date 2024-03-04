@@ -5,12 +5,17 @@
 #include "ColorWidget.h"
 
 #include <QWidget>
+#include <QVBoxLayout>
 #include <QSpinBox>
 #include <QIntValidator>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QString>
+#include <QPainter>
+#include <QImage>
 #include <QLabel>
+
+#include "ColorPicker.h"
 
 /**/
 /*
@@ -39,32 +44,26 @@ ColorWidget::ColorWidget(QWidget *parent)
     : QWidget{parent}
 {
     // Set the width (height has to be adjusted in the main window)
-    setMinimumWidth(200);
-    setMaximumWidth(200);
+    setMinimumWidth(225);
+    setMaximumWidth(225);
 
+    // Set up the container
     QWidget *container = new QWidget(this);
 
+    container->resize(225, 260);
+
+
+    m_colorPicker = new ColorPicker(container);
+
+
     // Set up a layout
-    QGridLayout *layout = new QGridLayout;
+    QVBoxLayout *layout = new QVBoxLayout(container);
+
+    // Add the RGB edit section
+    layout->addWidget(createRgbEdit());
 
 
-    QString colorLabels[RGB_SIZE] = {"R:", "G:", "B:"};
-
-    // Create and label the textfields for the RGB values
-    for (int i = 0 ; i < 3; i++)
-    {
-        m_rgbEdit[i] = new QSpinBox();
-        m_rgbEdit[i]->setMaximum(255);
-        m_rgbEdit[i]->setMinimum(0);
-        m_rgbEdit[i]->setValue(0);
-        layout->addWidget(new QLabel(colorLabels[i]), 0, 2*i, 1, 1);
-        layout->addWidget(m_rgbEdit[i], 0, (2*i)+1, 1, 1);
-
-        // Connect the text field to update the color
-        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor());});
-    }
-
-    container->setLayout(layout);
+    update();
 }
 
 /**/
@@ -97,6 +96,36 @@ void ColorWidget::updateColor(QColor a_newColor) {
     m_rgbEdit[GREEN]->setValue(a_newColor.green());
     m_rgbEdit[BLUE]->setValue(a_newColor.blue());
 }
+
+QWidget* ColorWidget::createRgbEdit() {
+    QWidget *container = new QWidget(this);
+
+    // Set up a layout
+    QGridLayout *layout = new QGridLayout;
+
+
+    QString colorLabels[RGB_SIZE] = {"R:", "G:", "B:"};
+
+    // Create and label the textfields for the RGB values
+    for (int i = 0 ; i < 3; i++)
+    {
+        m_rgbEdit[i] = new QSpinBox();
+        m_rgbEdit[i]->setMaximum(255);
+        m_rgbEdit[i]->setMinimum(0);
+        m_rgbEdit[i]->setValue(0);
+        layout->addWidget(new QLabel(colorLabels[i]), 0, 2*i, 1, 1);
+        layout->addWidget(m_rgbEdit[i], 0, (2*i)+1, 1, 1);
+
+        // Connect the text field to update the color
+        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor());});
+    }
+
+    container->setLayout(layout);
+
+    return container;
+}
+
+
 
 /**/
 /*

@@ -25,6 +25,29 @@ DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     }
 }
 
+/**/
+/*
+int DrawTool::getProperty(const int a_propId)
+
+NAME
+
+    DrawTool::getProperty(const int a_propId) - get a certain property's value
+
+SYNOPSIS
+
+    int DrawTool::getProperty(const int a_propId);
+        a_propId --> the ID of the property the tool wants to receive
+
+DESCRIPTION
+
+    Get a tool's current property value
+
+RETURNS
+
+    The value of the requested property
+
+*/
+/**/
 int DrawTool::getProperty(const int a_propId) {
     switch(a_propId) {
     case ToolSetting::SIZE:
@@ -39,6 +62,30 @@ int DrawTool::getProperty(const int a_propId) {
     }
 }
 
+/**/
+/*
+void DrawTool::setProperty(const int a_propId, const int a_newValue)
+
+NAME
+
+    DrawTool::setProperty(const int a_propId, const int a_newValue) - set a certain property's value
+
+SYNOPSIS
+
+    void DrawTool::setProperty(const int a_propId, const int a_newValue);
+        a_propId --> the ID of the property to change
+        a_newValue --> the new value of the changed property
+
+DESCRIPTION
+
+    Changes a tool's property to a new value.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void DrawTool::setProperty(const int a_propId, const int a_newValue) {
     switch(a_propId) {
     case ToolSetting::SIZE:
@@ -100,9 +147,7 @@ int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor
     // have a painter draw out this line
     QPainter painter(a_canvas);
 
-
     painter.drawPixmap(drawPoint, brush);
-
 
     painter.end();
 
@@ -162,7 +207,7 @@ int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor 
     qreal pos = 0;
     qreal percent = 0;
 
-    // have a painter draw out this line
+    // have a painter draw out this line by drawing the pixmap along the path
     QPainter painter(a_canvas);
     while (pos < length){
         percent = line.percentAtLength(pos);

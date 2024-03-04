@@ -92,6 +92,11 @@ void MainWindow::updateColor(QColor a_newColor) {
 }
 
 void MainWindow::changeToolType(const int a_newType) {
+    for (int i = 0; i < PaintModel::TOOLCOUNT; i++) {
+        m_toolButtons[i]->setChecked(false);
+    }
+
+    m_toolButtons[a_newType]->setChecked(true);
     m_model->setToolType(a_newType);
 
     emit changedCurrentTool(m_model->getCurrentTool());
@@ -199,13 +204,17 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea);
 
-    QAction* pencil = new QAction(QString::fromStdString("Pencil"));
-    toolbar->addAction(pencil);
-    connect(pencil, &QAction::triggered, this, [=](){changeToolType(PaintModel::DRAWTOOL);});
+    QString buttonNames[] = {tr("Pencil"), tr("Eraser"), tr("Select")};
 
-    QAction* eraser = new QAction(QString::fromStdString("Eraser"));
-    toolbar->addAction(eraser);
-    connect(eraser, &QAction::triggered, this, [=](){changeToolType(PaintModel::ERASETOOL);});
+    for (int i = 0; i < PaintModel::TOOLCOUNT; i++) {
+        m_toolButtons[i] = new QAction(buttonNames[i]);
+        m_toolButtons[i]->setCheckable(true);
+        connect(m_toolButtons[i], &QAction::triggered, this, [=](){changeToolType(i);});
+        toolbar->addAction(m_toolButtons[i]);
+    }
+
+    m_toolButtons[0]->setChecked(true);
+
 }
 
 /**/
@@ -231,12 +240,12 @@ RETURNS
 */
 /**/
 void MainWindow::setupMenu() {
-    fileMenu = menuBar()->addMenu(tr("&File"));
-    editMenu = menuBar()->addMenu(tr("&Edit"));
+    m_fileMenu = menuBar()->addMenu(tr("&File"));
+    m_editMenu = menuBar()->addMenu(tr("&Edit"));
 
     QAction* clearAction = new QAction(tr("&Clear Canvas"));
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
-    editMenu->addAction(clearAction);
+    m_editMenu->addAction(clearAction);
 
 }

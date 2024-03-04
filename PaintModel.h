@@ -15,6 +15,8 @@ class PaintModel : public QObject
 {
     Q_OBJECT
 public:
+    const static int TOOLCOUNT = 3;        // The number of selectable tools
+
     const static int DRAWTOOL = 0;
     const static int ERASETOOL = 1;
     const static int SELECTTOOL = 2;
@@ -47,7 +49,6 @@ public slots:
     void updateToolSetting(const int a_settingid, const int a_newValue);
 
 private:
-    const static int TOOLCOUNT = 3;        // The number of selectable tools
     QVector<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
 
     int m_currentTool[TOOLCOUNT];   // The indices of the selected tools for each tool type

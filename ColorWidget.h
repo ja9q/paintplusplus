@@ -7,7 +7,10 @@
 #define COLORWIDGET_H
 
 #include <QWidget>
+#include <QImage>
 #include <QSpinBox>
+
+#include "ColorPicker.h"
 
 class ColorWidget : public QWidget
 {
@@ -20,7 +23,6 @@ public slots:
     // React to when a color has been changed elsewhere.
     void updateColor(QColor a_newColor);
 
-
 signals:
     // Alert other objects when the color has changed
     void valueChanged(QColor a_newColor);
@@ -31,11 +33,15 @@ private:
 
     const int RED = 0;      // Index for red
     const int GREEN = 1;    // Index for green
-    const int BLUE = 2;     // index
+    const int BLUE = 2;     // Index for blue
 
+    ColorPicker* m_colorPicker;
 
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];
+
+    // Set up the text fields that manually the RGB values
+    QWidget* createRgbEdit();
 
     // Calculate the current color
     QColor getColor();

@@ -19,11 +19,13 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 
     QWidget* container = new QWidget(this);
 
+
     m_layout = new QGridLayout();
     m_layout->setVerticalSpacing(5);
 
     generateSettings(a_tool);
-    qDebug() << a_tool->getProperties().size() ;
+
+    container->resize(200, m_layout->rowCount()*30);
 
     container->setLayout(m_layout);
 }
@@ -44,9 +46,9 @@ void ToolSettingWidget::generateSettings(BaseTool* a_tool)
 }
 
 void ToolSettingWidget::initSettingData() {
-    m_settings.append(ToolSetting("Brush Size", 0, 200, false)); // [0] = ToolSetting::SIZE
-    m_settings.append(ToolSetting("Opacity", 0, 100, false)); // [1] = ToolSetting::OPACITY
-    m_settings.append(ToolSetting("Antialiasing", 0, 1, true)); // [2] = ToolSetting::ANTIALIAS
+    m_settings.append(ToolSetting("Brush Size", 1, 200, ToolSetting::DisplayType::SLIDER)); // [0] = ToolSetting::SIZE
+    m_settings.append(ToolSetting("Opacity", 0, 100, ToolSetting::DisplayType::SLIDER)); // [1] = ToolSetting::OPACITY
+    m_settings.append(ToolSetting("Antialiasing", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [2] = ToolSetting::ANTIALIAS
 }
 
 void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_initValue) {
@@ -55,8 +57,10 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
     // label the name of the item
     m_layout->addWidget(new QLabel(setting.getName()), 2*a_hposition, 1, 1, 1, Qt::AlignBottom);
 
-    // if this setting is not a toggle, then create a slider and text field
-    if (!setting.getIsToggle()) {
+    // produce a different type of control depending on the display type
+    switch (setting.getDisplayType()) {
+    case ToolSetting::DisplayType::SLIDER:
+    {
         // set up the slider and text field
         QSlider* slider = new QSlider(Qt::Horizontal);
         slider->setRange(setting.getMinValue(), setting.getMaxValue());
@@ -77,8 +81,10 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
         // add them to the widget
         m_layout->addWidget(slider, (2*a_hposition)+1, 1, 1, 3, Qt::AlignTop);
         m_layout->addWidget(textField, (2*a_hposition)+1, 4, 1, 1, Qt::AlignTop);
-
-    } else {
+        break;
+    }
+    case ToolSetting::DisplayType::TOGGLE:
+    {
         // otherwise, add a checkbox
         QCheckBox* checkbox = new QCheckBox();
 
@@ -86,8 +92,17 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
 
         // connect the checkbox and add it to the widget
         connect(checkbox, &QCheckBox::clicked, this, [=](){emit updateSetting(a_settingid, checkbox->isChecked());});
+
         m_layout->addWidget(checkbox, (2*a_hposition), 4, 1,1, Qt::AlignBottom);
+        break;
     }
+    default:
+    {
+        break;
+    }
+
+    }
+
 }
 
 void ToolSettingWidget::clearSettings() {
