@@ -131,7 +131,7 @@ void MainWindow::setupColorPicker() {
     colorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, colorDock);
 
-    m_colorPicker = new ColorWidget();
+    m_colorPicker = new ColorWidget(m_model);
     colorDock->setWidget(m_colorPicker);
 
     // connect the interactables

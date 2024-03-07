@@ -17,6 +17,9 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 {
     initSettingData();
 
+    setMinimumWidth(225);
+    setMaximumWidth(225);
+
     QWidget* container = new QWidget(this);
 
 

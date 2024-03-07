@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QSpinBox>
+#include "PaintModel.h"
 
 #include "ColorPicker.h"
 
@@ -17,7 +18,7 @@ class ColorWidget : public QWidget
     Q_OBJECT
 public:
     // constructor
-    explicit ColorWidget(QWidget *parent = nullptr);
+    explicit ColorWidget(PaintModel *a_model, QWidget *parent = nullptr);
 
 public slots:
     // React to when a color has been changed elsewhere.
@@ -36,6 +37,8 @@ private:
     const int BLUE = 2;     // Index for blue
 
     ColorPicker* m_colorPicker;
+
+    PaintModel* m_model;
 
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];

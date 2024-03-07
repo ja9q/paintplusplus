@@ -40,22 +40,21 @@ RETURNS
 
 */
 /**/
-ColorWidget::ColorWidget(QWidget *parent)
-    : QWidget{parent}
+ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
+    : QWidget{parent}, m_model(a_model)
 {
     // Set the width (height has to be adjusted in the main window)
-    setMinimumWidth(225);
-    setMaximumWidth(225);
+    setMinimumWidth(220);
+    setMaximumWidth(220);
 
-    // Set up the container
     QWidget *container = new QWidget(this);
+    container->resize(220, 300);
 
-    container->resize(225, 300);
 
     // Create the color picker and its container
     QWidget *pickerContainer = new QWidget();
-    m_colorPicker = new ColorPicker(pickerContainer);
-
+    m_colorPicker = new ColorPicker(a_model, pickerContainer);
+    connect(m_colorPicker, &ColorPicker::changedColor, this, &ColorWidget::updateColor);
 
     // Set up a layout
     QVBoxLayout *layout = new QVBoxLayout(container);
@@ -63,7 +62,10 @@ ColorWidget::ColorWidget(QWidget *parent)
 
     // Add the color picker and the layout
     layout->addWidget(pickerContainer);
-    //layout->addWidget(createRgbEdit());
+    layout->addWidget(createRgbEdit());
+
+    layout->setStretch(0,3);
+    layout->setStretch(1,1);
 
 
     update();
@@ -101,10 +103,10 @@ void ColorWidget::updateColor(QColor a_newColor) {
 }
 
 QWidget* ColorWidget::createRgbEdit() {
-    QWidget *container = new QWidget(this);
+    QWidget *container = new QWidget();
 
     // Set up a layout
-    QGridLayout *layout = new QGridLayout;
+    QGridLayout *layout = new QGridLayout(container);
 
 
     QString colorLabels[RGB_SIZE] = {"R:", "G:", "B:"};
@@ -123,7 +125,6 @@ QWidget* ColorWidget::createRgbEdit() {
         connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor());});
     }
 
-    container->setLayout(layout);
 
     return container;
 }

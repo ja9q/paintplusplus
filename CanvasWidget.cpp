@@ -18,6 +18,7 @@ CanvasWidget::CanvasWidget(User* user, QWidget *parent)
     : QWidget(parent), m_user(user)
 {
 
+    resize(1000,500);
     // initialize the canvas and make it white
     m_canvas = QPixmap(width(), height()).toImage();
     fillCanvas(QColor(Qt::white));
