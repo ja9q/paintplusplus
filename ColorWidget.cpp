@@ -50,17 +50,20 @@ ColorWidget::ColorWidget(QWidget *parent)
     // Set up the container
     QWidget *container = new QWidget(this);
 
-    container->resize(225, 260);
+    container->resize(225, 300);
 
-
-    m_colorPicker = new ColorPicker(container);
+    // Create the color picker and its container
+    QWidget *pickerContainer = new QWidget();
+    m_colorPicker = new ColorPicker(pickerContainer);
 
 
     // Set up a layout
     QVBoxLayout *layout = new QVBoxLayout(container);
 
-    // Add the RGB edit section
-    layout->addWidget(createRgbEdit());
+
+    // Add the color picker and the layout
+    layout->addWidget(pickerContainer);
+    //layout->addWidget(createRgbEdit());
 
 
     update();

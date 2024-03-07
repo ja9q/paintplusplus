@@ -7,6 +7,8 @@ class ColorPicker : public QWidget
 {
     Q_OBJECT
 public:
+    static const int LENGTH = 200;
+
     explicit ColorPicker(QWidget *parent = nullptr);
 
 protected:
