@@ -48,7 +48,7 @@ ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     setMaximumWidth(220);
 
     QWidget *container = new QWidget(this);
-    container->resize(220, 300);
+    container->resize(220, 290);
 
 
     // Create the color picker and its container

@@ -21,7 +21,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
     // React to when the mouse is released
-    void mouseReleaseEvent(QPaintEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
     // React to when something is painted
     void paintEvent(QPaintEvent *event);
@@ -47,6 +47,8 @@ private:
     QImage m_colorWheel;
     QImage m_colorSquare;
 
+    qreal angleDebug;
+
     // Indicates what is being edited (if anything)
     int m_editFlag;
 
@@ -57,6 +59,15 @@ private:
 
     // Draw the cursor for the wheel and square
     QImage generateCursor();
+
+    // Calculate the position of the wheel position to be centered
+    void calculateWheelPos(QPointF a_pos);
+
+    // Calculate the position of the wheel position to be centered
+    void calculateWheelPos(QColor a_color);
+
+    // Calculate the position of the wheel position to be centered
+    void calculateSquarePos(QColor a_color);
 };
 
 #endif // COLORWHEEL_H

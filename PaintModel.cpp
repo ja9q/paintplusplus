@@ -87,6 +87,10 @@ void PaintModel::setToolType(int a_typeId) {
     m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
 }
 
+QColor PaintModel::getColor(int a_which) {
+    return m_user.getColor(a_which);
+}
+
 void PaintModel::setColor(QColor a_color, int a_which) {
     m_user.setColor(a_color, a_which);
 }
