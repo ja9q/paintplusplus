@@ -57,7 +57,7 @@ int DrawTool::getProperty(const int a_propId) {
         return m_opacity;
         break;
     default:
-        qDebug() << "ERROR: tried to set incompatible property";
+        return -1;
         break;
     }
 }
@@ -86,7 +86,7 @@ RETURNS
 
 */
 /**/
-void DrawTool::setProperty(const int a_propId, const int a_newValue) {
+int DrawTool::setProperty(const int a_propId, const int a_newValue) {
     switch(a_propId) {
     case ToolSetting::SIZE:
         m_size = a_newValue;
@@ -95,9 +95,10 @@ void DrawTool::setProperty(const int a_propId, const int a_newValue) {
         m_opacity = a_newValue;
         break;
     default:
-        qDebug() << "ERROR: tried to set incompatible property";
+        return -1;
         break;
     }
+    return 0;
 }
 
 /**/
@@ -126,13 +127,16 @@ RETURNS
 
 */
 /**/
-int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-    drawColor.setAlpha(m_opacity * 2.55);
+    if (m_opacity != 100.0)
+    {
+        drawColor.setAlpha((m_opacity*0.1));
+    }
 
     // fill brush stencil with desired color
-    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32);
+    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32_Premultiplied);
     for (int i = 0; i < m_size; i++) {
         for (int j = 0; j < m_size; j++) {
             rawBrush.setPixelColor(i, j, drawColor);
@@ -145,7 +149,7 @@ int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor
     QPointF drawPoint(a_point.x()-(m_size/2),a_point.y()-(m_size/2));
 
     // have a painter draw out this line
-    QPainter painter(a_canvas);
+    QPainter painter(a_tempCanvas);
 
     painter.drawPixmap(drawPoint, brush);
 
@@ -183,15 +187,21 @@ RETURNS
 
 */
 /**/
-int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
+
     drawColor.setAlpha((m_opacity*2.55));
 
-    // fill brush stencil with desired color
-    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32);
 
-    rawBrush.fill(drawColor);
+    // fill brush stencil with desired color
+    QImage rawBrush(m_size, m_size, QImage::Format_ARGB32_Premultiplied);
+
+    for (int i = 0; i < m_size; i++) {
+        for (int j = 0; j < m_size; j++) {
+            rawBrush.setPixelColor(i, j, drawColor);
+        }
+    }
 
     // convert the QImage to a pixmap that the painter can use
     QPixmap brush = QPixmap::fromImage(rawBrush);
@@ -208,7 +218,9 @@ int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor 
     qreal percent = 0;
 
     // have a painter draw out this line by drawing the pixmap along the path
-    QPainter painter(a_canvas);
+    QPainter painter(a_tempCanvas);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+
     while (pos < length){
         percent = line.percentAtLength(pos);
 
@@ -216,7 +228,7 @@ int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor 
 
         pos += .1;
     }
-    painter.drawPixmap(drawPoint, brush);
+    //painter.drawPixmap(drawPoint, brush);
 
     painter.end();
 

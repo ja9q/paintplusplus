@@ -20,7 +20,9 @@ CanvasWidget::CanvasWidget(User* user, QWidget *parent)
 
     resize(1000,500);
     // initialize the canvas and make it white
-    m_canvas = QPixmap(width(), height()).toImage();
+    m_canvas = QImage(width(), height(), QImage::Format_ARGB32);
+    m_tempCanvas = QImage(width(), height(), QImage::Format_ARGB32);
+    m_tempCanvas.fill(QColor(Qt::transparent));
     fillCanvas(QColor(Qt::white));
 }
 
@@ -77,10 +79,11 @@ RETURNS
 */
 /**/
 void CanvasWidget::mousePressEvent(QMouseEvent *event) {
+    setFocus();
     if(event->buttons() & Qt::LeftButton){
         // If this was a left mouse click, send the event, canvas, and colors to the current tool
         BaseTool* currentTool = m_user->getCurrentTool();
-        currentTool->processClick(&m_canvas, event->position(), m_user->getColor(0), m_user->getColor(1));
+        currentTool->processClick(&m_canvas, &m_tempCanvas, event->position(), m_user->getColor(0), m_user->getColor(1));
         // Rerender the component
         repaint();
     }
@@ -117,10 +120,29 @@ RETURNS
 /**/
 void CanvasWidget::mouseMoveEvent(QMouseEvent *event){
     if(event->buttons() & Qt::LeftButton){
-        // If this was a left mouse click, send the event, canvas, and colors to the current tool
+        // If this was a left mouse click, send the event, canvases, and colors to the current tool
         BaseTool* currentTool = m_user->getCurrentTool();
-        currentTool->processDrag(&m_canvas, event->position(), m_user->getColor(0), m_user->getColor(1));
+        currentTool->processDrag(&m_canvas, &m_tempCanvas, event->position(), m_user->getColor(0), m_user->getColor(1));
         // Rerender the component
+        repaint();
+    }
+    else if (event->buttons() & Qt::RightButton){
+        QColor newColor = m_canvas.pixelColor(event->pos());
+        // If this was a right mouse click, copy the color the click was on.
+        m_user->setColor(newColor, 0);
+        emit colorChanged(newColor);
+    }
+}
+
+void CanvasWidget::mouseReleaseEvent(QMouseEvent *event){
+    // When drawing with a tool, the tool first applies it to a temporary canvas, and the changes to the temp canvas
+    // are made permanent when the user stops drawing (releases the left mouse button).
+    if(event->button() == Qt::LeftButton){
+        // If this was a left mouse button release, then paint the temp canvas onto the actual canvas and rerender
+        QPainter painter(&m_canvas);
+        painter.drawPixmap(0,0,QPixmap::fromImage(m_tempCanvas));
+        // also clear the temporary canvas
+        m_tempCanvas.fill(QColor(Qt::transparent));
         repaint();
     }
 }
@@ -140,7 +162,7 @@ SYNOPSIS
 
 DESCRIPTION
 
-    When the component is updated, copy the values on the stored canvas
+    When the component is updated, copy the values on the stored canvases
     into the display
 
 RETURNS
@@ -157,4 +179,9 @@ void CanvasWidget::paintEvent(QPaintEvent *event)
     painter.drawPixmap(0,0,QPixmap::fromImage(m_canvas));
 
     painter.end();
+
+    QPainter painter2(this);
+    painter2.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+    painter2.drawPixmap(0,0,QPixmap::fromImage(m_tempCanvas));
+    painter2.end();
 }

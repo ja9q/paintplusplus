@@ -11,7 +11,7 @@
 #include <QDockWidget>
 #include <QScrollArea>
 #include <QHBoxLayout>
-#include <QPushButton>
+#include <QShortcut>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QGroupBox>
@@ -57,38 +57,13 @@ MainWindow::MainWindow(QWidget *parent)
     setupColorPicker();
     setupToolSettings();
 
+    m_model->getCanvas()->setFocus();
+
 }
 
 // Destructor
 MainWindow::~MainWindow()
 {
-}
-
-/**/
-/*
-void MainWindow::updateColor(QColor a_newColor)
-
-NAME
-
-    MainWindow::updateColor(QColor a_newColor) - react to when the color has been changed
-
-SYNOPSIS
-
-    void MainWindow::updateColor(QColor a_newColor);
-        a_newColor --> the new color to be displayed
-
-DESCRIPTION
-
-    When the color widget changes the color, update the model to have this color as well
-
-RETURNS
-
-    None
-
-*/
-/**/
-void MainWindow::updateColor(QColor a_newColor) {
-    m_model->setColor(a_newColor, 0);
 }
 
 void MainWindow::changeToolType(const int a_newType) {
@@ -135,7 +110,6 @@ void MainWindow::setupColorPicker() {
     colorDock->setWidget(m_colorPicker);
 
     // connect the interactables
-    connect(m_colorPicker, &ColorWidget::valueChanged, this, &updateColor);
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorWidget::updateColor);
 }
 
@@ -204,7 +178,7 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea);
 
-    QString buttonNames[] = {tr("Pencil"), tr("Eraser"), tr("Select")};
+    QString buttonNames[] = {tr("Pencil"), tr("Eraser"), tr("Select"), tr("Shapes")};
 
     for (int i = 0; i < PaintModel::TOOLCOUNT; i++) {
         m_toolButtons[i] = new QAction(buttonNames[i]);
@@ -247,5 +221,6 @@ void MainWindow::setupMenu() {
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
     m_editMenu->addAction(clearAction);
+    addAction(clearAction);
 
 }

@@ -15,11 +15,12 @@ class PaintModel : public QObject
 {
     Q_OBJECT
 public:
-    const static int TOOLCOUNT = 3;        // The number of selectable tools
+    const static int TOOLCOUNT = 4;        // The number of selectable tools
 
     const static int DRAWTOOL = 0;
     const static int ERASETOOL = 1;
     const static int SELECTTOOL = 2;
+    const static int SHAPETOOL = 3;
 
     // The constructor
     explicit PaintModel(QWidget *parent = nullptr);
@@ -39,9 +40,6 @@ public:
     // set the toolType
     void setToolType(int a_typeId);
 
-    // set the color
-    void setColor(QColor a_color, int a_which);
-
     // fill the canvas with the first color
     void fillCanvas();
 
@@ -50,6 +48,9 @@ public:
 
 public slots:
     void updateToolSetting(const int a_settingid, const int a_newValue);
+
+    // set the color
+    void setColor(QColor a_color, int a_which);
 
 private:
     QVector<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category

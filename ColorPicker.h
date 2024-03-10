@@ -12,6 +12,9 @@ public:
 
     explicit ColorPicker(PaintModel *a_model, QWidget *parent = nullptr);
 
+public slots:
+    void updateColor(QColor a_color);
+
 protected:
 
     // React to a mouse click
@@ -28,6 +31,8 @@ protected:
 
 signals:
     void changedColor(QColor a_color);
+
+    void swappedColor(int a_whichColor);
 
 private:
     const int EDITNONE = 0;
@@ -51,6 +56,9 @@ private:
 
     // Indicates what is being edited (if anything)
     int m_editFlag;
+
+    // Indicates which color is being modified
+    int m_whichColor;
 
     // Draw the color wheel (happens once when intializing)
     void renderColorWheel();

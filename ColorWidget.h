@@ -24,9 +24,12 @@ public slots:
     // React to when a color has been changed elsewhere.
     void updateColor(QColor a_newColor);
 
+private slots:
+    void swapColor(int a_newColor);
+
 signals:
     // Alert other objects when the color has changed
-    void valueChanged(QColor a_newColor);
+    void valueChanged(QColor a_newColor, int a_whichColor);
 
 private:
 
@@ -37,6 +40,8 @@ private:
     const int BLUE = 2;     // Index for blue
 
     ColorPicker* m_colorPicker;
+
+    int m_whichColor;
 
     PaintModel* m_model;
 

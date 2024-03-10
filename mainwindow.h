@@ -25,8 +25,6 @@ public:
     ~MainWindow();
 
 private slots:
-    // React to when the color has been changed
-    void updateColor(QColor a_newColor);
 
     // React to when the tool type has changed
     void changeToolType(const int a_newType);

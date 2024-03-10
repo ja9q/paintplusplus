@@ -110,12 +110,15 @@ void PaintModel::updateToolSetting(const int a_settingid, const int a_newValue) 
 
 void PaintModel::initTools() {
     // init the drawing tools
-    m_tools[PaintModel::DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0, {}));
+    m_tools[DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0, {}));
 
     // init the erase tools
-    m_tools[PaintModel::ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
+    m_tools[ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
 
     // init the rest of the tools (they don't exist yet);
-    m_tools[PaintModel::SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
+    m_tools[SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
+
+    // init the rest of the tools (they don't exist yet);
+    m_tools[SHAPETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
 
 }

@@ -27,13 +27,16 @@ public:
     virtual int getProperty(const int a_propId) = 0;
 
     // Modify a tool's property (e.g. size, opacity)
-    virtual void setProperty(const int a_propId, const int a_newValue) = 0;
+    virtual int setProperty(const int a_propId, const int a_newValue) = 0;
 
     // React to a click on the canvas
-    virtual int processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
+    virtual int processClick(QImage* a_canvas, QImage* a_tempCanvas,  const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
 
     // React to a drag on the canvas
-    virtual int processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
+    virtual int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
+
+    // react to a double click (only relevant to the polyline tool)
+    virtual int processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
 
 protected:
     // Add new properties

@@ -26,6 +26,9 @@ protected:
     // React to a mouse move (only a drag so far)
     void mouseMoveEvent(QMouseEvent *event);
 
+    // React to a mouse release
+    void mouseReleaseEvent(QMouseEvent *event);
+
     // React to when something is painted
     void paintEvent(QPaintEvent *event);
 
@@ -35,6 +38,9 @@ signals:
 private:
     // The actual pixel values
     QImage m_canvas;
+
+    // temporarily displayed canvas values; they are are usually eventually placed onto the actual canvas
+    QImage m_tempCanvas;
 
     // Pointer to the user; allows for access to their current colors and brush
     User* m_user;

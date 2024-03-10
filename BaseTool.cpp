@@ -43,6 +43,10 @@ QVector<int> BaseTool::getProperties() const {
     return m_properties;
 }
 
+int BaseTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+    return 0;
+}
+
 /**/
 /*
 void BaseTool::addProperties(QVector<int> a_extraProperties)

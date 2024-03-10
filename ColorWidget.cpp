@@ -16,6 +16,7 @@
 #include <QLabel>
 
 #include "ColorPicker.h"
+#include "PaintModel.h"
 
 /**/
 /*
@@ -41,7 +42,7 @@ RETURNS
 */
 /**/
 ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
-    : QWidget{parent}, m_model(a_model)
+    : QWidget{parent}, m_model(a_model), m_whichColor(0)
 {
     // Set the width (height has to be adjusted in the main window)
     setMinimumWidth(220);
@@ -55,6 +56,7 @@ ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     QWidget *pickerContainer = new QWidget();
     m_colorPicker = new ColorPicker(a_model, pickerContainer);
     connect(m_colorPicker, &ColorPicker::changedColor, this, &ColorWidget::updateColor);
+    connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorPicker::updateColor);
 
     // Set up a layout
     QVBoxLayout *layout = new QVBoxLayout(container);
@@ -102,6 +104,11 @@ void ColorWidget::updateColor(QColor a_newColor) {
     m_rgbEdit[BLUE]->setValue(a_newColor.blue());
 }
 
+void ColorWidget::swapColor(int a_newColor) {
+    m_whichColor = a_newColor;
+    updateColor(m_model->getColor(a_newColor));
+}
+
 QWidget* ColorWidget::createRgbEdit() {
     QWidget *container = new QWidget();
 
@@ -122,7 +129,7 @@ QWidget* ColorWidget::createRgbEdit() {
         layout->addWidget(m_rgbEdit[i], 0, (2*i)+1, 1, 1);
 
         // Connect the text field to update the color
-        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor());});
+        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor(), m_whichColor);});
     }
 
 
