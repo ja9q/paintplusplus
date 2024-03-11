@@ -10,6 +10,8 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QScrollArea>
+#include <QComboBox>
 #include "BaseTool.h"
 
 ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
@@ -17,20 +19,24 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 {
     initSettingData();
 
-    setMinimumWidth(225);
-    setMaximumWidth(225);
+    setMinimumSize(225,300);
+    setMaximumSize(225,300);
+    resize(225,300);
 
-    QWidget* container = new QWidget(this);
+    m_container = new QWidget(this);
 
-
-    m_layout = new QGridLayout();
-    m_layout->setVerticalSpacing(5);
+    m_layout = new QGridLayout(m_container);
+    m_layout->setVerticalSpacing(4);
 
     generateSettings(a_tool);
 
-    container->resize(200, m_layout->rowCount()*30);
+    //setGeometry(0,0, 215,  m_layout->rowCount()*30);
 
-    container->setLayout(m_layout);
+    QScrollArea* scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(false);
+    scrollArea->setWidget(m_container);
+
+    m_container->resize(225, m_layout->rowCount()*30);
 }
 
 void ToolSettingWidget::generateSettings(BaseTool* a_tool)
@@ -46,12 +52,21 @@ void ToolSettingWidget::generateSettings(BaseTool* a_tool)
         formSetting(setting, row, currentValue);
         row++;
     }
+
+    if (row*2 < 10) {
+        m_layout->addWidget(new QLabel(), row*2, 1, 10-(row*2),1 );
+    }
+
+    m_container->resize(225, m_layout->rowCount()*30);
 }
 
 void ToolSettingWidget::initSettingData() {
     m_settings.append(ToolSetting("Brush Size", 1, 200, ToolSetting::DisplayType::SLIDER)); // [0] = ToolSetting::SIZE
     m_settings.append(ToolSetting("Opacity", 0, 100, ToolSetting::DisplayType::SLIDER)); // [1] = ToolSetting::OPACITY
     m_settings.append(ToolSetting("Antialiasing", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [2] = ToolSetting::ANTIALIAS
+    m_settings.append(ToolSetting("Fill Type", 0, 2, ToolSetting::DisplayType::DROPDOWN, {"No Fill", "Fill with Color 1", "Fill with Color 2"}));
+        // [3] = ToolSetting::FILLTYPE
+    m_settings.append(ToolSetting("Has Outline", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [4] = ToolSetting::OUTLINE
 }
 
 void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_initValue) {
@@ -64,40 +79,17 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
     switch (setting.getDisplayType()) {
     case ToolSetting::DisplayType::SLIDER:
     {
-        // set up the slider and text field
-        QSlider* slider = new QSlider(Qt::Horizontal);
-        slider->setRange(setting.getMinValue(), setting.getMaxValue());
-        QSpinBox* textField = new QSpinBox();
-        textField->setMinimum(setting.getMinValue());
-        textField->setMaximum(setting.getMaxValue());
-
-        // sync the text field with the slider and vice versa
-        connect(slider, &QSlider::valueChanged, textField, &QSpinBox::setValue);
-        connect(textField, &QSpinBox::valueChanged, slider, &QSlider::setValue);
-
-        // set the current value for the slider (the textfield will automatically adjust)
-        slider->setValue(a_initValue);
-
-        // connect the setting to the rest of the program
-        connect(slider, &QSlider::valueChanged, this, [=](){emit updateSetting(a_settingid, slider->value());});
-
-        // add them to the widget
-        m_layout->addWidget(slider, (2*a_hposition)+1, 1, 1, 3, Qt::AlignTop);
-        m_layout->addWidget(textField, (2*a_hposition)+1, 4, 1, 1, Qt::AlignTop);
+        createSlider(a_settingid, setting, a_hposition, a_initValue);
         break;
     }
     case ToolSetting::DisplayType::TOGGLE:
     {
-        // otherwise, add a checkbox
-        QCheckBox* checkbox = new QCheckBox();
-
-        checkbox->setChecked(a_initValue == 1);
-
-        // connect the checkbox and add it to the widget
-        connect(checkbox, &QCheckBox::clicked, this, [=](){emit updateSetting(a_settingid, checkbox->isChecked());});
-
-        m_layout->addWidget(checkbox, (2*a_hposition), 4, 1,1, Qt::AlignBottom);
+        createCheckbox(a_settingid, setting, a_hposition, a_initValue);
         break;
+    }
+    case ToolSetting::DisplayType::DROPDOWN:
+    {
+        createDropdown(a_settingid, setting, a_hposition, a_initValue);
     }
     default:
     {
@@ -106,6 +98,59 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
 
     }
 
+}
+
+void ToolSettingWidget::createSlider(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue) {
+    // set up the slider and text field
+    QSlider* slider = new QSlider(Qt::Horizontal);
+    slider->setRange(a_setting.getMinValue(), a_setting.getMaxValue());
+    QSpinBox* textField = new QSpinBox();
+    textField->setMinimum(a_setting.getMinValue());
+    textField->setMaximum(a_setting.getMaxValue());
+
+    // sync the text field with the slider and vice versa
+    connect(slider, &QSlider::valueChanged, textField, &QSpinBox::setValue);
+    connect(textField, &QSpinBox::valueChanged, slider, &QSlider::setValue);
+
+    // set the current value for the slider (the textfield will automatically adjust)
+    slider->setValue(a_initValue);
+
+    // connect the setting to the rest of the program
+    connect(slider, &QSlider::valueChanged, this, [=](){emit updateSetting(a_settingid, slider->value());});
+
+    // add them to the widget
+    m_layout->addWidget(slider, (2*a_hposition)+1, 1, 1, 3, Qt::AlignTop);
+    m_layout->addWidget(textField, (2*a_hposition)+1, 4, 1, 1, Qt::AlignTop);
+}
+
+void ToolSettingWidget::createCheckbox(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue) {
+    (void)a_setting;
+
+    // otherwise, add a checkbox
+    QCheckBox* checkbox = new QCheckBox();
+
+    checkbox->setChecked(a_initValue == 1);
+
+    // connect the checkbox and add it to the widget
+    connect(checkbox, &QCheckBox::clicked, this, [=](){emit updateSetting(a_settingid, checkbox->isChecked());});
+
+    m_layout->addWidget(checkbox, (2*a_hposition), 4, 1,1, Qt::AlignBottom);
+}
+
+void ToolSettingWidget::createDropdown(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue) {
+
+    QComboBox* dropdown = new QComboBox();
+
+    // initialize the dropdown menu items and the initial setting
+    for (QString item : a_setting.getListValues()) {
+        dropdown->addItem(item);
+    }
+    dropdown->setCurrentIndex(a_initValue);
+
+    // connect the dropdown and add it to the widget
+    connect(dropdown, &QComboBox::currentIndexChanged, this, [=](){emit updateSetting(a_settingid, dropdown->currentIndex());});
+
+    m_layout->addWidget(dropdown, (2*a_hposition)+1, 1, 1, 4, Qt::AlignTop);
 }
 
 void ToolSettingWidget::clearSettings() {

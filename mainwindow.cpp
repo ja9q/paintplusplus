@@ -11,6 +11,7 @@
 #include <QDockWidget>
 #include <QScrollArea>
 #include <QHBoxLayout>
+#include <QScrollArea>
 #include <QShortcut>
 #include <QMenuBar>
 #include <QToolBar>
@@ -140,6 +141,8 @@ void MainWindow::setupToolSettings() {
     QDockWidget* settingsDock = new QDockWidget(tr("Tool Settings"), this);
     settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, settingsDock);
+
+
 
     BaseTool* currentTool = m_model->getCurrentTool();
 

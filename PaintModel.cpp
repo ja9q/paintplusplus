@@ -5,6 +5,7 @@
 #include "PaintModel.h"
 
 #include "DrawTool.h"
+#include "SquareTool.h"
 #include "User.h"
 
 /**/
@@ -119,6 +120,6 @@ void PaintModel::initTools() {
     m_tools[SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
 
     // init the rest of the tools (they don't exist yet);
-    m_tools[SHAPETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1, {}));
+    m_tools[SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0, {}));
 
 }

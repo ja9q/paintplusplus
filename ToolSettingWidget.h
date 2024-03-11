@@ -28,12 +28,20 @@ private:
     QVector<ToolSetting> m_settings;
 
     QGridLayout* m_layout;
+    QWidget* m_container;
 
     void initSettingData();
 
     void formSetting(int a_settingid, int a_hposition, int a_initValue);
 
+    void createSlider(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue);
+
+    void createCheckbox(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue);
+
+    void createDropdown(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue);
+
     void clearSettings();
+
 };
 
 #endif // TOOLSETTINGWIDGET_H

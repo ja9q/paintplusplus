@@ -13,7 +13,7 @@
 #include "ToolSetting.h"
 
 // default constructor
-DrawTool::DrawTool() : BaseTool(), m_size(10), m_opacity(100), m_color(0)
+DrawTool::DrawTool() : BaseTool(), m_size(10), m_color(0), m_opacity(100)
     {}
 
 // parametric constructor
@@ -111,8 +111,9 @@ NAME
 
 SYNOPSIS
 
-    int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
-        a_canvas - the canvas where operation must happen
+    int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+        a_canvas - the canvas where the drawing will eventually happen; some tools use this, but this one doesn't
+        a_tempCanvas - the canvas where a single stroke is temporarily stored; this tool will draw here
         a_point - where the mouse was clicked
         a_color1 - the user's first color
         a_color2 - the user's second color
@@ -128,6 +129,9 @@ RETURNS
 */
 /**/
 int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+
+    (void)a_canvas;
+
     // set the user-set color to the brush color
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
     if (m_opacity != 100.0)
@@ -171,8 +175,9 @@ NAME
 
 SYNOPSIS
 
-    int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
-        a_canvas - the canvas where operation must happen
+    int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+        a_canvas - the canvas where the drawing is eventually applied; this is used by some tools as a reference for colors, but not this one
+        a_tempCanvas - the canvas where the stroke is temporarily applied; this is to ensure the opacity works well
         a_point - where the mouse was clicked
         a_color1 - the user's first color
         a_color2 - the user's second color
@@ -188,6 +193,8 @@ RETURNS
 */
 /**/
 int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+    (void)a_canvas;
+
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
 
