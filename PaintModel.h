@@ -9,7 +9,7 @@
 #include "CanvasWidget.h"
 #include "User.h"
 #include "BaseTool.h"
-#include <QVector>
+#include <QList>
 
 class PaintModel : public QObject
 {
@@ -37,6 +37,14 @@ public:
     // Getter for one of the colors
     QColor getColor(int a_which);
 
+    // Getter for the list of the current tools
+    QList<BaseTool*> getToolSet() const;
+
+    // Getter for the current tool id
+    int getCurrentToolInd() const;
+
+    void setTool(int a_newTool);
+
     // set the toolType
     void setToolType(int a_typeId);
 
@@ -53,7 +61,7 @@ public slots:
     void setColor(QColor a_color, int a_which);
 
 private:
-    QVector<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
+    QList<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
 
     int m_currentTool[TOOLCOUNT];   // The indices of the selected tools for each tool type
     int m_currentToolType;          // The index that reflects the current tool type

@@ -2,6 +2,7 @@
 #define SQUARETOOL_H
 
 #include "ShapeTool.h"
+#include <QMouseEvent>
 
 class SquareTool : public ShapeTool
 {
@@ -12,7 +13,7 @@ public:
     SquareTool(QString a_name, int a_color, QVector<int> a_moreProperties = {});
 
     // Draw the shape
-    void drawShape(QImage* a_canvas, QPointF a_endPoint, const QColor a_color1, const QColor a_color2);
+    void drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
 };
 

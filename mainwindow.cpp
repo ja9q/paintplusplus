@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupToolBar();
     setupMenu();
     setupColorPicker();
+    setupToolSelector();
     setupToolSettings();
 
     m_model->getCanvas()->setFocus();
@@ -75,6 +76,13 @@ void MainWindow::changeToolType(const int a_newType) {
     m_toolButtons[a_newType]->setChecked(true);
     m_model->setToolType(a_newType);
 
+    emit changedToolType(m_model->getToolSet(), m_model->getCurrentToolInd());
+
+    emit changedCurrentTool(m_model->getCurrentTool());
+}
+
+void MainWindow::changeTool(const int a_newTool) {
+    m_model->setTool(a_newTool);
     emit changedCurrentTool(m_model->getCurrentTool());
 }
 
@@ -112,6 +120,20 @@ void MainWindow::setupColorPicker() {
 
     // connect the interactables
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorWidget::updateColor);
+}
+
+void MainWindow::setupToolSelector() {
+    // Make the dock for the settings dock
+    QDockWidget* selectorDock = new QDockWidget(tr("Tools"), this);
+    selectorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::LeftDockWidgetArea, selectorDock);
+
+    // create and add the tool settings
+    m_toolSelector = new ToolSelector(m_model->getToolSet(), m_model->getCurrentToolInd());
+    selectorDock->setWidget(m_toolSelector);
+
+    connect(this, &MainWindow::changedToolType, m_toolSelector, &ToolSelector::generateTools);
+    connect(m_toolSelector, &ToolSelector::updateTool, this, &MainWindow::changeTool);
 }
 
 /**/

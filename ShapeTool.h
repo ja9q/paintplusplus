@@ -2,6 +2,7 @@
 #define SHAPETOOL_H
 
 #include "DrawTool.h"
+#include <QMouseEvent>
 
 class ShapeTool : public DrawTool
 {
@@ -19,12 +20,12 @@ public:
     int setProperty(const int a_propId, const int a_newValue);
 
     // react to a click
-    int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
-    int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
     // Draw the shape
-    virtual void drawShape(QImage* a_canvas, QPointF a_endPoint, const QColor a_color1, const QColor a_color2) = 0;
+    virtual void drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) = 0;
 
 
 protected:

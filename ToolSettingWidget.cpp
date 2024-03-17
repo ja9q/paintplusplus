@@ -19,14 +19,15 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 {
     initSettingData();
 
-    setMinimumSize(225,300);
+    setMinimumSize(225,100);
     setMaximumSize(225,300);
-    resize(225,300);
+    resize(225,250);
 
     m_container = new QWidget(this);
 
     m_layout = new QGridLayout(m_container);
     m_layout->setVerticalSpacing(4);
+    m_layout->setContentsMargins(5,5,30,5);
 
     generateSettings(a_tool);
 
@@ -34,9 +35,11 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 
     QScrollArea* scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(false);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setWidget(m_container);
 
-    m_container->resize(225, m_layout->rowCount()*30);
+    m_container->resize(225, height());
+
 }
 
 void ToolSettingWidget::generateSettings(BaseTool* a_tool)
@@ -57,7 +60,7 @@ void ToolSettingWidget::generateSettings(BaseTool* a_tool)
         m_layout->addWidget(new QLabel(), row*2, 1, 10-(row*2),1 );
     }
 
-    m_container->resize(225, m_layout->rowCount()*30);
+    m_container->resize(225, height());
 }
 
 void ToolSettingWidget::initSettingData() {

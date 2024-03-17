@@ -2,6 +2,8 @@
 #include "DrawTool.h"
 #include "ToolSetting.h"
 
+#include <QMouseEvent>
+
 ShapeTool::ShapeTool() {}
 
 // parametric constructor
@@ -53,17 +55,17 @@ int ShapeTool::setProperty(const int a_propId, const int a_newValue) {
 }
 
 // react to a click
-int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void)a_canvas;
     (void)a_tempCanvas;
     (void)a_color1;
     (void)a_color2;
 
-    m_lastPoint = a_point;
+    m_lastPoint = a_event->position();
     return 0;
 }
 
-int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
-    drawShape(a_tempCanvas, a_point, a_color1, a_color2);
+int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
+    drawShape(a_tempCanvas, a_event, a_color1, a_color2);
     return 0;
 }

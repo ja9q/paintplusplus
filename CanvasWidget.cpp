@@ -83,7 +83,7 @@ void CanvasWidget::mousePressEvent(QMouseEvent *event) {
     if(event->buttons() & Qt::LeftButton){
         // If this was a left mouse click, send the event, canvas, and colors to the current tool
         BaseTool* currentTool = m_user->getCurrentTool();
-        currentTool->processClick(&m_canvas, &m_tempCanvas, event->position(), m_user->getColor(0), m_user->getColor(1));
+        currentTool->processClick(&m_canvas, &m_tempCanvas, event, m_user->getColor(0), m_user->getColor(1));
         // Rerender the component
         repaint();
     }
@@ -122,7 +122,7 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event){
     if(event->buttons() & Qt::LeftButton){
         // If this was a left mouse click, send the event, canvases, and colors to the current tool
         BaseTool* currentTool = m_user->getCurrentTool();
-        currentTool->processDrag(&m_canvas, &m_tempCanvas, event->position(), m_user->getColor(0), m_user->getColor(1));
+        currentTool->processDrag(&m_canvas, &m_tempCanvas, event, m_user->getColor(0), m_user->getColor(1));
         // Rerender the component
         repaint();
     }
@@ -137,12 +137,11 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event){
 void CanvasWidget::mouseReleaseEvent(QMouseEvent *event){
     // When drawing with a tool, the tool first applies it to a temporary canvas, and the changes to the temp canvas
     // are made permanent when the user stops drawing (releases the left mouse button).
+
+    // some other tools might have different behaviors (e.g. select and shapes) so tell the tool to deal with it
     if(event->button() == Qt::LeftButton){
-        // If this was a left mouse button release, then paint the temp canvas onto the actual canvas and rerender
-        QPainter painter(&m_canvas);
-        painter.drawPixmap(0,0,QPixmap::fromImage(m_tempCanvas));
-        // also clear the temporary canvas
-        m_tempCanvas.fill(QColor(Qt::transparent));
+        BaseTool* currentTool = m_user->getCurrentTool();
+        currentTool->processMouseRelease(&m_canvas, &m_tempCanvas, event, m_user->getColor(0), m_user->getColor(1));
         repaint();
     }
 }

@@ -82,6 +82,20 @@ BaseTool* PaintModel::getCurrentTool() const
     return m_user.getCurrentTool();
 }
 
+// Getter for the list of the current tools
+QList<BaseTool*> PaintModel::getToolSet() const {
+    return m_tools[m_currentToolType];
+}
+
+// Getter for the current tool id
+int PaintModel::getCurrentToolInd() const {
+    return m_currentTool[m_currentToolType];
+}
+
+void PaintModel::setTool(int a_newTool) {
+    m_currentTool[m_currentToolType] = a_newTool;
+    m_user.setCurrentTool(m_tools[m_currentToolType][m_currentTool[m_currentToolType]]);
+}
 
 void PaintModel::setToolType(int a_typeId) {
     m_currentToolType = a_typeId;
@@ -121,5 +135,6 @@ void PaintModel::initTools() {
 
     // init the rest of the tools (they don't exist yet);
     m_tools[SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0, {}));
+    m_tools[SHAPETOOL].append(new SquareTool(QString::fromStdString("Circle"), 0, {}));
 
 }

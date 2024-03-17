@@ -4,6 +4,7 @@
 
 #include "BaseTool.h"
 #include <QDebug>
+#include <QPainter>
 
 // Base tool default constructor
 BaseTool::BaseTool() {}
@@ -14,6 +15,10 @@ BaseTool::BaseTool(QString a_name, QVector<int> a_properties):
     m_name(a_name),
     m_properties(a_properties)
 {}
+
+QString BaseTool::getName() const {
+    return m_name;
+}
 
 /**/
 /*
@@ -43,7 +48,26 @@ QVector<int> BaseTool::getProperties() const {
     return m_properties;
 }
 
-int BaseTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+// React to when the mouse is no longer clicking/dragging on the canvas
+int BaseTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
+    (void) a_event;
+    (void) a_color1;
+    (void) a_color2;
+    // If this was a left mouse button release, then paint the temp canvas onto the actual canvas and rerender
+    QPainter painter(a_canvas);
+    painter.drawPixmap(0,0,QPixmap::fromImage(*a_tempCanvas));
+    // also clear the temporary canvas
+    a_tempCanvas->fill(QColor(Qt::transparent));
+
+    return 0;
+}
+
+int BaseTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
+    (void) a_canvas;
+    (void) a_tempCanvas;
+    (void) a_event;
+    (void) a_color1;
+    (void) a_color2;
     return 0;
 }
 

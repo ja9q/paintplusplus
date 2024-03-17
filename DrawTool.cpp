@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QRgb>
 #include <QPainter>
+#include <QMouseEvent>
 #include <QPainterPath>
 #include "BaseTool.h"
 #include "ToolSetting.h"
@@ -128,9 +129,11 @@ RETURNS
 
 */
 /**/
-int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
 
     (void)a_canvas;
+
+    QPointF point = a_event->position();
 
     // set the user-set color to the brush color
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
@@ -150,7 +153,7 @@ int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF
     // convert the QImage to a pixmap that the painter can use
     QPixmap brush = QPixmap::fromImage(rawBrush);
 
-    QPointF drawPoint(a_point.x()-(m_size/2),a_point.y()-(m_size/2));
+    QPointF drawPoint(point.x()-(m_size/2),point.y()-(m_size/2));
 
     // have a painter draw out this line
     QPainter painter(a_tempCanvas);
@@ -192,8 +195,10 @@ RETURNS
 
 */
 /**/
-int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) {
+int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void)a_canvas;
+
+    QPointF point = a_event->pos();
 
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
@@ -213,7 +218,7 @@ int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF 
     // convert the QImage to a pixmap that the painter can use
     QPixmap brush = QPixmap::fromImage(rawBrush);
 
-    QPointF drawPoint(a_point.x()-(m_size/2),a_point.y()-(m_size/2));
+    QPointF drawPoint(point.x()-(m_size/2),point.y()-(m_size/2));
 
     // define a line between the last point and the current point
     QPainterPath line;

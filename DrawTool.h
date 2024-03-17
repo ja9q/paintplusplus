@@ -6,6 +6,7 @@
 #define DRAWTOOL_H
 
 #include "BaseTool.h"
+#include <QMouseEvent>
 
 class DrawTool : public BaseTool
 {
@@ -26,10 +27,10 @@ public:
     int setProperty(const int a_propId, const int a_newValue);
 
     // react to a click
-    int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
     // react to a drag
-    int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
 protected:
     int m_size;     // the thickness of the line

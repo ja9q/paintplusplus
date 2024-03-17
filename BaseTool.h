@@ -8,6 +8,7 @@
 
 #include <QIcon>
 #include <QString>
+#include <QMouseEvent>
 
 class BaseTool
 {
@@ -21,6 +22,8 @@ public:
     // Parametric constructor
     BaseTool(QString a_name, QVector<int> a_properties);
 
+    QString getName() const;
+
     // Getter for properties list
     QVector<int> getProperties() const;
 
@@ -30,13 +33,16 @@ public:
     virtual int setProperty(const int a_propId, const int a_newValue) = 0;
 
     // React to a click on the canvas
-    virtual int processClick(QImage* a_canvas, QImage* a_tempCanvas,  const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
+    virtual int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) = 0;
 
     // React to a drag on the canvas
-    virtual int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) = 0;
+    virtual int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) = 0;
+
+    // React to when the mouse is no longer clicking/dragging on the canvas
+    virtual int processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
     // react to a double click (only relevant to the polyline tool)
-    virtual int processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    virtual int processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
 protected:
     // Add new properties
