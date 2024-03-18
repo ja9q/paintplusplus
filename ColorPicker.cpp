@@ -12,6 +12,29 @@
 
 
 
+/**/
+/*
+ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
+
+NAME
+
+    *a_model, QWidget *parent) - the parameter constructor
+
+SYNOPSIS
+
+    ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent);
+        a_model -->
+
+DESCRIPTION
+
+    parameter constructor
+
+RETURNS
+
+    The constructed ColorPicker
+
+*/
+/**/
 ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
     : QWidget{parent}, m_model(a_model), m_whichColor(0), m_cursor(generateCursor()),
     m_colorWheel(QImage(LENGTH, LENGTH, QImage::Format_ARGB32)),
@@ -26,6 +49,31 @@ ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
     renderColorSquare(QColor(Qt::red));
 }
 
+/**/
+/*
+void ColorPicker::updateColor(QColor a_color)
+
+NAME
+
+    ColorPicker::updateColor(QColor a_color) - updates the appearance of the
+    color picker after the color is externally changed
+
+SYNOPSIS
+
+    void ColorPicker::updateColor(QColor a_color);
+        a_color --> the new color that should be displayed
+
+DESCRIPTION
+
+    When an external component (i.e. the canvas color picker or outer color widget) change
+    the color, this widget is also updated to reflect the new color
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ColorPicker::updateColor(QColor a_color) {
     calculateSquarePos(a_color);
     calculateWheelPos(a_color);
@@ -190,8 +238,7 @@ RETURNS
 */
 /**/
 void ColorPicker::mouseReleaseEvent(QMouseEvent *event) {
-    QPoint removeWarningPls = event->pos();
-    m_editFlag = EDITNONE;
+    (void) event;
 }
 
 /**/
@@ -390,7 +437,30 @@ QImage ColorPicker::generateCursor() {
     return cursor;
 }
 
-//
+/**/
+/*
+void ColorPicker::calculateWheelPos(QPointF a_pos)
+
+NAME
+
+    ColorPicker::calculateWheelPos(QPointF a_pos) - adjusts the wheel cursor to be centered
+
+SYNOPSIS
+
+    void ColorPicker::calculateWheelPos(QPointF a_pos);
+        a_pos --> the unprocessed position of the wheel from the mouse movement
+
+DESCRIPTION
+
+    Recalculates the wheel cursor position after it is moved by the mouse to be something centered
+    within the wheel's width
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ColorPicker::calculateWheelPos(QPointF a_pos) {
     // the center/radius of the circle the cursor wants to place itself on
     const qreal CENTER = (LENGTH/2.0);
@@ -417,7 +487,30 @@ void ColorPicker::calculateWheelPos(QPointF a_pos) {
     m_wheelPos = QPointF(CENTER + newX -5, CENTER + newY -5);
 }
 
-// Calculate the position of the wheel position to be centered
+/**/
+/*
+void ColorPicker::calculateWheelPos(QColor a_color)
+
+NAME
+
+    ColorPicker::calculateWheelPos(QColor a_color) - calculates a color's corresponding square cursor position
+
+SYNOPSIS
+
+    void ColorPicker::calculateWheelPos(QColor a_color);
+        a_color --> the color the position will be calculated from
+
+DESCRIPTION
+
+    Changes the square cursor position from a given color. This is needed when the color is changed from outside
+    of the this color picker
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ColorPicker::calculateWheelPos(QColor a_color){
     // the center/radius of the circle the cursor wants to place itself on
     const qreal CENTER = (LENGTH/2.0);
@@ -448,7 +541,30 @@ void ColorPicker::calculateWheelPos(QColor a_color){
     m_wheelPos = QPointF(CENTER + newX -5, CENTER + newY -5);
 }
 
-// Calculate the position of the wheel position to be centered
+/**/
+/*
+void ColorPicker::calculateSquarePos(QColor a_color)
+
+NAME
+
+    ColorPicker::calculateSquarePos(QColor a_color) - calculates a color's corresponding square cursor position
+
+SYNOPSIS
+
+    void ColorPicker::calculateSquarePos(QColor a_color);
+        a_color --> the color the position will be calculated from
+
+DESCRIPTION
+
+    Changes the square cursor position from a given color. This is needed when the color is changed from outside
+    of the this color picker
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ColorPicker::calculateSquarePos(QColor a_color){
     a_color = a_color.toHsv();
 

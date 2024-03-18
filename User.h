@@ -11,8 +11,6 @@
 class User
 {
 public:
-    // default constructor
-    User();
 
     // parametric constructor
     User(BaseTool* a_tool);

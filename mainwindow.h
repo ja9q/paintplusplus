@@ -42,8 +42,8 @@ signals:
 private:
     PaintModel *m_model;        // The information about the user and available brushes
     ColorWidget *m_colorPicker; // GUI component that lets the user change the brush color
-    ToolSelector *m_toolSelector;
-    ToolSettingWidget *m_toolSettings;
+    ToolSelector *m_toolSelector;   // GUI component for displaying possible subtools
+    ToolSettingWidget *m_toolSettings;  // GUI component for adjusting tool settings
 
     QAction *m_toolButtons[PaintModel::TOOLCOUNT];    // The buttons to be added to the toolbar
 

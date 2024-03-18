@@ -15,6 +15,9 @@ public:
     // Constructs the widget
     explicit CanvasWidget(User* user, QWidget *parent = 0);
 
+    // Setter for the canvas;
+    void setCanvas(QImage a_newCanvas);
+
     // Fills the canvas with one color
     void fillCanvas(QColor a_color);
 
@@ -33,7 +36,11 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 signals:
+    // tell other objects that the color is different
     void colorChanged(QColor a_newColor);
+
+    // alert other components that the canvas changed
+    void canvasChanged(QImage a_newCanvas);
 
 private:
     // The actual pixel values

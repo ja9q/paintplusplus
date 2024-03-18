@@ -25,6 +25,7 @@ public slots:
     void updateColor(QColor a_newColor);
 
 private slots:
+    // react to when the color picker switches current color (e.g. switching to color2)
     void swapColor(int a_newColor);
 
 signals:
@@ -39,11 +40,11 @@ private:
     const int GREEN = 1;    // Index for green
     const int BLUE = 2;     // Index for blue
 
-    ColorPicker* m_colorPicker;
+    ColorPicker* m_colorPicker; // the GUI component of the color wheel square
 
-    int m_whichColor;
+    PaintModel* m_model; // the model it displays for
 
-    PaintModel* m_model;
+    int m_whichColor; // the color mode it is displaying
 
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];

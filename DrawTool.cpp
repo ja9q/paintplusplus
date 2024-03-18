@@ -13,10 +13,6 @@
 #include "BaseTool.h"
 #include "ToolSetting.h"
 
-// default constructor
-DrawTool::DrawTool() : BaseTool(), m_size(10), m_color(0), m_opacity(100)
-    {}
-
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
         BaseTool(a_name, {ToolSetting::SIZE, ToolSetting::OPACITY}),
@@ -104,21 +100,20 @@ int DrawTool::setProperty(const int a_propId, const int a_newValue) {
 
 /**/
 /*
-int DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2)
+int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
 
 NAME
 
-    DrawTool::processClick(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) - draw a dot
+    DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - draw a dot
 
 SYNOPSIS
 
     int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
-        a_canvas - the canvas where the drawing will eventually happen; some tools use this, but this one doesn't
-        a_tempCanvas - the canvas where a single stroke is temporarily stored; this tool will draw here
-        a_point - where the mouse was clicked
+        a_canvas - the canvas where the drawing is eventually applied; this is used by some tools as a reference for colors, but not this one
+        a_tempCanvas - the canvas where the stroke is temporarily applied; this is to ensure the opacity works well
+        a_event - the related mouse event; contains the position and modifier keys
         a_color1 - the user's first color
         a_color2 - the user's second color
-
 DESCRIPTION
 
     Draw a dot on the mouse click
@@ -170,18 +165,19 @@ int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
 
 /**/
 /*
-int DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2)
+int DrawTool::processDragQImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
 
 NAME
 
-    DrawTool::processDrag(QImage* a_canvas, const QPointF a_point, const QColor a_color1, const QColor a_color2) - draw a line
+    DrawTool::processDragQImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) -
+        draw a line
 
 SYNOPSIS
 
-    int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QPointF a_point, const QColor a_color1, const QColor a_color2);
+    int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
         a_canvas - the canvas where the drawing is eventually applied; this is used by some tools as a reference for colors, but not this one
         a_tempCanvas - the canvas where the stroke is temporarily applied; this is to ensure the opacity works well
-        a_point - where the mouse was clicked
+        a_event - the related mouse event; contains the position and modifier keys
         a_color1 - the user's first color
         a_color2 - the user's second color
 

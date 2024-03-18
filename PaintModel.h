@@ -10,6 +10,7 @@
 #include "User.h"
 #include "BaseTool.h"
 #include <QList>
+#include <QImage>
 
 class PaintModel : public QObject
 {
@@ -17,6 +18,7 @@ class PaintModel : public QObject
 public:
     const static int TOOLCOUNT = 4;        // The number of selectable tools
 
+    // the indices of the tool types in the tool arrays
     const static int DRAWTOOL = 0;
     const static int ERASETOOL = 1;
     const static int SELECTTOOL = 2;
@@ -55,21 +57,36 @@ public:
     void clearCanvas();
 
 public slots:
+    // update one of the settings of the current tool
     void updateToolSetting(const int a_settingid, const int a_newValue);
+
+    // undo within the canvas
+    void undo();
+
+    // redo within the canvas
+    void redo();
+
+    // add to the undo history
+    void updateHistory(QImage a_canvas);
 
     // set the color
     void setColor(QColor a_color, int a_which);
 
 private:
+    const int UNDO_LIMIT = 10; // max length for history
+
     QList<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
 
     int m_currentTool[TOOLCOUNT];   // The indices of the selected tools for each tool type
     int m_currentToolType;          // The index that reflects the current tool type
 
     User m_user;                // The user's chosen tool and colors
-    CanvasWidget m_canvas;      // The canvas
+    CanvasWidget m_canvas;      // The canvas widget that is to be displayed
 
-    void initTools();
+    int m_historyPos;   // tracks the undos and redos of the history
+    QList<QImage> m_history;    // the limited history of the canvas
+
+    void initTools();   // initialize all the tools that the user can use
 };
 
 #endif // PAINTMODEL_H

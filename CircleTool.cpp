@@ -1,47 +1,45 @@
-#include "SquareTool.h"
+#include "CircleTool.h"
 
 #include <QPainter>
 #include <QRectF>
 #include <QMouseEvent>
 
-
 /**/
 /*
-SquareTool::SquareTool(QString a_name, int a_color, QVector<int> a_moreProperties);
+CircleTool::CircleTool(QString a_name, int a_color, QVector<int> a_moreProperties);
 
 NAME
 
-    SquareTool::SquareTool(QString a_name, int a_color, QVector<int> a_moreProperties) - parameter constructor
+    CircleTool::CircleTool(QString a_name, int a_color, QVector<int> a_moreProperties) - parameter constructor
 
 SYNOPSIS
 
-    SquareTool::SquareTool(QString a_name, int a_color, QVector<int> a_moreProperties);
+    CircleTool::CircleTool(QString a_name, int a_color, QVector<int> a_moreProperties);
         a_name - the name of the tool
         a_color - the color that is used to draw the outline
         a_moreProperties - additional properties the tool can use
 
 DESCRIPTION
 
-    Constructor for the SquareTool
+    Constructor for the CircleTool
 
 RETURNS
 
-    The constructed SquareTool
+    The constructed CircleTool
 
 */
 /**/
-SquareTool::SquareTool(QString a_name, int a_color, QVector<int> a_moreProperties):
+CircleTool::CircleTool(QString a_name, int a_color, QVector<int> a_moreProperties):
     ShapeTool(a_name, a_color, a_moreProperties)
 {}
 
-
 /**/
 /*
-void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
 
 NAME
 
-    SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - draws the shape
+    CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - draws the shape
 
 SYNOPSIS
 
@@ -53,8 +51,8 @@ SYNOPSIS
 
 DESCRIPTION
 
-    Draws the square onto the temporary canvas. The corners of the rectangle is determined by the position of the initial click
-    and the position of the current drag. If the drag happened while the shift key is held, then a perfect square is drawn
+    Draws the circle onto the temporary canvas. The corners of the circle is determined by the position of the initial click
+    and the position of the current drag. If the drag happened while the shift key is held, then a perfect circle is drawn
 
 RETURNS
 
@@ -62,7 +60,7 @@ RETURNS
 
 */
 /**/
-void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2){
+void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2){
     // clear the temp canvas from any previous marks (e.g. the previous rectangle)
     a_canvas->fill(Qt::transparent);
 
@@ -91,7 +89,7 @@ void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const Q
         painter.setBrush(fillColor);
     }
 
-    // if the shift button is held down, then make this a square; otherwise, draw the rectangle as is
+    // if the shift button is held down, then make this a perfect circle; otherwise, draw the ellipse as is
     if (a_event->modifiers() & Qt::ShiftModifier) {
         QPointF fixedPoint = a_event->position();
         qreal x_distance = qFabs(fixedPoint.x()-m_lastPoint.x());
@@ -102,11 +100,10 @@ void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const Q
         } else {
             fixedPoint.ry() = (fixedPoint.y() > m_lastPoint.y()) ? m_lastPoint.y() + x_distance : m_lastPoint.y() - x_distance;
         }
-        painter.drawRect(QRectF(m_lastPoint, fixedPoint));
+        painter.drawEllipse(QRectF(m_lastPoint, fixedPoint));
     } else {
-        painter.drawRect(QRectF(m_lastPoint, a_event->position()));
+        painter.drawEllipse(QRectF(m_lastPoint, a_event->position()));
     }
 
 
 }
-

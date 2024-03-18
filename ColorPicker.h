@@ -1,3 +1,7 @@
+//
+// GUI for the color square wheel part of the color widget
+//
+
 #ifndef COLORWHEEL_H
 #define COLORWHEEL_H
 
@@ -30,15 +34,19 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 signals:
+    // alert other components that the current color values is different
     void changedColor(QColor a_color);
 
+    // alert other components that the current color is different (e.g. now using color2)
     void swappedColor(int a_whichColor);
 
 private:
+    // modes for the edit flag
     const int EDITNONE = 0;
     const int EDITWHEEL = 1;
     const int EDITSQUARE = 2;
 
+    // Copy the model because it needs to display the model's state (colors 1 and 2)
     PaintModel* m_model;
 
     // positions to place the cursors.
@@ -51,8 +59,6 @@ private:
     // Visual components needed to display the color wheel and square
     QImage m_colorWheel;
     QImage m_colorSquare;
-
-    qreal angleDebug;
 
     // Indicates what is being edited (if anything)
     int m_editFlag;

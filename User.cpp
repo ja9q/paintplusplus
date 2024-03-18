@@ -8,14 +8,6 @@
 #include "DrawTool.h"
 #include <QColor>
 
-// default constructor
-User::User() {
-    m_colors[0] = QColor(Qt::black);
-    m_colors[1] = QColor(Qt::white);
-
-    m_currentTool = new DrawTool();
-}
-
 // parametric constructor
 User::User(BaseTool* a_tool) {
     m_colors[0] = QColor(Qt::black);

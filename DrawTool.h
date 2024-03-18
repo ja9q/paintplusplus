@@ -11,9 +11,6 @@
 class DrawTool : public BaseTool
 {
 public:
-    // constructor
-    DrawTool();
-
     // parametric constructor
     DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties = {});
 

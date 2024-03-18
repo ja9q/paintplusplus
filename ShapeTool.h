@@ -8,8 +8,6 @@ class ShapeTool : public DrawTool
 {
 
 public:
-    ShapeTool();
-
     // parametric constructor
     ShapeTool(QString a_name, int a_color, QVector<int> a_moreProperties = {});
 
@@ -22,6 +20,7 @@ public:
     // react to a click
     int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
+    // react to a drag
     int processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
     // Draw the shape

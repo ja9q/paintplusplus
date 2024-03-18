@@ -13,15 +13,10 @@
 class BaseTool
 {
 public:
-
-
-
-    // Default constructor
-    BaseTool();
-
     // Parametric constructor
     BaseTool(QString a_name, QVector<int> a_properties);
 
+    // Getter for name
     QString getName() const;
 
     // Getter for properties list

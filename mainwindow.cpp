@@ -45,12 +45,19 @@ RETURNS
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    resize(1000,500);
     setWindowTitle(tr("Paint++"));
 
     // initialize the paint model and display its canvas
-    m_model = new PaintModel(parent);
-    setCentralWidget(m_model->getCanvas());
+    m_model = new PaintModel();
+
+    QScrollArea* scrollArea = new QScrollArea;
+    scrollArea->setWidgetResizable(false);
+    scrollArea->setWidget(m_model->getCanvas());
+    scrollArea->setAlignment((Qt::AlignHCenter | Qt::AlignVCenter));
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    setCentralWidget(scrollArea);
 
     // set up the other GUI components
     setupToolBar();
@@ -246,6 +253,15 @@ void MainWindow::setupMenu() {
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
     m_editMenu->addAction(clearAction);
-    addAction(clearAction);
+
+    QAction* undoAction = new QAction(tr("&Undo"));
+    undoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
+    connect(undoAction, &QAction::triggered, this, [=](){m_model->undo();});
+    m_editMenu->addAction(undoAction);
+
+    QAction* redoAction = new QAction(tr("&Redo"));
+    redoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
+    connect(redoAction, &QAction::triggered, this, [=](){m_model->redo();});
+    m_editMenu->addAction(redoAction);
 
 }
