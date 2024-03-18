@@ -7,6 +7,7 @@
 #include "DrawTool.h"
 #include "SquareTool.h"
 #include "CircleTool.h"
+#include "FillTool.h"
 #include "User.h"
 
 /**/
@@ -34,8 +35,8 @@ RETURNS
 /**/
 PaintModel::PaintModel(QWidget *parent) :
     QObject{parent},
-    m_currentToolType(PaintModel::DRAWTOOL),
     m_currentTool{0},
+    m_currentToolType(PaintModel::DRAWTOOL),
     m_user(nullptr),
     m_canvas(CanvasWidget(&m_user, parent)),
     m_historyPos(0)
@@ -369,7 +370,7 @@ RETURNS
 /**/
 void PaintModel::undo() {
     // replace the canvas with the next most recent part of the history and remove it
-    if (m_history.length() >= 2) {
+    if (m_historyPos < UNDO_LIMIT-1) {
         // update the history position;
         m_historyPos++;
         // set the canvas to the current part of history
@@ -482,8 +483,11 @@ void PaintModel::initTools() {
     // init the rest of the tools (they don't exist yet);
     m_tools[SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));
 
-    // init the rest of the tools (they don't exist yet);
+    // init the shapetools
     m_tools[SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0));
     m_tools[SHAPETOOL].append(new CircleTool(QString::fromStdString("Circle"), 0));
+
+    // init the fill tools
+    m_tools[FILLTOOL].append(new FillTool("Fill Bucket", 0));
 
 }

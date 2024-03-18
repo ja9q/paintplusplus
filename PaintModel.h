@@ -16,13 +16,14 @@ class PaintModel : public QObject
 {
     Q_OBJECT
 public:
-    const static int TOOLCOUNT = 4;        // The number of selectable tools
+    const static int TOOLCOUNT = 5;        // The number of selectable tools
 
     // the indices of the tool types in the tool arrays
     const static int DRAWTOOL = 0;
     const static int ERASETOOL = 1;
     const static int SELECTTOOL = 2;
     const static int SHAPETOOL = 3;
+    const static int FILLTOOL = 4;
 
     // The constructor
     explicit PaintModel(QWidget *parent = nullptr);
@@ -73,7 +74,7 @@ public slots:
     void setColor(QColor a_color, int a_which);
 
 private:
-    const int UNDO_LIMIT = 10; // max length for history
+    const int UNDO_LIMIT = 20; // max length for history
 
     QList<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
 

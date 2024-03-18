@@ -134,7 +134,7 @@ int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
     if (m_opacity != 100.0)
     {
-        drawColor.setAlpha((m_opacity*0.1));
+        drawColor.setAlpha((m_opacity*2.55));
     }
 
     // fill brush stencil with desired color
@@ -198,8 +198,10 @@ int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEv
 
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-
-    drawColor.setAlpha((m_opacity*2.55));
+    if (m_opacity != 100.0)
+    {
+        drawColor.setAlpha((m_opacity*2.55));
+    }
 
 
     // fill brush stencil with desired color

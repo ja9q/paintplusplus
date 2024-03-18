@@ -72,8 +72,6 @@ void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const Q
 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
-
-    // set the composition mode to have consistent opacity
     painter.setCompositionMode(QPainter::CompositionMode_Source);
 
     // ready the outline portion (to exist or not exist)

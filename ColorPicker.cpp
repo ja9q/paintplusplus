@@ -36,9 +36,10 @@ RETURNS
 */
 /**/
 ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
-    : QWidget{parent}, m_model(a_model), m_whichColor(0), m_cursor(generateCursor()),
+    : QWidget{parent}, m_model(a_model), m_cursor(generateCursor()),
     m_colorWheel(QImage(LENGTH, LENGTH, QImage::Format_ARGB32)),
-    m_colorSquare(QImage(LENGTH-82, LENGTH-82, QImage::Format_ARGB32))
+    m_colorSquare(QImage(LENGTH-82, LENGTH-82, QImage::Format_ARGB32)),
+    m_whichColor(0)
 {
 
     resize(LENGTH,LENGTH);

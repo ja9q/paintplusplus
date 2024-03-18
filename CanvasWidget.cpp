@@ -39,7 +39,6 @@ RETURNS
 CanvasWidget::CanvasWidget(User* user, QWidget *parent)
     : QWidget(parent), m_user(user)
 {
-    qDebug() << height() << width();
     resize(1000,500);
 
     // initialize the canvases
@@ -257,6 +256,9 @@ void CanvasWidget::paintEvent(QPaintEvent *event)
 
     // Copy the values on the canvas then the temporary canvas onto the display
     painter.drawPixmap(0,0,QPixmap::fromImage(m_canvas));
-    painter.drawPixmap(0,0,QPixmap::fromImage(m_tempCanvas));
     painter.end();
+    QPainter painter2(this);
+    painter2.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+    painter2.drawPixmap(0,0,QPixmap::fromImage(m_tempCanvas));
+    painter2.end();
 }
