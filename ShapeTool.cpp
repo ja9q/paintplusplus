@@ -3,6 +3,7 @@
 #include "ToolSetting.h"
 
 #include <QMouseEvent>
+#include <QPainter>
 
 /**/
 /*
@@ -30,7 +31,8 @@ RETURNS
 */
 /**/
 ShapeTool::ShapeTool(QString a_name, int a_color, QVector<int> a_moreProperties):
-    DrawTool(a_name, a_color, {ToolSetting::OUTLINE, ToolSetting::FILLTYPE}), m_fillMode(NOFILL), m_outline(true)
+    DrawTool(a_name, a_color, {ToolSetting::OUTLINE, ToolSetting::FILLTYPE}), m_shape(), m_fillMode(NOFILL), m_outline(true),
+    m_isEditing(false), m_editMode(NONE)
 {
     addProperties(a_moreProperties);
 }
@@ -158,6 +160,11 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     (void)a_color2;
 
     m_lastPoint = a_event->position();
+
+    if (m_isEditing) {
+        identifyEdit();
+    }
+
     return 0;
 }
 
@@ -189,6 +196,172 @@ RETURNS
 /**/
 int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
-    drawShape(a_tempCanvas, a_event, a_color1, a_color2);
+    // draw out the shape if the user is still dragging it for the first time (i.e. not in edit mode)
+    if (!m_isEditing) {
+        calcShape(a_event);
+    }
+    // otherwise the user is in edit mode; use the appropriate edit function
+    else {
+        switch (m_editMode) {
+        case ROTATE:
+            rotate(a_event);
+            break;
+        case TRANSLATE:
+            translate(a_event);
+            break;
+        case SCALE:
+            scale(a_event);
+            break;
+        }
+    }
+
+    drawShape(a_tempCanvas, a_color1, a_color2);
     return 0;
+}
+
+// react to a mouse release
+int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
+    (void) a_canvas;
+    (void) a_event;
+    (void) a_color1;
+    (void) a_color2;
+
+    // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle
+    if (!m_shape.isEmpty() && !m_isEditing) {
+        m_isEditing = true;
+        drawBoundingRect(a_tempCanvas);
+    }
+    else if (m_isEditing) {
+        m_editMode = NONE;
+        drawBoundingRect(a_tempCanvas);
+    }
+
+    return 0;
+}
+
+void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
+    // clear the temp canvas from any previous marks (e.g. the previous rectangle)
+    a_canvas->fill(Qt::transparent);
+
+    // set the user-set color to the brush color and opacity
+    QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
+    if (m_opacity < 100) {
+        drawColor.setAlpha((m_opacity*2.55));
+    }
+
+    // create the painter and set it to have consistent opacity
+    QPainter painter(a_canvas);
+    painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
+
+    // ready the outline portion (to exist or not exist)
+    if (m_outline) {
+        painter.setPen(QPen(drawColor, m_size, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+    } else {
+        painter.setPen(QColor(Qt::transparent));
+    }
+
+    // ready the fill portion (if it exists)
+    if (m_fillMode != NOFILL) {
+        QColor fillColor = (m_fillMode == FILLC1) ? a_color1 : a_color2;
+        fillColor.setAlpha((m_opacity*2.55));
+
+        painter.setBrush(fillColor);
+    }
+
+    // draw the shape
+    painter.drawPolygon(m_shape);
+}
+
+void ShapeTool::drawBoundingRect(QImage* a_canvas) {
+    QRect boundRect = m_shape.boundingRect();
+
+    // create a painter and set it up to draw the rectangle
+    QPainter painter(a_canvas);
+
+    // make the pen white
+    painter.setPen(QColor(Qt::white));
+    painter.drawRect(boundRect);
+
+    // shift the rectangle and redraw it in black so it sticks out
+    painter.setPen(QColor(Qt::black));
+    painter.drawRect(boundRect.translated(1,1));
+
+    // get ready to draw the pivots
+    painter.setBrush(QColor(Qt::white));
+    QRect pivot = QRect(0,0,8,8);
+
+    QList<QPoint> pivotPoints = {boundRect.topLeft(), boundRect.topRight(), boundRect.bottomLeft(), boundRect.bottomRight()};
+
+    int midWidth = (boundRect.left()+boundRect.right())/2;
+    int midHeight = (boundRect.top()+boundRect.bottom())/2;
+
+    pivotPoints.append({QPoint(midWidth, boundRect.bottom()), QPoint(midWidth, boundRect.top())});
+    pivotPoints.append({QPoint(boundRect.left(), midHeight), QPoint(boundRect.right(), midHeight)});
+
+    for (QPoint point : pivotPoints) {
+        pivot.moveCenter(point);
+        painter.drawRect(pivot);
+    }
+
+}
+
+void ShapeTool::identifyEdit() {
+    QRect boundRect = m_shape.boundingRect();
+    // if this click was outside of the bounding rectangle, then this is a rotation
+    if (!boundRect.contains(m_lastPoint.toPoint())) {
+        m_editMode = ROTATE;
+        qDebug() << "rotate";
+        return;
+    } else {
+        // otherwise, check if the click was on one of the pivots
+
+        QRect pivot = QRect(0,0,8,8);
+
+        QList<QPoint> pivotPoints = {boundRect.topLeft(), boundRect.topRight(), boundRect.bottomLeft(), boundRect.bottomRight()};
+        int midWidth = (boundRect.left()+boundRect.right())/2;
+        int midHeight = (boundRect.top()+boundRect.bottom())/2;
+
+        pivotPoints.append({QPoint(midWidth, boundRect.bottom()), QPoint(midWidth, boundRect.top())});
+        pivotPoints.append({QPoint(boundRect.left(), midHeight), QPoint(boundRect.right(), midHeight)});
+
+        // if the click was on a pivot, then this is a scaling transformation (dilation)
+        for (QPoint point : pivotPoints) {
+            pivot.moveCenter(point);
+            if (pivot.contains(m_lastPoint.toPoint())) {
+                m_editMode = SCALE;
+                return;
+            }
+        }
+
+        // otherwise, this is a translation
+        m_editMode = TRANSLATE;
+
+    }
+}
+
+// Move the shape
+void ShapeTool::translate(const QMouseEvent* a_event) {
+    qDebug() << m_shape.boundingRect().topRight();
+    QPoint eventPos = a_event->position().toPoint();
+
+    int offsetX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
+    int offsetY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
+
+    QPoint offset(offsetX, offsetY);
+
+
+    m_shape.translate(offset);
+    m_lastPoint = a_event->position().toPoint();
+
+    qDebug() << m_shape.boundingRect().topRight();
+}
+
+// rotate the shape
+void ShapeTool::rotate(const QMouseEvent* a_event) {
+
+}
+
+// Resize the shape
+void ShapeTool::scale(const QMouseEvent* a_event) {
+
 }

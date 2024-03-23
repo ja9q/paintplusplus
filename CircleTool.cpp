@@ -60,19 +60,21 @@ RETURNS
 
 */
 /**/
-void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2){
+void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
+    QRect rectangle = m_shape.boundingRect();
+
     // clear the temp canvas from any previous marks (e.g. the previous rectangle)
     a_canvas->fill(Qt::transparent);
 
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
-    drawColor.setAlpha((m_opacity*2.55));
+    if (m_opacity < 100) {
+        drawColor.setAlpha((m_opacity*2.55));
+    }
 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
-
-    // set the composition mode to have consistent opacity
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    //painter.setCompositionMode(QPainter::CompositionMode_Source);
 
     // ready the outline portion (to exist or not exist)
     if (m_outline) {
@@ -89,21 +91,27 @@ void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const Q
         painter.setBrush(fillColor);
     }
 
+    // draw the shape
+    painter.drawEllipse(rectangle);
+}
+
+
+void CircleTool::calcShape(const QMouseEvent* a_event){
+
     // if the shift button is held down, then make this a perfect circle; otherwise, draw the ellipse as is
     if (a_event->modifiers() & Qt::ShiftModifier) {
-        QPointF fixedPoint = a_event->position();
-        qreal x_distance = qFabs(fixedPoint.x()-m_lastPoint.x());
-        qreal y_distance = qFabs(fixedPoint.y()-m_lastPoint.y());
-        // set the square's length to be whatever is shorter between the height and width
+        QPoint fixedPoint = a_event->position().toPoint();
+        int x_distance = qFabs(fixedPoint.x()-m_lastPoint.x());
+        int y_distance = qFabs(fixedPoint.y()-m_lastPoint.y());
+        // set the circle's diameter to be whatever is shorter between the height and width
         if (x_distance > y_distance) {
             fixedPoint.rx() = (fixedPoint.x() > m_lastPoint.x()) ? m_lastPoint.x() + y_distance : m_lastPoint.x() - y_distance;
         } else {
             fixedPoint.ry() = (fixedPoint.y() > m_lastPoint.y()) ? m_lastPoint.y() + x_distance : m_lastPoint.y() - x_distance;
         }
-        painter.drawEllipse(QRectF(m_lastPoint, fixedPoint));
+        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), fixedPoint));
     } else {
-        painter.drawEllipse(QRectF(m_lastPoint, a_event->position()));
+        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), a_event->pos()));
     }
-
 
 }
