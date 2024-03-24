@@ -32,7 +32,7 @@ RETURNS
 /**/
 ShapeTool::ShapeTool(QString a_name, int a_color, QVector<int> a_moreProperties):
     DrawTool(a_name, a_color, {ToolSetting::OUTLINE, ToolSetting::FILLTYPE}), m_shape(), m_fillMode(NOFILL), m_outline(true),
-    m_isEditing(false), m_editMode(NONE)
+    m_isEditing(false), m_editMode(NONE), m_translation(0,0), m_rotation(0), m_scaling(1)
 {
     addProperties(a_moreProperties);
 }
@@ -160,6 +160,7 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     (void)a_color2;
 
     m_lastPoint = a_event->position();
+    m_lastPoint = getTransform().inverted().map(m_lastPoint);
 
     if (m_isEditing) {
         identifyEdit();
@@ -229,6 +230,7 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
     // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle
     if (!m_shape.isEmpty() && !m_isEditing) {
         m_isEditing = true;
+        initBoundingRect();
         drawBoundingRect(a_tempCanvas);
     }
     else if (m_isEditing) {
@@ -252,6 +254,7 @@ void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
     painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
+    painter.setTransform(getTransform());
 
     // ready the outline portion (to exist or not exist)
     if (m_outline) {
@@ -272,34 +275,37 @@ void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor 
     painter.drawPolygon(m_shape);
 }
 
-void ShapeTool::drawBoundingRect(QImage* a_canvas) {
-    QRect boundRect = m_shape.boundingRect();
+void ShapeTool::initBoundingRect() {
+    QRect tempRect = m_shape.boundingRect();
+    m_boundRect.clear();
 
+    int midHeight = (tempRect.bottom() + tempRect.top()) / 2;
+    int midWidth = (tempRect.right() + tempRect.left()) / 2;
+
+    m_boundRect.append({tempRect.topLeft(), QPoint(midWidth, tempRect.top()), tempRect.topRight(), QPoint(tempRect.right(), midHeight)});
+    m_boundRect.append({tempRect.bottomRight(), QPoint(midWidth, tempRect.bottom()), tempRect.bottomLeft(), QPoint(tempRect.left(), midHeight)});
+}
+
+void ShapeTool::drawBoundingRect(QImage* a_canvas) {
     // create a painter and set it up to draw the rectangle
     QPainter painter(a_canvas);
 
+    painter.setTransform(getTransform());
+
     // make the pen white
     painter.setPen(QColor(Qt::white));
-    painter.drawRect(boundRect);
+    painter.drawPolygon(m_boundRect);
 
     // shift the rectangle and redraw it in black so it sticks out
     painter.setPen(QColor(Qt::black));
-    painter.drawRect(boundRect.translated(1,1));
+    painter.drawPolygon(m_boundRect.translated(1,1));
 
     // get ready to draw the pivots
     painter.setBrush(QColor(Qt::white));
     QRect pivot = QRect(0,0,8,8);
 
-    QList<QPoint> pivotPoints = {boundRect.topLeft(), boundRect.topRight(), boundRect.bottomLeft(), boundRect.bottomRight()};
-
-    int midWidth = (boundRect.left()+boundRect.right())/2;
-    int midHeight = (boundRect.top()+boundRect.bottom())/2;
-
-    pivotPoints.append({QPoint(midWidth, boundRect.bottom()), QPoint(midWidth, boundRect.top())});
-    pivotPoints.append({QPoint(boundRect.left(), midHeight), QPoint(boundRect.right(), midHeight)});
-
-    for (QPoint point : pivotPoints) {
-        pivot.moveCenter(point);
+    for (int i = 0; i < 8; i++) {
+        pivot.moveCenter(m_boundRect.at(i));
         painter.drawRect(pivot);
     }
 
@@ -310,23 +316,15 @@ void ShapeTool::identifyEdit() {
     // if this click was outside of the bounding rectangle, then this is a rotation
     if (!boundRect.contains(m_lastPoint.toPoint())) {
         m_editMode = ROTATE;
-        qDebug() << "rotate";
         return;
     } else {
         // otherwise, check if the click was on one of the pivots
 
         QRect pivot = QRect(0,0,8,8);
 
-        QList<QPoint> pivotPoints = {boundRect.topLeft(), boundRect.topRight(), boundRect.bottomLeft(), boundRect.bottomRight()};
-        int midWidth = (boundRect.left()+boundRect.right())/2;
-        int midHeight = (boundRect.top()+boundRect.bottom())/2;
-
-        pivotPoints.append({QPoint(midWidth, boundRect.bottom()), QPoint(midWidth, boundRect.top())});
-        pivotPoints.append({QPoint(boundRect.left(), midHeight), QPoint(boundRect.right(), midHeight)});
-
         // if the click was on a pivot, then this is a scaling transformation (dilation)
-        for (QPoint point : pivotPoints) {
-            pivot.moveCenter(point);
+        for (int i = 0; i < 8; i++) {
+            pivot.moveCenter(m_boundRect.at(i));
             if (pivot.contains(m_lastPoint.toPoint())) {
                 m_editMode = SCALE;
                 return;
@@ -341,27 +339,56 @@ void ShapeTool::identifyEdit() {
 
 // Move the shape
 void ShapeTool::translate(const QMouseEvent* a_event) {
-    qDebug() << m_shape.boundingRect().topRight();
     QPoint eventPos = a_event->position().toPoint();
+    eventPos = getTransform().inverted().map(eventPos);
 
     int offsetX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
     int offsetY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
 
-    QPoint offset(offsetX, offsetY);
-
-
-    m_shape.translate(offset);
-    m_lastPoint = a_event->position().toPoint();
-
-    qDebug() << m_shape.boundingRect().topRight();
+    m_translation.rx() += offsetX;
+    m_translation.ry() += offsetY;
 }
 
 // rotate the shape
 void ShapeTool::rotate(const QMouseEvent* a_event) {
 
+    // get the required points
+    QPoint center = m_shape.boundingRect().center();
+    QPoint newPos = a_event->position().toPoint();
+
+    newPos = getTransform().inverted().map(newPos);
+
+    // get the angle
+    qreal angle = qAtan2(newPos.y() - center.y(), newPos.x() - center.x());
+    angle = qRadiansToDegrees(angle);
+
+    qDebug() << angle;
+
+    m_rotation += angle;
+
+    m_lastPoint = newPos;
 }
 
 // Resize the shape
 void ShapeTool::scale(const QMouseEvent* a_event) {
 
+}
+
+QTransform ShapeTool::getTransform() {
+    QTransform translates, rotates, resizes, temp;
+    QPoint center = m_shape.boundingRect().center();
+
+    translates.translate(0-center.x()-m_translation.x(), 0-center.y()-m_translation.y());
+
+    rotates.rotate(m_rotation);
+
+    center = temp.rotate(-m_rotation).translate(m_translation.x(), m_translation.y()).map(center);
+
+    translates.translate(center.x(), center.y());
+
+    translates.translate(m_translation.x(), m_translation.y());
+
+    qDebug() << m_translation << (translates*rotates*resizes).map(center) << center;
+
+    return (translates*rotates*resizes);
 }

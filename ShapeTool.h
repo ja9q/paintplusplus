@@ -43,6 +43,8 @@ protected:
 
     // the points of the shape
     QPolygon m_shape;
+    // the bounding rectangle of the shape
+    QPolygon m_boundRect;
 
     // how the tool should fill the shape or not
     int m_fillMode;
@@ -56,17 +58,26 @@ protected:
     // the type of transformation that is being performed on the shape
     int m_editMode;
 
+    QPoint m_translation;
+    qreal m_rotation;
+    qreal m_scaling;
+
     // Draw the shape on the temporary canvas
     virtual void drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2);
 
     // Calculate the shape as it is first being dragged by the mouse
     virtual void calcShape(const QMouseEvent* a_event) = 0;
 
+    // Initialize the bounding rectangle (custom shape)
+    void initBoundingRect();
+
     // Draw the bounding rectangle
     void drawBoundingRect(QImage* a_canvas);
 
     // identify the edit the user wants based off of the mouse click position
     void identifyEdit();
+
+    QTransform getTransform();
 
     // Move the shape
     virtual void translate(const QMouseEvent* a_event);
