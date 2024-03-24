@@ -26,8 +26,8 @@ public:
     // react to a mouse release
     int processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2);
 
-    // // react to a double click
-    // int processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2);
+    // react to a double click
+    int processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2);
 
 protected:
     // the modes for fill mode
@@ -40,6 +40,7 @@ protected:
     static const int TRANSLATE = 0; // moving the shape
     static const int ROTATE = 1;    // rotating the shape
     static const int SCALE = 2;     // resizing the shape
+    static const int END = 3;       // stopping edit mode
 
     // the points of the shape
     QPolygon m_shape;

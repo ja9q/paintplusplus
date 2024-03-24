@@ -226,6 +226,17 @@ void CanvasWidget::mouseReleaseEvent(QMouseEvent *event){
     }
 }
 
+void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+    // some other tools might have different behaviors (e.g. select and shapes) so tell the tool to deal with it
+    if(event->button() == Qt::LeftButton){
+        BaseTool* currentTool = m_user->getCurrentTool();
+        if (currentTool->processDoubleClick(&m_canvas, &m_tempCanvas, event, m_user->getColor(0), m_user->getColor(1)) == 1) {
+            emit canvasChanged(m_canvas);
+        }
+        repaint();
+    }
+}
+
 /**/
 /*
 void CanvasWidget::paintEvent(QPaintEvent *event)

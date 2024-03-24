@@ -216,6 +216,9 @@ int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
         }
     }
 
+    // clear the temp canvas from any previous marks (e.g. the previous rectangle)
+    a_tempCanvas->fill(Qt::transparent);
+
     drawShape(a_tempCanvas, a_color1, a_color2);
     return 0;
 }
@@ -228,7 +231,10 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
     (void) a_color2;
 
     // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle
-    if (!m_shape.isEmpty() && !m_isEditing) {
+    if (m_editMode == END){
+        // do nothing if the edit mode is set to stop, but reset the edit mode to none
+        m_editMode = NONE;
+    }else if (!m_shape.isEmpty() && !m_isEditing) {
         m_isEditing = true;
         initBoundingRect();
         drawBoundingRect(a_tempCanvas);
@@ -241,10 +247,24 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
     return 0;
 }
 
-void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
-    // clear the temp canvas from any previous marks (e.g. the previous rectangle)
-    a_canvas->fill(Qt::transparent);
+int ShapeTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
+    a_tempCanvas->fill(Qt::transparent);
+    drawShape(a_tempCanvas, a_color1, a_color2);
 
+    // reset the editing parameters
+    m_editMode = END;
+    m_translation = QPoint(0,0);
+    m_rotation = 0.0;
+    m_scaling = 0.0;
+    m_isEditing = false;
+
+    // call the original BaseTool's mouseRelease to copy the contents from the temporary canvas to the original canvas
+    BaseTool::processMouseRelease(a_canvas, a_tempCanvas, a_event, a_color1, a_color2);
+
+    return 1;
+}
+
+void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
     if (m_opacity < 100) {
@@ -253,7 +273,7 @@ void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor 
 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
-    painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.setTransform(getTransform());
 
     // ready the outline portion (to exist or not exist)
@@ -341,12 +361,15 @@ void ShapeTool::identifyEdit() {
 void ShapeTool::translate(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
     eventPos = getTransform().inverted().map(eventPos);
+    qDebug() << m_lastPoint << eventPos;
 
     int offsetX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
     int offsetY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
 
     m_translation.rx() += offsetX;
     m_translation.ry() += offsetY;
+
+
 }
 
 // rotate the shape
@@ -357,16 +380,24 @@ void ShapeTool::rotate(const QMouseEvent* a_event) {
     QPoint newPos = a_event->position().toPoint();
 
     newPos = getTransform().inverted().map(newPos);
+    qDebug() << m_lastPoint << newPos;
 
     // get the angle
     qreal angle = qAtan2(newPos.y() - center.y(), newPos.x() - center.x());
+    qreal oldAngle = qAtan2(m_lastPoint.y() - center.y(), m_lastPoint.x() - center.x());
     angle = qRadiansToDegrees(angle);
+    oldAngle = qRadiansToDegrees(oldAngle);
 
-    qDebug() << angle;
+    m_rotation += (angle-oldAngle);
 
-    m_rotation += angle;
+    while (m_rotation > 360.0) {
+        m_rotation -= 360;
+    }
+    while (m_rotation < -360.0) {
+        m_rotation += 360;
+    }
 
-    m_lastPoint = newPos;
+    //m_lastPoint = newPos;
 }
 
 // Resize the shape
@@ -387,6 +418,8 @@ QTransform ShapeTool::getTransform() {
     translates.translate(center.x(), center.y());
 
     translates.translate(m_translation.x(), m_translation.y());
+
+    center = m_shape.boundingRect().center();
 
     qDebug() << m_translation << (translates*rotates*resizes).map(center) << center;
 

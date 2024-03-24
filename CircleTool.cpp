@@ -74,6 +74,7 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
+    painter.setTransform(getTransform());
     //painter.setCompositionMode(QPainter::CompositionMode_Source);
 
     // ready the outline portion (to exist or not exist)

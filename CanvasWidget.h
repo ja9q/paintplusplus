@@ -32,6 +32,9 @@ protected:
     // React to a mouse release
     void mouseReleaseEvent(QMouseEvent *event);
 
+    // React to a double click
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
     // React to when something is painted
     void paintEvent(QPaintEvent *event);
 
