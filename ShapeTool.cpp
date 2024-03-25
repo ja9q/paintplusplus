@@ -160,7 +160,6 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     (void)a_color2;
 
     m_lastPoint = a_event->position();
-    m_lastPoint = getTransform().inverted().map(m_lastPoint);
 
     if (m_isEditing) {
         identifyEdit();
@@ -333,19 +332,25 @@ void ShapeTool::drawBoundingRect(QImage* a_canvas) {
 
 void ShapeTool::identifyEdit() {
     QRect boundRect = m_shape.boundingRect();
+    QPointF clickPos = getTransform().inverted().map(m_lastPoint);
+
     // if this click was outside of the bounding rectangle, then this is a rotation
-    if (!boundRect.contains(m_lastPoint.toPoint())) {
+    if (!boundRect.contains(clickPos.toPoint())) {
         m_editMode = ROTATE;
         return;
     } else {
         // otherwise, check if the click was on one of the pivots
 
-        QRect pivot = QRect(0,0,8,8);
+        QRect pivot = QRect(0,0,12,12);
+        QPolygon temp;
 
         // if the click was on a pivot, then this is a scaling transformation (dilation)
         for (int i = 0; i < 8; i++) {
             pivot.moveCenter(m_boundRect.at(i));
-            if (pivot.contains(m_lastPoint.toPoint())) {
+            temp = getTransform().map(QPolygon(pivot));
+            if (pivot.contains(clickPos.toPoint())) {
+                // identify the pivot that was opposite to the clicked pivot (scaling anchor)
+                m_anchor = (i+4) % 8;
                 m_editMode = SCALE;
                 return;
             }
@@ -360,15 +365,14 @@ void ShapeTool::identifyEdit() {
 // Move the shape
 void ShapeTool::translate(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
-    eventPos = getTransform().inverted().map(eventPos);
-    qDebug() << m_lastPoint << eventPos;
 
     int offsetX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
     int offsetY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
 
-    m_translation.rx() += offsetX;
-    m_translation.ry() += offsetY;
+    m_shape.translate(offsetX, offsetY);
+    m_boundRect.translate(offsetX, offsetY);
 
+    m_lastPoint = eventPos;
 
 }
 
@@ -377,10 +381,9 @@ void ShapeTool::rotate(const QMouseEvent* a_event) {
 
     // get the required points
     QPoint center = m_shape.boundingRect().center();
-    QPoint newPos = a_event->position().toPoint();
+    center = getTransform().map(center);
 
-    newPos = getTransform().inverted().map(newPos);
-    qDebug() << m_lastPoint << newPos;
+    QPoint newPos = a_event->position().toPoint();
 
     // get the angle
     qreal angle = qAtan2(newPos.y() - center.y(), newPos.x() - center.x());
@@ -397,31 +400,66 @@ void ShapeTool::rotate(const QMouseEvent* a_event) {
         m_rotation += 360;
     }
 
-    //m_lastPoint = newPos;
+    m_lastPoint = newPos;
+
 }
 
 // Resize the shape
 void ShapeTool::scale(const QMouseEvent* a_event) {
+    QPoint eventPos = a_event->position().toPoint();
+    QPoint oldAnchor = m_boundRect.at(m_anchor);
 
+    // find the dimensions of the scale
+    qreal scaleX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
+    qreal scaleY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
+    scaleX = (m_shape.boundingRect().width()+scaleX)/m_shape.boundingRect().width();
+    scaleY = (m_shape.boundingRect().height()+scaleY)/m_shape.boundingRect().height();
+
+    // if the anchor (and thus the pivot) is on the top/bottom, disable x scaling
+    if (m_anchor == 1 || m_anchor == 5) {
+        scaleX = 1.0;
+    }
+    // if the anchor (and thus the pivot) is on the left/right, disable y scaling
+    if (m_anchor == 3 || m_anchor == 7) {
+        scaleY = 1.0;
+    }
+    // if the anchors are from the top-left/top/left/ bottom-left, inverse the proportions
+    if (m_anchor == 4 || m_anchor == 5 || m_anchor == 3 || m_anchor == 6) {
+        scaleY = 1.0/scaleY;
+    }
+    if (m_anchor == 4 || m_anchor == 5 || m_anchor == 2 || m_anchor == 3) {
+        scaleX = 1.0/scaleX;
+    }
+
+    // scale the shape and its bounding rectangle
+    QTransform scales = QTransform::fromScale(scaleX, scaleY);
+    m_shape = scales.map(m_shape);
+    m_boundRect = scales.map(m_boundRect);
+
+    // translate the shape and the bounding rectangle so the anchor is still aligned
+    QPoint newAnchor = m_boundRect.at(m_anchor);
+    int anchX = (newAnchor.x() > oldAnchor.x()) ? -(newAnchor.x() - oldAnchor.x()) :  oldAnchor.x() - newAnchor.x();
+    int anchY = (newAnchor.y() > oldAnchor.y()) ? -(newAnchor.y() - oldAnchor.y()) :  oldAnchor.y() - newAnchor.y();
+
+    m_shape.translate(anchX, anchY);
+    m_boundRect.translate(anchX, anchY);
+
+    m_lastPoint = eventPos;
 }
 
 QTransform ShapeTool::getTransform() {
-    QTransform translates, rotates, resizes, temp;
+    QTransform translates, rotates;
     QPoint center = m_shape.boundingRect().center();
 
-    translates.translate(0-center.x()-m_translation.x(), 0-center.y()-m_translation.y());
+    translates.translate(-center.x(), -center.y());
 
     rotates.rotate(m_rotation);
 
-    center = temp.rotate(-m_rotation).translate(m_translation.x(), m_translation.y()).map(center);
+    center = QTransform().rotate(-m_rotation).map(center);
 
     translates.translate(center.x(), center.y());
 
-    translates.translate(m_translation.x(), m_translation.y());
-
     center = m_shape.boundingRect().center();
 
-    qDebug() << m_translation << (translates*rotates*resizes).map(center) << center;
-
-    return (translates*rotates*resizes);
+    return (translates*rotates);
 }

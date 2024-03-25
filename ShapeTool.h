@@ -63,6 +63,8 @@ protected:
     qreal m_rotation;
     qreal m_scaling;
 
+    int m_anchor;
+
     // Draw the shape on the temporary canvas
     virtual void drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2);
 
