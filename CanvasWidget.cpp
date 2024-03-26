@@ -109,6 +109,11 @@ void CanvasWidget::fillCanvas(QColor a_color) {
     emit canvasChanged(m_canvas);
 }
 
+void CanvasWidget::flushTemp() {
+    m_tempCanvas.fill(Qt::transparent);
+    update();
+}
+
 /**/
 /*
 void CanvasWidget::mousePressEvent(QMouseEvent *event)

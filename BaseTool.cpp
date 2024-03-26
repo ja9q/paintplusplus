@@ -45,6 +45,8 @@ QVector<int> BaseTool::getProperties() const {
     return m_properties;
 }
 
+void BaseTool::resetEditor() {}
+
 /**/
 /*
 int BaseTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)

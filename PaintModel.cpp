@@ -180,6 +180,8 @@ RETURNS
 */
 /**/
 void PaintModel::setTool(int a_newTool) {
+    m_user.getCurrentTool()->resetEditor();
+    m_canvas.flushTemp();
     m_currentTool[m_currentToolType] = a_newTool;
     m_user.setCurrentTool(m_tools[m_currentToolType][m_currentTool[m_currentToolType]]);
 }
@@ -208,6 +210,8 @@ RETURNS
 */
 /**/
 void PaintModel::setToolType(int a_typeId) {
+    m_user.getCurrentTool()->resetEditor();
+    m_canvas.flushTemp();
     m_currentToolType = a_typeId;
     m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
 }
@@ -369,6 +373,9 @@ RETURNS
 */
 /**/
 void PaintModel::undo() {
+
+    m_user.getCurrentTool()->resetEditor();
+
     // replace the canvas with the next most recent part of the history and remove it
     if (m_historyPos < UNDO_LIMIT-1) {
         // update the history position;
@@ -401,6 +408,9 @@ RETURNS
 */
 /**/
 void PaintModel::redo() {
+
+    m_user.getCurrentTool()->resetEditor();
+
     // replace the canvas with the next most recent part of the history and remove it
     if (m_historyPos > 0) {
         // update the history position;

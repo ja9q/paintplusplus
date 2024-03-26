@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QRectF>
 #include <QMouseEvent>
+#include <QPainterPath>
 
 /**/
 /*
@@ -61,7 +62,6 @@ RETURNS
 */
 /**/
 void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
-    QRect rectangle = m_shape.boundingRect();
 
     // clear the temp canvas from any previous marks (e.g. the previous rectangle)
     a_canvas->fill(Qt::transparent);
@@ -69,13 +69,10 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
     if (m_opacity < 100) {
-        drawColor.setAlpha((m_opacity*2.55));
     }
 
     // create the painter and set it to have consistent opacity
     QPainter painter(a_canvas);
-    painter.setTransform(getTransform());
-    //painter.setCompositionMode(QPainter::CompositionMode_Source);
 
     // ready the outline portion (to exist or not exist)
     if (m_outline) {
@@ -87,13 +84,30 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
     // ready the fill portion (if it exists)
     if (m_fillMode != NOFILL) {
         QColor fillColor = (m_fillMode == FILLC1) ? a_color1 : a_color2;
-        fillColor.setAlpha((m_opacity*2.55));
+
+        if (m_opacity < 100) {
+            fillColor.setAlpha((m_opacity*2.55));
+        }
 
         painter.setBrush(fillColor);
+
     }
 
+    QPainterPath ellipse;
+    ellipse.addEllipse(m_shape.boundingRect());
+
+    // scale the shape first because it displaces the center + has to be before rotation
+    ellipse = QTransform().scale(m_scale.x(), m_scale.y()).map(ellipse);
+
+    // rotate the shape with the new center
+    QPoint center = ellipse.boundingRect().center().toPoint();
+    ellipse = QTransform().translate(center.x(), center.y()).rotate(m_rotation).translate(-center.x(), -center.y()).map(ellipse);
+
+    // finally translate the shape
+    ellipse = QTransform().translate(m_translation.x(), m_translation.y()).map(ellipse);
+
     // draw the shape
-    painter.drawEllipse(rectangle);
+    painter.drawPath(ellipse);
 }
 
 

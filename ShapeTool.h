@@ -17,6 +17,9 @@ public:
     // Modify a tool's property (e.g. size, opacity)
     int setProperty(const int a_propId, const int a_newValue);
 
+    // reset the editor (remove any uncommited shapes)
+    void resetEditor();
+
     // react to a click
     int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
@@ -44,6 +47,7 @@ protected:
 
     // the points of the shape
     QPolygon m_shape;
+
     // the bounding rectangle of the shape
     QPolygon m_boundRect;
 
@@ -61,7 +65,7 @@ protected:
 
     QPoint m_translation;
     qreal m_rotation;
-    qreal m_scaling;
+    QPointF m_scale;
 
     int m_anchor;
 
@@ -74,22 +78,25 @@ protected:
     // Initialize the bounding rectangle (custom shape)
     void initBoundingRect();
 
+    // Initialize the bounding rectangle (custom shape)
+    void resetBoundingRect();
+
     // Draw the bounding rectangle
     void drawBoundingRect(QImage* a_canvas);
 
     // identify the edit the user wants based off of the mouse click position
     void identifyEdit();
 
-    QTransform getTransform();
+    QPolygon transformShape(QPolygon a_shape);
 
     // Move the shape
-    virtual void translate(const QMouseEvent* a_event);
+    void translate(const QMouseEvent* a_event);
 
     // rotate the shape
-    virtual void rotate(const QMouseEvent* a_event);
+    void rotate(const QMouseEvent* a_event);
 
     // Resize the shape
-    virtual void scale(const QMouseEvent* a_event);
+    void scale(const QMouseEvent* a_event);
 };
 
 #endif // SHAPETOOL_H

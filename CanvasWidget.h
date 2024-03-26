@@ -21,6 +21,8 @@ public:
     // Fills the canvas with one color
     void fillCanvas(QColor a_color);
 
+    void flushTemp();
+
 protected:
 
     // React to a mouse click

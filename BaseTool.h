@@ -27,6 +27,8 @@ public:
     // Modify a tool's property (e.g. size, opacity)
     virtual int setProperty(const int a_propId, const int a_newValue) = 0;
 
+    virtual void resetEditor();
+
     // React to a click on the canvas
     virtual int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) = 0;
 
