@@ -19,11 +19,9 @@ public:
     const static int TOOLCOUNT = 5;        // The number of selectable tools
 
     // the indices of the tool types in the tool arrays
-    const static int DRAWTOOL = 0;
-    const static int ERASETOOL = 1;
-    const static int SELECTTOOL = 2;
-    const static int SHAPETOOL = 3;
-    const static int FILLTOOL = 4;
+    enum class ToolType {
+        DRAWTOOL, ERASETOOL, SELECTTOOL, SHAPETOOL, FILLTOOL
+    };
 
     // The constructor
     explicit PaintModel(QWidget *parent = nullptr);
@@ -79,7 +77,7 @@ private:
     QList<BaseTool*> m_tools[TOOLCOUNT]; // The implemented tools, each vector is a different category
 
     int m_currentTool[TOOLCOUNT];   // The indices of the selected tools for each tool type
-    int m_currentToolType;          // The index that reflects the current tool type
+    ToolType m_currentToolType;          // The index that reflects the current tool type
 
     User m_user;                // The user's chosen tool and colors
     CanvasWidget m_canvas;      // The canvas widget that is to be displayed

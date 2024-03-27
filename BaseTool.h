@@ -42,6 +42,10 @@ public:
     virtual int processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
 protected:
+    enum class ToolProperty {
+        SIZE, OPACITY, ANTIALIAS, FILLTYPE, OUTLINE
+    };
+
     // Add new properties
     void addProperties(QVector<int> a_extraProperties);
 

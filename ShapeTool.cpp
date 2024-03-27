@@ -31,8 +31,8 @@ RETURNS
 */
 /**/
 ShapeTool::ShapeTool(QString a_name, int a_color, QVector<int> a_moreProperties):
-    DrawTool(a_name, a_color, {ToolSetting::OUTLINE, ToolSetting::FILLTYPE}), m_shape(), m_fillMode(NOFILL), m_outline(true),
-    m_isEditing(false), m_editMode(NONE), m_translation(0,0), m_rotation(0), m_scale(1.0,1.0)
+    DrawTool(a_name, a_color, {(int)ToolProperty::OUTLINE, (int)ToolProperty::FILLTYPE}), m_shape(), m_fillMode(FillMode::NOFILL), m_outline(true),
+    m_isEditing(false), m_editMode(EditMode::NONE), m_translation(0,0), m_rotation(0), m_scale(1.0,1.0)
 {
     addProperties(a_moreProperties);
 }
@@ -66,11 +66,11 @@ int ShapeTool::getProperty(const int a_propId) {
         return DrawTool::getProperty(a_propId);
     }
 
-    switch (a_propId) {
-    case ToolSetting::FILLTYPE:
-        return m_fillMode;
+    switch ((ToolProperty)a_propId) {
+    case ToolProperty::FILLTYPE:
+        return (int)m_fillMode;
         break;
-    case ToolSetting::OUTLINE:
+    case ToolProperty::OUTLINE:
         return m_outline;
         break;
     default:
@@ -110,12 +110,12 @@ int ShapeTool::setProperty(const int a_propId, const int a_newValue) {
         return 0;
     }
 
-    switch (a_propId) {
-    case ToolSetting::FILLTYPE:
-        m_fillMode = a_newValue;
+    switch ((ToolProperty)a_propId) {
+    case ToolProperty::FILLTYPE:
+        m_fillMode = (FillMode)a_newValue;
         return 0;
         break;
-    case ToolSetting::OUTLINE:
+    case ToolProperty::OUTLINE:
         m_outline = a_newValue;
         return 0;
         break;
@@ -131,7 +131,7 @@ void ShapeTool::resetEditor() {
     m_boundRect.clear();
 
     // reset the editing parameters
-    m_editMode = END;
+    m_editMode = EditMode::END;
     m_translation = QPoint(0,0);
     m_rotation = 0.0;
     m_scale = QPointF(1,1);
@@ -178,8 +178,8 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
         identifyEdit();
     }
 
-    if (m_editMode == END) {
-        m_editMode = NONE;
+    if (m_editMode == EditMode::END) {
+        m_editMode = EditMode::NONE;
     }
 
     return 0;
@@ -220,14 +220,16 @@ int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
     // otherwise the user is in edit mode; use the appropriate edit function
     else {
         switch (m_editMode) {
-        case ROTATE:
+        case EditMode::ROTATE:
             rotate(a_event);
             break;
-        case TRANSLATE:
+        case EditMode::TRANSLATE:
             translate(a_event);
             break;
-        case SCALE:
+        case EditMode::SCALE:
             scale(a_event);
+            break;
+        default:
             break;
         }
     }
@@ -247,19 +249,19 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
     (void) a_color2;
 
     // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle
-    if (m_editMode == END){
+    if (m_editMode == EditMode::END){
         // do nothing if the edit mode is set to stop, but reset the edit mode to none
-        m_editMode = NONE;
+        m_editMode = EditMode::NONE;
     }else if (!m_shape.isEmpty() && !m_isEditing) {
         m_isEditing = true;
         initBoundingRect();
         drawBoundingRect(a_tempCanvas);
     }
     else if (m_isEditing) {
-        if (m_editMode != TRANSLATE) {
+        if (m_editMode != EditMode::TRANSLATE) {
             //resetBoundingRect();
         }
-        m_editMode = NONE;
+        m_editMode = EditMode::NONE;
         drawBoundingRect(a_tempCanvas);
     }
 
@@ -297,8 +299,8 @@ void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor 
     }
 
     // ready the fill portion (if it exists)
-    if (m_fillMode != NOFILL) {
-        QColor fillColor = (m_fillMode == FILLC1) ? a_color1 : a_color2;
+    if (m_fillMode != FillMode::NOFILL) {
+        QColor fillColor = (m_fillMode == FillMode::FILLC1) ? a_color1 : a_color2;
         if (m_opacity < 100) {
             fillColor.setAlpha((m_opacity*2.55));
         }
@@ -321,20 +323,6 @@ void ShapeTool::initBoundingRect() {
     m_boundRect.append({tempRect.bottomRight(), QPoint(midWidth, tempRect.bottom()), tempRect.bottomLeft(), QPoint(tempRect.left(), midHeight)});
 }
 
-// void ShapeTool::resetBoundingRect() {
-//     QPoint newPos;
-
-//     for (int i = 1; i < 7; i += 2) {
-//         newPos.rx() = (m_boundRect.at(i-1).x() + m_boundRect.at(i+1).x()) / 2;
-//         newPos.ry() = (m_boundRect.at(i-1).y() + m_boundRect.at(i+1).y()) / 2;
-//         m_boundRect.setPoint(i, newPos);
-//     }
-
-//     newPos.rx() = (m_boundRect.at(6).x() + m_boundRect.at(0).x()) / 2;
-//     newPos.ry() = (m_boundRect.at(6).y() + m_boundRect.at(0).y()) / 2;
-//     m_boundRect.setPoint(7, newPos);
-// }
-
 void ShapeTool::drawBoundingRect(QImage* a_canvas) {
     // create a painter and set it up to draw the rectangle
     QPainter painter(a_canvas);
@@ -351,7 +339,7 @@ void ShapeTool::drawBoundingRect(QImage* a_canvas) {
 
     // get ready to draw the pivots
     painter.setBrush(QColor(Qt::white));
-    QRect pivot = QRect(0,0,8,8);
+    QRect pivot = QRect(0,0,11,11);
 
     for (int i = 0; i < 8; i++) {
         pivot.moveCenter(transformedRect.at(i));
@@ -366,7 +354,7 @@ void ShapeTool::identifyEdit() {
 
     // if this click was outside of the bounding rectangle, then this is a rotation
     if (!boundRect.contains(m_lastPoint.toPoint())) {
-        m_editMode = ROTATE;
+        m_editMode = EditMode::ROTATE;
         return;
     } else {
         // otherwise, check if the click was on one of the pivots
@@ -380,13 +368,13 @@ void ShapeTool::identifyEdit() {
             if (pivot.contains(m_lastPoint.toPoint())) {
                 // identify the pivot that was opposite to the clicked pivot (scaling anchor)
                 m_anchor = (i+4) % 8;
-                m_editMode = SCALE;
+                m_editMode = EditMode::SCALE;
                 return;
             }
         }
 
         // otherwise, this is a translation
-        m_editMode = TRANSLATE;
+        m_editMode = EditMode::TRANSLATE;
 
     }
 }

@@ -7,7 +7,6 @@
 
 #include <QWidget>
 #include <QGridLayout>
-#include "ToolSetting.h"
 #include "BaseTool.h"
 
 class ToolSettingWidget : public QWidget
@@ -26,6 +25,22 @@ signals:
     updateSetting(const int a_setting, int a_newValue);
 
 private:
+
+    struct ToolSetting {
+        enum class DisplayType {
+            SLIDER, TOGGLE, DROPDOWN
+        };
+
+        QString m_name; // the name of the setting
+        int m_minValue; // the minimum value of the setting
+        int m_maxValue; // the maximum value of the setting
+        DisplayType m_format;  // how the setting should be presented (e.g. checkbox, slider)
+        QList<QString> m_listVals; // for a dropdown, the values to display in the menu
+
+        ToolSetting(QString a_name, int a_min, int a_max, DisplayType a_format, QList<QString> a_listVals = {}) :
+            m_name(a_name), m_minValue(a_min), m_maxValue(a_max), m_format(a_format), m_listVals(a_listVals) {}
+    };
+
     QVector<ToolSetting> m_settings; // information about each setting the widget can display
 
     QGridLayout* m_layout;  // the widget's layout

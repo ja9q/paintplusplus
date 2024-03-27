@@ -33,17 +33,13 @@ public:
     int processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2);
 
 protected:
-    // the modes for fill mode
-    static const int NOFILL = 0;    // don't fill
-    static const int FILLC1 = 1;    // fill with color 1
-    static const int FILLC2 = 2;    // fill with color 2
+    enum class FillMode {
+        NOFILL, FILLC1, FILLC2
+    };
 
-    // the modes for editMode
-    static const int NONE  = -1;
-    static const int TRANSLATE = 0; // moving the shape
-    static const int ROTATE = 1;    // rotating the shape
-    static const int SCALE = 2;     // resizing the shape
-    static const int END = 3;       // stopping edit mode
+    enum class EditMode {
+        NONE, TRANSLATE, ROTATE, SCALE, END
+    };
 
     // the points of the shape
     QPolygon m_shape;
@@ -52,7 +48,7 @@ protected:
     QPolygon m_boundRect;
 
     // how the tool should fill the shape or not
-    int m_fillMode;
+    FillMode m_fillMode;
 
     // if the tool should outline the shape
     bool m_outline;
@@ -61,7 +57,7 @@ protected:
     // if the shape exists and is being edited
     bool m_isEditing;
     // the type of transformation that is being performed on the shape
-    int m_editMode;
+    EditMode m_editMode;
 
     QPoint m_translation;
     qreal m_rotation;

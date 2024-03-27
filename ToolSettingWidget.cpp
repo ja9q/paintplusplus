@@ -76,10 +76,10 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
     ToolSetting setting = m_settings[a_settingid];
 
     // label the name of the item
-    m_layout->addWidget(new QLabel(setting.getName()), 2*a_hposition, 1, 1, 1, Qt::AlignBottom);
+    m_layout->addWidget(new QLabel(setting.m_name), 2*a_hposition, 1, 1, 1, Qt::AlignBottom);
 
     // produce a different type of control depending on the display type
-    switch (setting.getDisplayType()) {
+    switch (setting.m_format) {
     case ToolSetting::DisplayType::SLIDER:
     {
         createSlider(a_settingid, setting, a_hposition, a_initValue);
@@ -106,10 +106,10 @@ void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_init
 void ToolSettingWidget::createSlider(int a_settingid, ToolSetting a_setting, int a_hposition, int a_initValue) {
     // set up the slider and text field
     QSlider* slider = new QSlider(Qt::Horizontal);
-    slider->setRange(a_setting.getMinValue(), a_setting.getMaxValue());
+    slider->setRange(a_setting.m_minValue, a_setting.m_maxValue);
     QSpinBox* textField = new QSpinBox();
-    textField->setMinimum(a_setting.getMinValue());
-    textField->setMaximum(a_setting.getMaxValue());
+    textField->setMinimum(a_setting.m_minValue);
+    textField->setMaximum(a_setting.m_maxValue);
 
     // sync the text field with the slider and vice versa
     connect(slider, &QSlider::valueChanged, textField, &QSpinBox::setValue);
@@ -145,7 +145,7 @@ void ToolSettingWidget::createDropdown(int a_settingid, ToolSetting a_setting, i
     QComboBox* dropdown = new QComboBox();
 
     // initialize the dropdown menu items and the initial setting
-    for (QString item : a_setting.getListValues()) {
+    for (QString item : a_setting.m_listVals) {
         dropdown->addItem(item);
     }
     dropdown->setCurrentIndex(a_initValue);

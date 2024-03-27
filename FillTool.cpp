@@ -6,7 +6,7 @@
 
 
 FillTool::FillTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
-    BaseTool(a_name, {ToolSetting::OPACITY}),
+    BaseTool(a_name, {(int)ToolProperty::OPACITY}),
     m_color(a_color), m_opacity(100) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
@@ -15,8 +15,8 @@ FillTool::FillTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
 
 // Get the current value of a tool's property
 int FillTool::getProperty(const int a_propId) {
-    switch(a_propId) {
-    case ToolSetting::OPACITY:
+    switch((ToolProperty)a_propId) {
+    case ToolProperty::OPACITY:
         return m_opacity;
         break;
     default:
@@ -27,8 +27,8 @@ int FillTool::getProperty(const int a_propId) {
 
 // Modify a tool's property (e.g. size, opacity)
 int FillTool::setProperty(const int a_propId, const int a_newValue) {
-    switch(a_propId) {
-    case ToolSetting::OPACITY:
+    switch((ToolProperty)a_propId) {
+    case ToolProperty::OPACITY:
         m_opacity = a_newValue;
         break;
     default:

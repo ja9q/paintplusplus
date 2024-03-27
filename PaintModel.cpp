@@ -36,13 +36,13 @@ RETURNS
 PaintModel::PaintModel(QWidget *parent) :
     QObject{parent},
     m_currentTool{0},
-    m_currentToolType(PaintModel::DRAWTOOL),
+    m_currentToolType(ToolType::DRAWTOOL),
     m_user(nullptr),
     m_canvas(CanvasWidget(&m_user, parent)),
     m_historyPos(0)
 {
     initTools();
-    m_user.setCurrentTool(m_tools[DRAWTOOL][0]);
+    m_user.setCurrentTool(m_tools[(int)ToolType::DRAWTOOL][0]);
 
     connect(&m_canvas, &CanvasWidget::canvasChanged, this, &PaintModel::updateHistory);
     m_canvas.fillCanvas(QColor(Qt::white));
@@ -129,7 +129,7 @@ RETURNS
 */
 /**/
 QList<BaseTool*> PaintModel::getToolSet() const {
-    return m_tools[m_currentToolType];
+    return m_tools[(int)m_currentToolType];
 }
 
 /**/
@@ -154,7 +154,7 @@ RETURNS
 */
 /**/
 int PaintModel::getCurrentToolInd() const {
-    return m_currentTool[m_currentToolType];
+    return m_currentTool[(int)m_currentToolType];
 }
 
 /**/
@@ -182,8 +182,8 @@ RETURNS
 void PaintModel::setTool(int a_newTool) {
     m_user.getCurrentTool()->resetEditor();
     m_canvas.flushTemp();
-    m_currentTool[m_currentToolType] = a_newTool;
-    m_user.setCurrentTool(m_tools[m_currentToolType][m_currentTool[m_currentToolType]]);
+    m_currentTool[(int)m_currentToolType] = a_newTool;
+    m_user.setCurrentTool(m_tools[(int)m_currentToolType][m_currentTool[(int)m_currentToolType]]);
 }
 
 
@@ -212,7 +212,7 @@ RETURNS
 void PaintModel::setToolType(int a_typeId) {
     m_user.getCurrentTool()->resetEditor();
     m_canvas.flushTemp();
-    m_currentToolType = a_typeId;
+    m_currentToolType = (ToolType)a_typeId;
     m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
 }
 
@@ -485,19 +485,19 @@ RETURNS
 /**/
 void PaintModel::initTools() {
     // init the drawing tools
-    m_tools[DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0));
+    m_tools[(int)ToolType::DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0));
 
     // init the erase tools
-    m_tools[ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));
+    m_tools[(int)ToolType::ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));
 
     // init the rest of the tools (they don't exist yet);
-    m_tools[SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));
+    m_tools[(int)ToolType::SELECTTOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));
 
     // init the shapetools
-    m_tools[SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0));
-    m_tools[SHAPETOOL].append(new CircleTool(QString::fromStdString("Circle"), 0));
+    m_tools[(int)ToolType::SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0));
+    m_tools[(int)ToolType::SHAPETOOL].append(new CircleTool(QString::fromStdString("Circle"), 0));
 
     // init the fill tools
-    m_tools[FILLTOOL].append(new FillTool("Fill Bucket", 0));
+    m_tools[(int)ToolType::FILLTOOL].append(new FillTool("Fill Bucket", 0));
 
 }

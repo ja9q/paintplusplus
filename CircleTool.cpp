@@ -82,8 +82,8 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
     }
 
     // ready the fill portion (if it exists)
-    if (m_fillMode != NOFILL) {
-        QColor fillColor = (m_fillMode == FILLC1) ? a_color1 : a_color2;
+    if (m_fillMode != FillMode::NOFILL) {
+        QColor fillColor = (m_fillMode == FillMode::FILLC1) ? a_color1 : a_color2;
 
         if (m_opacity < 100) {
             fillColor.setAlpha((m_opacity*2.55));

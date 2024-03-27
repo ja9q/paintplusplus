@@ -15,7 +15,7 @@
 
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
-        BaseTool(a_name, {ToolSetting::SIZE, ToolSetting::OPACITY}),
+    BaseTool(a_name, {(int)ToolProperty::SIZE, (int)ToolProperty::OPACITY}),
     m_size(10), m_color(a_color), m_opacity(100) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
@@ -46,11 +46,11 @@ RETURNS
 */
 /**/
 int DrawTool::getProperty(const int a_propId) {
-    switch(a_propId) {
-    case ToolSetting::SIZE:
+    switch((ToolProperty)a_propId) {
+    case ToolProperty::SIZE:
         return m_size;
         break;
-    case ToolSetting::OPACITY:
+    case ToolProperty::OPACITY:
         return m_opacity;
         break;
     default:
@@ -84,11 +84,11 @@ RETURNS
 */
 /**/
 int DrawTool::setProperty(const int a_propId, const int a_newValue) {
-    switch(a_propId) {
-    case ToolSetting::SIZE:
+    switch((ToolProperty)a_propId) {
+    case ToolProperty::SIZE:
         m_size = a_newValue;
         break;
-    case ToolSetting::OPACITY:
+    case ToolProperty::OPACITY:
         m_opacity = a_newValue;
         break;
     default:

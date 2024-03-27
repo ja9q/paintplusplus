@@ -20,7 +20,6 @@ SOURCES += \
     ShapeTool.cpp \
     SquareTool.cpp \
     ToolSelector.cpp \
-    ToolSetting.cpp \
     ToolSettingWidget.cpp \
     User.cpp \
     main.cpp \
@@ -38,7 +37,6 @@ HEADERS += \
     ShapeTool.h \
     SquareTool.h \
     ToolSelector.h \
-    ToolSetting.h \
     ToolSettingWidget.h \
     User.h \
     mainwindow.h
