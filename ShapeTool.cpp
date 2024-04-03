@@ -1,6 +1,5 @@
 #include "ShapeTool.h"
 #include "DrawTool.h"
-#include "ToolSetting.h"
 
 #include <QMouseEvent>
 #include <QPainter>
@@ -258,9 +257,6 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
         drawBoundingRect(a_tempCanvas);
     }
     else if (m_isEditing) {
-        if (m_editMode != EditMode::TRANSLATE) {
-            //resetBoundingRect();
-        }
         m_editMode = EditMode::NONE;
         drawBoundingRect(a_tempCanvas);
     }
@@ -349,11 +345,10 @@ void ShapeTool::drawBoundingRect(QImage* a_canvas) {
 }
 
 void ShapeTool::identifyEdit() {
-    QRect boundRect = transformShape(m_shape).boundingRect();
     QPolygon transformedRect = transformShape(m_boundRect);
 
     // if this click was outside of the bounding rectangle, then this is a rotation
-    if (!boundRect.contains(m_lastPoint.toPoint())) {
+    if (!transformedRect.containsPoint(m_lastPoint.toPoint(), Qt::OddEvenFill)) {
         m_editMode = EditMode::ROTATE;
         return;
     } else {
@@ -451,13 +446,16 @@ void ShapeTool::scale(const QMouseEvent* a_event) {
         scaleX = 1.0/scaleX;
     }
 
+    // update the current scale
     m_scale.rx() += (scaleX-1.0);
     m_scale.ry() += (scaleY-1.0);
 
+    // find the new position of the anchor
     QPoint newAnchor = transformShape(m_boundRect).at(m_anchor);
     int anchX = (newAnchor.x() > oldAnchor.x()) ? -(newAnchor.x() - oldAnchor.x()) :  oldAnchor.x() - newAnchor.x();
     int anchY = (newAnchor.y() > oldAnchor.y()) ? -(newAnchor.y() - oldAnchor.y()) :  oldAnchor.y() - newAnchor.y();
 
+    // translate the shape so the anchor hasn't changed position
     m_translation.rx() += anchX;
     m_translation.ry() += anchY;
 

@@ -16,7 +16,9 @@ SOURCES += \
     ColorWidget.cpp \
     DrawTool.cpp \
     FillTool.cpp \
+    LineTool.cpp \
     PaintModel.cpp \
+    PolygonTool.cpp \
     ShapeTool.cpp \
     SquareTool.cpp \
     ToolSelector.cpp \
@@ -33,7 +35,9 @@ HEADERS += \
     ColorWidget.h \
     DrawTool.h \
     FillTool.h \
+    LineTool.h \
     PaintModel.h \
+    PolygonTool.h \
     ShapeTool.h \
     SquareTool.h \
     ToolSelector.h \
