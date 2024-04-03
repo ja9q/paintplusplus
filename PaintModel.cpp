@@ -8,6 +8,7 @@
 #include "SquareTool.h"
 #include "CircleTool.h"
 #include "PolygonTool.h"
+#include "LineTool.h"
 #include "FillTool.h"
 #include "User.h"
 
@@ -498,6 +499,7 @@ void PaintModel::initTools() {
     m_tools[(int)ToolType::SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0));
     m_tools[(int)ToolType::SHAPETOOL].append(new CircleTool(QString::fromStdString("Circle"), 0));
     m_tools[(int)ToolType::SHAPETOOL].append(new PolygonTool(QString::fromStdString("Polygon"), 0));
+    m_tools[(int)ToolType::SHAPETOOL].append(new LineTool(QString::fromStdString("Line"), 0));
 
     // init the fill tools
     m_tools[(int)ToolType::FILLTOOL].append(new FillTool("Fill Bucket", 0));
