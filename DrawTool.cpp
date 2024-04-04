@@ -11,7 +11,6 @@
 #include <QMouseEvent>
 #include <QPainterPath>
 #include "BaseTool.h"
-#include "ToolSetting.h"
 
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :

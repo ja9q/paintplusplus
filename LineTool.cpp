@@ -42,8 +42,6 @@ int LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
 
     if (m_isEditing) {
         identifyEdit(a_tempCanvas);
-    } else {
-        m_line.setP1(m_lastPoint.toPoint());
     }
 
     if (m_editMode == EditMode::END) {
@@ -119,6 +117,10 @@ int LineTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const Q
 }
 
 void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
+    if (m_line.isNull()) {
+        return;
+    }
+
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;
     if (m_opacity < 100) {
@@ -137,6 +139,10 @@ void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_
 }
 
 void LineTool::calcLine(const QMouseEvent* a_event) {
+    if (m_line.isNull()) {
+        m_line.setP1(m_lastPoint.toPoint());
+    }
+
     m_line.setP2(a_event->position().toPoint());
 }
 

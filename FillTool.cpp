@@ -1,5 +1,4 @@
 #include "FillTool.h"
-#include "ToolSetting.h"
 #include <QQueue>
 #include <QImage>
 #include <QPainter>

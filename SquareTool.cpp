@@ -74,9 +74,9 @@ void SquareTool::calcShape(const QMouseEvent* a_event){
         } else {
             fixedPoint.ry() = (fixedPoint.y() > m_lastPoint.y()) ? m_lastPoint.y() + x_distance : m_lastPoint.y() - x_distance;
         }
-        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), fixedPoint));
+        m_shape.setShape( QPolygon(QRect(m_lastPoint.toPoint(), fixedPoint)));
     } else {
-        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), a_event->pos()));
+        m_shape.setShape(QPolygon(QRect(m_lastPoint.toPoint(), a_event->pos())));
     }
 
 }

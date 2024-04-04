@@ -10,20 +10,25 @@ PolygonTool::PolygonTool(QString a_name, int a_color, QVector<int> a_morePropert
 
 // Draw the shape
 void PolygonTool::calcShape(const QMouseEvent* a_event) {
-    if (m_shape.length() == 1) {
-        m_shape.append(a_event->position().toPoint());
+    QPolygon shape = m_shape.getShape();
+
+    if (shape.length() == 1) {
+        shape.append(a_event->position().toPoint());
     } else {
-        m_shape.back() = a_event->position().toPoint();
+        shape.back() = a_event->position().toPoint();
     }
 
+    m_shape.setShape(shape);
 }
 
 int PolygonTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     ShapeTool::processClick(a_canvas, a_tempCanvas, a_event, a_color1, a_color2);
+    QPolygon shape = m_shape.getShape();
 
-    if (!m_isEditing && (m_shape.isEmpty() || m_shape.back() != a_event->position().toPoint())) {
-        m_shape.append(m_lastPoint.toPoint());
-        if (m_shape.length() > 1) {
+    if (!m_shape.isEditing() && (shape.isEmpty() || shape.back() != a_event->position().toPoint())) {
+        shape.append(m_lastPoint.toPoint());
+        m_shape.setShape(shape);
+        if (shape.length() > 1) {
             drawShape(a_tempCanvas, a_color1, a_color2);
         }
 
@@ -39,7 +44,7 @@ int PolygonTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, con
     (void) a_color1;
     (void) a_color2;
 
-    if (m_editMode == EditMode::END || m_isEditing) {
+    if (m_shape.getEditMode() == Editable::EditMode::END || m_shape.isEditing()) {
         ShapeTool::processMouseRelease(a_canvas, a_tempCanvas, a_event, a_color1, a_color2);
     }
 
@@ -49,17 +54,17 @@ int PolygonTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, con
 // react to a double click
 int PolygonTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     // if the tool was editing, end the editing
-    if (m_isEditing) {
+    if (m_shape.isEditing()) {
         ShapeTool::processDoubleClick(a_canvas, a_tempCanvas, a_event, a_color1, a_color2);
 
         return 1;
     }
     // if the tool was not editing, start editing
     else {
-        m_isEditing = true;
+        m_shape.setIsEditing(true);
         drawShape(a_tempCanvas, a_color1, a_color2);
-        initBoundingRect();
-        drawBoundingRect(a_tempCanvas);
+        m_shape.initBoundingRect();
+        m_shape.drawBoundingRect(a_tempCanvas);
         return 0;
     }
 }
@@ -85,7 +90,7 @@ void PolygonTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColo
         painter.setBrush(fillColor);
     }
 
-    if (m_isEditing) {
+    if (m_shape.isEditing()) {
         // ready the outline portion (to exist or not exist)
         if (m_outline) {
             painter.setPen(QPen(drawColor, m_size, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
@@ -94,13 +99,13 @@ void PolygonTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColo
         }
 
         // draw the shape
-        painter.drawPolygon(transformShape(m_shape));
+        painter.drawPolygon(m_shape.getTransformedShape());
     } else {
         painter.setPen(QColor(Qt::transparent));
-        painter.drawPolygon(transformShape(m_shape));
+        painter.drawPolygon(m_shape.getTransformedShape());
 
         painter.setPen(QPen(drawColor, m_size, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
-        painter.drawPolyline(m_shape);
+        painter.drawPolyline(m_shape.getShape());
     }
 
 }

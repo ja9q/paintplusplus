@@ -94,17 +94,17 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
     }
 
     QPainterPath ellipse;
-    ellipse.addEllipse(m_shape.boundingRect());
+    ellipse.addEllipse(m_shape.getShape().boundingRect());
 
     // scale the shape first because it displaces the center + has to be before rotation
-    ellipse = QTransform().scale(m_scale.x(), m_scale.y()).map(ellipse);
+    ellipse = QTransform().scale(m_shape.getScale().x(), m_shape.getScale().y()).map(ellipse);
 
     // rotate the shape with the new center
     QPoint center = ellipse.boundingRect().center().toPoint();
-    ellipse = QTransform().translate(center.x(), center.y()).rotate(m_rotation).translate(-center.x(), -center.y()).map(ellipse);
+    ellipse = QTransform().translate(center.x(), center.y()).rotate(m_shape.getRotation()).translate(-center.x(), -center.y()).map(ellipse);
 
     // finally translate the shape
-    ellipse = QTransform().translate(m_translation.x(), m_translation.y()).map(ellipse);
+    ellipse = QTransform().translate(m_shape.getTranslation().x(), m_shape.getTranslation().y()).map(ellipse);
 
     // draw the shape
     painter.drawPath(ellipse);
@@ -124,9 +124,9 @@ void CircleTool::calcShape(const QMouseEvent* a_event){
         } else {
             fixedPoint.ry() = (fixedPoint.y() > m_lastPoint.y()) ? m_lastPoint.y() + x_distance : m_lastPoint.y() - x_distance;
         }
-        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), fixedPoint));
+        m_shape.setShape(QPolygon(QRect(m_lastPoint.toPoint(), fixedPoint)));
     } else {
-        m_shape = QPolygon(QRect(m_lastPoint.toPoint(), a_event->pos()));
+        m_shape.setShape(QPolygon(QRect(m_lastPoint.toPoint(), a_event->pos())));
     }
 
 }

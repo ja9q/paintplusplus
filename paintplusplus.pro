@@ -15,10 +15,12 @@ SOURCES += \
     ColorPicker.cpp \
     ColorWidget.cpp \
     DrawTool.cpp \
+    Editable.cpp \
     FillTool.cpp \
     LineTool.cpp \
     PaintModel.cpp \
     PolygonTool.cpp \
+    SelectTool.cpp \
     ShapeTool.cpp \
     SquareTool.cpp \
     ToolSelector.cpp \
@@ -34,10 +36,12 @@ HEADERS += \
     ColorPicker.h \
     ColorWidget.h \
     DrawTool.h \
+    Editable.h \
     FillTool.h \
     LineTool.h \
     PaintModel.h \
     PolygonTool.h \
+    SelectTool.h \
     ShapeTool.h \
     SquareTool.h \
     ToolSelector.h \

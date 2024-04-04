@@ -43,7 +43,7 @@ public:
 
 protected:
     enum class ToolProperty {
-        SIZE, OPACITY, ANTIALIAS, FILLTYPE, OUTLINE
+        SIZE, OPACITY, ANTIALIAS, FILLTYPE, OUTLINE, MASKBACK
     };
 
     // Add new properties
