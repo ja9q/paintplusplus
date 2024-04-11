@@ -81,7 +81,7 @@ void Editable::drawBoundingRect(QImage* a_canvas) {
 
     // get ready to draw the pivots
     painter.setBrush(QColor(Qt::white));
-    QRect pivot = QRect(0,0,11,11);
+    QRect pivot = QRect(0,0,7,7);
 
     for (int i = 0; i < 8; i++) {
         pivot.moveCenter(transformedRect.at(i));

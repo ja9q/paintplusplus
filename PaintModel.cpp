@@ -4,6 +4,8 @@
 
 #include "PaintModel.h"
 
+#include <QFileDialog>
+
 #include "DrawTool.h"
 #include "SelectTool.h"
 #include "SquareTool.h"
@@ -323,6 +325,22 @@ void PaintModel::clearCanvas() {
     m_canvas.fillCanvas(m_user.getColor(1));
 }
 
+void PaintModel::openFile() {
+
+    QString fileName = QFileDialog::getOpenFileName(NULL, tr("Open File"), tr("./"), tr("Images (*.png *.jpg)"));
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    // reset the history because this is a new file
+    m_history.clear();
+    m_historyPos = 0;
+
+    QImage file(fileName);
+
+    m_canvas.setCanvas(file);
+}
+
 /**/
 /*
 void PaintModel::updateToolSetting(const int a_settingid, const int a_newValue)
@@ -378,9 +396,10 @@ RETURNS
 void PaintModel::undo() {
 
     m_user.getCurrentTool()->resetEditor();
+    qDebug() << m_history.length() << m_historyPos;
 
     // replace the canvas with the next most recent part of the history and remove it
-    if (m_historyPos < UNDO_LIMIT-1) {
+    if (m_history.length() > m_historyPos+1 && m_historyPos < UNDO_LIMIT-1) {
         // update the history position;
         m_historyPos++;
         // set the canvas to the current part of history
@@ -488,7 +507,7 @@ RETURNS
 /**/
 void PaintModel::initTools() {
     // init the drawing tools
-    m_tools[(int)ToolType::DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0));
+    m_tools[(int)ToolType::DRAWTOOL].append(new DrawTool(QString::fromStdString("Pencil"), 0, {6}));
 
     // init the erase tools
     m_tools[(int)ToolType::ERASETOOL].append(new DrawTool(QString::fromStdString("Eraser"), 1));

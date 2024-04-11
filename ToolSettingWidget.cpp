@@ -71,6 +71,7 @@ void ToolSettingWidget::initSettingData() {
         // [3] = ToolSetting::FILLTYPE
     m_settings.append(ToolSetting("Has Outline", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [4] = ToolSetting::OUTLINE
     m_settings.append(ToolSetting("Transparent Background", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [5] = ToolSetting::MASKBACK
+    m_settings.append(ToolSetting("Mask to Color 2", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [5] = ToolSetting::MASKBACK
 }
 
 void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_initValue) {

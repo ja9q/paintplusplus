@@ -23,6 +23,7 @@ SOURCES += \
     SelectTool.cpp \
     ShapeTool.cpp \
     SquareTool.cpp \
+    TextTool.cpp \
     ToolSelector.cpp \
     ToolSettingWidget.cpp \
     User.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     SelectTool.h \
     ShapeTool.h \
     SquareTool.h \
+    TextTool.h \
     ToolSelector.h \
     ToolSettingWidget.h \
     User.h \

@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QRgb>
 #include <QPainter>
+#include <QRegion>
+#include <QBitmap>
 #include <QMouseEvent>
 #include <QPainterPath>
 #include "BaseTool.h"
@@ -15,7 +17,7 @@
 // parametric constructor
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     BaseTool(a_name, {(int)ToolProperty::SIZE, (int)ToolProperty::OPACITY}),
-    m_size(10), m_color(a_color), m_opacity(100) {
+    m_size(10), m_color(a_color), m_opacity(100), m_masksColor(false) {
     if (!a_moreProperties.empty()) {
         addProperties(a_moreProperties);
     }
@@ -51,6 +53,9 @@ int DrawTool::getProperty(const int a_propId) {
         break;
     case ToolProperty::OPACITY:
         return m_opacity;
+        break;
+    case ToolProperty::MASKCOLOR2:
+        return m_masksColor;
         break;
     default:
         return -1;
@@ -89,6 +94,9 @@ int DrawTool::setProperty(const int a_propId, const int a_newValue) {
         break;
     case ToolProperty::OPACITY:
         m_opacity = a_newValue;
+        break;
+    case ToolProperty::MASKCOLOR2:
+        m_masksColor = a_newValue;
         break;
     default:
         return -1;
@@ -151,6 +159,10 @@ int DrawTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
 
     // have a painter draw out this line
     QPainter painter(a_tempCanvas);
+    if (m_masksColor) {
+        QImage mask = (a_canvas->createMaskFromColor(a_color2.rgb(), Qt::MaskOutColor));
+        painter.setClipRegion(QBitmap::fromImage(mask));
+    }
 
     painter.drawPixmap(drawPoint, brush);
 
@@ -191,7 +203,6 @@ RETURNS
 */
 /**/
 int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
-    (void)a_canvas;
 
     QPointF point = a_event->pos();
 
@@ -229,6 +240,11 @@ int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEv
     // have a painter draw out this line by drawing the pixmap along the path
     QPainter painter(a_tempCanvas);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
+
+    if (m_masksColor) {
+        QImage mask = (a_canvas->createMaskFromColor(a_color2.rgb(), Qt::MaskOutColor));
+        painter.setClipRegion(QBitmap::fromImage(mask));
+    }
 
     while (pos < length){
         percent = line.percentAtLength(pos);

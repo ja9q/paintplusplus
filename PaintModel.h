@@ -56,6 +56,8 @@ public:
     void clearCanvas();
 
 public slots:
+    void openFile();
+
     // update one of the settings of the current tool
     void updateToolSetting(const int a_settingid, const int a_newValue);
 

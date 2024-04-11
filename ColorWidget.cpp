@@ -57,6 +57,7 @@ ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     m_colorPicker = new ColorPicker(a_model, pickerContainer);
     connect(m_colorPicker, &ColorPicker::changedColor, this, &ColorWidget::updateColor);
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorPicker::updateColor);
+    connect(this, &ColorWidget::valueChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});
 
     // Set up a layout
     QVBoxLayout *layout = new QVBoxLayout(container);

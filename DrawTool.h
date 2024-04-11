@@ -34,6 +34,8 @@ protected:
     int m_color;    // which color (1 or 2) the brush uses
     int m_opacity;  // the opacity (transparency/alpha value) of the line
 
+    bool m_masksColor; // whether the pen can only draw within color 2
+
     QPointF m_lastPoint;    // The last point drawn on the canvas; needed for drawing dragged lines
 
 };

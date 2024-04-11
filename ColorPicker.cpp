@@ -76,9 +76,15 @@ RETURNS
 */
 /**/
 void ColorPicker::updateColor(QColor a_color) {
-    calculateSquarePos(a_color);
-    calculateWheelPos(a_color);
+    if (m_editFlag != EDITWHEEL) {
+        calculateSquarePos(a_color);
+    }
+    if (m_editFlag != EDITSQUARE) {
+        calculateWheelPos(a_color);
+    }
     renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
+
+    m_model->setColor(a_color, m_whichColor);
 
     repaint();
 }
@@ -115,6 +121,7 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
     if(event->buttons() & Qt::LeftButton){
         // if this is a click on the color wheel, then change the color of the square
         if (m_colorWheel.pixelColor(event->pos()) != QColor(Qt::transparent)) {
+            m_editFlag = EDITWHEEL;
             // update the position of the wheel cursor
             calculateWheelPos(event->pos());
 
@@ -125,10 +132,10 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
 
             // rerender + set the flag
             repaint();
-            m_editFlag = EDITWHEEL;
         }
         // if the color square was clicked
         else if (mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
+            m_editFlag = EDITSQUARE;
             // change the color in the outer widget and model
             emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42));
             m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
@@ -136,7 +143,6 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
             // update the position of the square cursor, rerender, and set flag
             m_squarePos = QPointF(mouseX-5, mouseY-5);
             repaint();
-            m_editFlag = EDITSQUARE;
         }
         // otherwise, if this was a click to the other square, then swap colors
         else if (this->grab().toImage().pixelColor(event->pos()) == m_model->getColor(1 + (-1 * m_whichColor))) {
@@ -240,6 +246,7 @@ RETURNS
 /**/
 void ColorPicker::mouseReleaseEvent(QMouseEvent *event) {
     (void) event;
+    m_editFlag = EDITNONE;
 }
 
 /**/

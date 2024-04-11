@@ -133,6 +133,7 @@ void MainWindow::setupToolSelector() {
     // Make the dock for the settings dock
     QDockWidget* selectorDock = new QDockWidget(tr("Tools"), this);
     selectorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    selectorDock->setFeatures((QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable));
     addDockWidget(Qt::LeftDockWidgetArea, selectorDock);
 
     // create and add the tool settings
@@ -169,6 +170,7 @@ void MainWindow::setupToolSettings() {
     // Make the dock for the settings dock
     QDockWidget* settingsDock = new QDockWidget(tr("Tool Settings"), this);
     settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    settingsDock->setFeatures((QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable));
     addDockWidget(Qt::LeftDockWidgetArea, settingsDock);
 
 
@@ -249,6 +251,12 @@ void MainWindow::setupMenu() {
     m_fileMenu = menuBar()->addMenu(tr("&File"));
     m_editMenu = menuBar()->addMenu(tr("&Edit"));
 
+    QAction* openAction = new QAction(tr("&Open"));
+    openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
+    connect(openAction, &QAction::triggered, m_model, &PaintModel::openFile);
+    m_fileMenu->addAction(openAction);
+
+
     QAction* clearAction = new QAction(tr("&Clear Canvas"));
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
@@ -256,12 +264,12 @@ void MainWindow::setupMenu() {
 
     QAction* undoAction = new QAction(tr("&Undo"));
     undoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
-    connect(undoAction, &QAction::triggered, this, [=](){m_model->undo();});
+    connect(undoAction, &QAction::triggered, m_model, &PaintModel::undo);
     m_editMenu->addAction(undoAction);
 
     QAction* redoAction = new QAction(tr("&Redo"));
     redoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
-    connect(redoAction, &QAction::triggered, this, [=](){m_model->redo();});
+    connect(redoAction, &QAction::triggered, m_model, &PaintModel::redo);
     m_editMenu->addAction(redoAction);
 
 }

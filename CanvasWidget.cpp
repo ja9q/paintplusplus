@@ -11,6 +11,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 #include <QPixmap>
+#include <QImage>
 #include <QPainter>
 
 /**/
@@ -76,7 +77,11 @@ RETURNS
 /**/
 void CanvasWidget::setCanvas(QImage a_newCanvas) {
     m_tempCanvas.fill(QColor(Qt::transparent));
+    if (a_newCanvas.height() != m_canvas.height() || a_newCanvas.width() != m_canvas.width()) {
+        resize(a_newCanvas.width(), a_newCanvas.height());
+    }
     m_canvas = a_newCanvas;
+
     update();
 }
 
@@ -150,7 +155,6 @@ void CanvasWidget::mousePressEvent(QMouseEvent *event) {
     else if (event->buttons() & Qt::RightButton){
         QColor newColor = m_canvas.pixelColor(event->pos());
         // If this was a right mouse click, copy the color the click was on.
-        m_user->setColor(newColor, 0);
         emit colorChanged(newColor);
     }
 }
@@ -189,7 +193,6 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event){
     else if (event->buttons() & Qt::RightButton){
         QColor newColor = m_canvas.pixelColor(event->pos());
         // If this was a right mouse click, copy the color the click was on.
-        m_user->setColor(newColor, 0);
         emit colorChanged(newColor);
     }
 }

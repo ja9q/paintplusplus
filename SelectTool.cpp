@@ -145,7 +145,7 @@ void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
 
     if (!m_selectArea.isEditing()) {
         painter.setPen(Qt::white);
-        painter.drawPolyline(m_selectArea.getShape());
+        painter.drawPolyline(m_selectArea.getShape().translated(-1,-1));
 
         painter.setPen(Qt::black);
         painter.drawPolyline(m_selectArea.getShape());
