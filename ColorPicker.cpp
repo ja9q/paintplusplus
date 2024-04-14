@@ -76,10 +76,10 @@ RETURNS
 */
 /**/
 void ColorPicker::updateColor(QColor a_color) {
-    if (m_editFlag != EDITWHEEL) {
+    if (m_editFlag != EditFlag::EDITWHEEL) {
         calculateSquarePos(a_color);
     }
-    if (m_editFlag != EDITSQUARE) {
+    if (m_editFlag != EditFlag::EDITSQUARE) {
         calculateWheelPos(a_color);
     }
     renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
@@ -121,7 +121,7 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
     if(event->buttons() & Qt::LeftButton){
         // if this is a click on the color wheel, then change the color of the square
         if (m_colorWheel.pixelColor(event->pos()) != QColor(Qt::transparent)) {
-            m_editFlag = EDITWHEEL;
+            m_editFlag = EditFlag::EDITWHEEL;
             // update the position of the wheel cursor
             calculateWheelPos(event->pos());
 
@@ -135,7 +135,7 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
         }
         // if the color square was clicked
         else if (mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
-            m_editFlag = EDITSQUARE;
+            m_editFlag = EditFlag::EDITSQUARE;
             // change the color in the outer widget and model
             emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42));
             m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
@@ -185,19 +185,19 @@ void ColorPicker::mouseMoveEvent(QMouseEvent *event) {
 
     // if this is a left click within the range of the widget
     if((event->buttons() & Qt::LeftButton) && mouseX >=0 && mouseX < LENGTH && mouseY >=0 && mouseY < LENGTH){
-        if (m_editFlag == EDITWHEEL) {
+        if (m_editFlag == EditFlag::EDITWHEEL) {
             calculateWheelPos(event->pos());
             renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
             emit changedColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37));
             m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37), m_whichColor);
             repaint();
         }
-        else if (m_editFlag == EDITSQUARE && mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
+        else if (m_editFlag == EditFlag::EDITSQUARE && mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
             emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42));
             m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
             m_squarePos = QPointF(mouseX-5, mouseY-5);
             repaint();
-        } else if (m_editFlag == EDITSQUARE && (mouseX < 42 || mouseY < 42 || mouseX >= 160 || mouseY >= 160)) {
+        } else if (m_editFlag == EditFlag::EDITSQUARE && (mouseX < 42 || mouseY < 42 || mouseX >= 160 || mouseY >= 160)) {
             if (mouseX < 42) {
                 mouseX = 42;
             }
@@ -246,7 +246,7 @@ RETURNS
 /**/
 void ColorPicker::mouseReleaseEvent(QMouseEvent *event) {
     (void) event;
-    m_editFlag = EDITNONE;
+    m_editFlag = EditFlag::EDITNONE;
 }
 
 /**/

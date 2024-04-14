@@ -64,6 +64,9 @@ int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMous
 int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_color1;
+
+    // clear the temp canvas from any previous marks (e.g. the previous rectangle)
+    a_tempCanvas->fill(Qt::transparent);
     // draw out the shape if the user is still dragging it for the first time (i.e. not in edit mode)
     if (!m_selectArea.isEditing()) {
         calcBounds(a_event);
@@ -73,9 +76,6 @@ int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     // otherwise the user is in edit mode; use the appropriate edit function
     else {
         m_selectArea.processEdit(a_event);
-
-        // clear the temp canvas from any previous marks (e.g. the previous rectangle)
-        a_tempCanvas->fill(Qt::transparent);
 
         drawBounds(a_tempCanvas, a_color2);
         drawSelection(a_tempCanvas);

@@ -15,6 +15,9 @@ public:
     // Constructs the widget
     explicit CanvasWidget(User* user, QWidget *parent = 0);
 
+    // Getter for the temporary canvas;
+    QImage* getTempCanvas();
+
     // Setter for the canvas;
     void setCanvas(QImage a_newCanvas);
 

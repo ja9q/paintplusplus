@@ -16,11 +16,11 @@ class PaintModel : public QObject
 {
     Q_OBJECT
 public:
-    const static int TOOLCOUNT = 5;        // The number of selectable tools
+    const static int TOOLCOUNT = 6;        // The number of selectable tools
 
     // the indices of the tool types in the tool arrays
     enum class ToolType {
-        DRAWTOOL, ERASETOOL, SELECTTOOL, SHAPETOOL, FILLTOOL
+        DRAWTOOL, ERASETOOL, SELECTTOOL, SHAPETOOL, FILLTOOL, TEXTTOOL
     };
 
     // The constructor

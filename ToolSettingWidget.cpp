@@ -71,7 +71,13 @@ void ToolSettingWidget::initSettingData() {
         // [3] = ToolSetting::FILLTYPE
     m_settings.append(ToolSetting("Has Outline", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [4] = ToolSetting::OUTLINE
     m_settings.append(ToolSetting("Transparent Background", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [5] = ToolSetting::MASKBACK
-    m_settings.append(ToolSetting("Mask to Color 2", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [5] = ToolSetting::MASKBACK
+    m_settings.append(ToolSetting("Mask to Color 2", 0, 1, ToolSetting::DisplayType::TOGGLE)); // [6] = ToolSetting::MASKCOLOR2
+    //FONT_SIZE, FONT, TEXT_BOLD, TEXT_ITALIC, TEXT_UNDERLINE
+    m_settings.append(ToolSetting("Font Size", 0, 100, ToolSetting::DisplayType::SLIDER));
+    m_settings.append(ToolSetting("Font", 0, 2, ToolSetting::DisplayType::DROPDOWN, {"egg", "Egg", "EGG"}));
+    m_settings.append(ToolSetting("Bold", 0, 1, ToolSetting::DisplayType::TOGGLE));
+    m_settings.append(ToolSetting("Italics", 0, 1, ToolSetting::DisplayType::TOGGLE));
+    m_settings.append(ToolSetting("Underline", 0, 1, ToolSetting::DisplayType::TOGGLE));
 }
 
 void ToolSettingWidget::formSetting(int a_settingid, int a_hposition, int a_initValue) {

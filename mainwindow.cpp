@@ -212,7 +212,7 @@ void MainWindow::setupToolBar() {
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea);
 
-    QString buttonNames[] = {tr("Pencil"), tr("Eraser"), tr("Select"), tr("Shapes"), tr("Fill")};
+    QString buttonNames[] = {tr("Pencil"), tr("Eraser"), tr("Select"), tr("Shapes"), tr("Fill"), tr("Text")};
 
     for (int i = 0; i < PaintModel::TOOLCOUNT; i++) {
         m_toolButtons[i] = new QAction(buttonNames[i]);

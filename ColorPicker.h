@@ -42,9 +42,9 @@ signals:
 
 private:
     // modes for the edit flag
-    const int EDITNONE = 0;
-    const int EDITWHEEL = 1;
-    const int EDITSQUARE = 2;
+    enum class EditFlag {
+            EDITNONE, EDITWHEEL, EDITSQUARE
+    };
 
     // Copy the model because it needs to display the model's state (colors 1 and 2)
     PaintModel* m_model;
@@ -61,7 +61,7 @@ private:
     QImage m_colorSquare;
 
     // Indicates what is being edited (if anything)
-    int m_editFlag;
+    EditFlag m_editFlag;
 
     // Indicates which color is being modified
     int m_whichColor;

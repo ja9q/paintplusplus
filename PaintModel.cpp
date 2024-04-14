@@ -8,11 +8,13 @@
 
 #include "DrawTool.h"
 #include "SelectTool.h"
+#include "SquareSelectTool.h"
 #include "SquareTool.h"
 #include "CircleTool.h"
 #include "PolygonTool.h"
 #include "LineTool.h"
 #include "FillTool.h"
+#include "TextTool.h"
 #include "User.h"
 
 /**/
@@ -332,11 +334,12 @@ void PaintModel::openFile() {
         return;
     }
 
+    QImage file(fileName);
+
     // reset the history because this is a new file
     m_history.clear();
+    m_history.append(file);
     m_historyPos = 0;
-
-    QImage file(fileName);
 
     m_canvas.setCanvas(file);
 }
@@ -396,7 +399,6 @@ RETURNS
 void PaintModel::undo() {
 
     m_user.getCurrentTool()->resetEditor();
-    qDebug() << m_history.length() << m_historyPos;
 
     // replace the canvas with the next most recent part of the history and remove it
     if (m_history.length() > m_historyPos+1 && m_historyPos < UNDO_LIMIT-1) {
@@ -514,6 +516,7 @@ void PaintModel::initTools() {
 
     // init the rest of the tools (they don't exist yet);
     m_tools[(int)ToolType::SELECTTOOL].append(new SelectTool(QString::fromStdString("Lasso")));
+    m_tools[(int)ToolType::SELECTTOOL].append(new SquareSelectTool(QString::fromStdString("Square Select")));
 
     // init the shapetools
     m_tools[(int)ToolType::SHAPETOOL].append(new SquareTool(QString::fromStdString("Square"), 0));
@@ -523,5 +526,8 @@ void PaintModel::initTools() {
 
     // init the fill tools
     m_tools[(int)ToolType::FILLTOOL].append(new FillTool("Fill Bucket", 0));
+
+    // init the text tools
+    m_tools[(int)ToolType::TEXTTOOL].append(new TextTool(QString::fromStdString("Text"), &m_canvas));
 
 }

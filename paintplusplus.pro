@@ -22,6 +22,7 @@ SOURCES += \
     PolygonTool.cpp \
     SelectTool.cpp \
     ShapeTool.cpp \
+    SquareSelectTool.cpp \
     SquareTool.cpp \
     TextTool.cpp \
     ToolSelector.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     PolygonTool.h \
     SelectTool.h \
     ShapeTool.h \
+    SquareSelectTool.h \
     SquareTool.h \
     TextTool.h \
     ToolSelector.h \

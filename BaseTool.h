@@ -44,7 +44,7 @@ public:
 protected:
     enum class ToolProperty {
         SIZE, OPACITY, ANTIALIAS, FILLTYPE, OUTLINE, MASKBACK, MASKCOLOR2,
-        FONT_SIZE, FONT, TEXT_BOLD, TEXT_ITALIC, TEXT_UNDERLINE, TEXT_STRIKETHROUGH
+        FONT_SIZE, FONT, TEXT_BOLD, TEXT_ITALIC, TEXT_UNDERLINE
     };
 
     // Add new properties
