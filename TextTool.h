@@ -5,6 +5,7 @@
 
 #include <QTextEdit>
 #include <QTimer>
+#include <QFontDatabase>
 #include "Editable.h"
 #include "CanvasWidget.h"
 
@@ -34,6 +35,7 @@ public:
 
 private:
 
+    QList<QString> FONTS;
 
     QTextEdit m_textbox;
 
@@ -47,9 +49,11 @@ private:
 
     bool m_isOpaque;
 
-    int passMouseEvent(const QMouseEvent* a_event);
+    QColor m_bgColor;
 
     void drawText(QImage* a_canvas, bool a_renderBounds = true);
+
+    void adjustSize();
 };
 
 #endif // TEXTTOOL_H

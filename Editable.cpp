@@ -100,13 +100,12 @@ void Editable::identifyEdit() {
     } else {
         // otherwise, check if the click was on one of the pivots
 
-        QRect pivot = QRect(0,0,12,12);
-        QPolygon temp;
+        QRect pivot = QRect(0,0,21,21);
 
         // if the click was on a pivot, then this is a scaling transformation (dilation)
         for (int i = 0; i < 8; i++) {
             pivot.moveCenter(transformedRect.at(i));
-            if (pivot.contains(m_prevEditPoint)) {
+            if (((QPolygon)pivot).containsPoint(m_prevEditPoint, Qt::OddEvenFill)) {
                 // identify the pivot that was opposite to the clicked pivot (scaling anchor)
                 m_anchor = (i+4) % 8;
                 m_editMode = EditMode::SCALE;
