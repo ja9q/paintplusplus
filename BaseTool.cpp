@@ -47,6 +47,17 @@ QVector<int> BaseTool::getProperties() const {
 
 void BaseTool::resetEditor() {}
 
+QImage BaseTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) {
+    (void)a_canvas;
+    (void)a_color;
+    (void)a_cuts;
+    return QImage();
+}
+
+void BaseTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) {
+    (void)a_image;
+}
+
 /**/
 /*
 int BaseTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)

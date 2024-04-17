@@ -52,6 +52,10 @@ CanvasWidget::CanvasWidget(User* user, QWidget *parent)
     update();
 }
 
+QImage* CanvasWidget::getCanvas() {
+    return &m_canvas;
+}
+
 QImage* CanvasWidget::getTempCanvas() {
     return &m_tempCanvas;
 }

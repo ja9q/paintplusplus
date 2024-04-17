@@ -256,11 +256,23 @@ void MainWindow::setupMenu() {
     connect(openAction, &QAction::triggered, m_model, &PaintModel::openFile);
     m_fileMenu->addAction(openAction);
 
+    QAction* saveAction = new QAction(tr("&Save"));
+    saveAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_S));
+    connect(saveAction, &QAction::triggered, m_model, &PaintModel::saveFile);
+    m_fileMenu->addAction(saveAction);
+
+    QAction* saveAsAction = new QAction(tr("&Save as"));
+    saveAsAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_S));
+    connect(saveAsAction, &QAction::triggered, m_model, &PaintModel::saveNewFile);
+    m_fileMenu->addAction(saveAsAction);
+
 
     QAction* clearAction = new QAction(tr("&Clear Canvas"));
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
     m_editMenu->addAction(clearAction);
+
+    m_editMenu->addSeparator();
 
     QAction* undoAction = new QAction(tr("&Undo"));
     undoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
@@ -271,5 +283,22 @@ void MainWindow::setupMenu() {
     redoAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
     connect(redoAction, &QAction::triggered, m_model, &PaintModel::redo);
     m_editMenu->addAction(redoAction);
+
+    m_editMenu->addSeparator();
+
+    QAction* copyAction = new QAction(tr("&Copy"));
+    copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
+    connect(copyAction, &QAction::triggered, m_model, &PaintModel::copy);
+    m_editMenu->addAction(copyAction);
+
+    QAction* cutAction = new QAction(tr("&Cut"));
+    cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
+    connect(cutAction, &QAction::triggered, m_model, &PaintModel::cut);
+    m_editMenu->addAction(cutAction);
+
+    QAction* pasteAction = new QAction(tr("&Paste"));
+    pasteAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
+    connect(pasteAction, &QAction::triggered, this, [=](){changeToolType((int)PaintModel::ToolType::SELECTTOOL); m_model->paste();});
+    m_editMenu->addAction(pasteAction);
 
 }

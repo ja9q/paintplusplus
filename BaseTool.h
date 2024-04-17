@@ -29,6 +29,10 @@ public:
 
     virtual void resetEditor();
 
+    virtual QImage getEditable(QImage* a_canvas = NULL, const QColor a_color = QColor(), bool a_cuts = false);
+
+    virtual void setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas);
+
     // React to a click on the canvas
     virtual int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) = 0;
 

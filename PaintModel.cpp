@@ -5,6 +5,9 @@
 #include "PaintModel.h"
 
 #include <QFileDialog>
+#include <QGuiApplication>
+#include <QClipboard>
+#include <QMimeData>
 
 #include "DrawTool.h"
 #include "SelectTool.h"
@@ -46,6 +49,7 @@ PaintModel::PaintModel(QWidget *parent) :
     m_currentToolType(ToolType::DRAWTOOL),
     m_user(nullptr),
     m_canvas(CanvasWidget(&m_user, parent)),
+    m_fileName(""),
     m_historyPos(0)
 {
     initTools();
@@ -334,7 +338,9 @@ void PaintModel::openFile() {
         return;
     }
 
-    QImage file(fileName);
+    m_fileName = fileName;
+
+    QImage file(m_fileName);
 
     // reset the history because this is a new file
     m_history.clear();
@@ -342,6 +348,59 @@ void PaintModel::openFile() {
     m_historyPos = 0;
 
     m_canvas.setCanvas(file);
+}
+
+void PaintModel::saveFile() {
+    if(m_fileName != "") {
+        QImage canvas = *(m_canvas.getCanvas());
+        canvas.save(m_fileName);
+    } else {
+        saveNewFile();
+    }
+}
+
+void PaintModel::saveNewFile() {
+    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save File"), tr("./"), tr("Images (*.png *.jpg)"));
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    QImage canvas = *(m_canvas.getCanvas());
+
+    m_fileName = fileName;
+    canvas.save(m_fileName);
+}
+
+// copy a selection of the canvas
+void PaintModel::copy() {
+    QImage selection = m_user.getCurrentTool()->getEditable();
+
+    if (!selection.isNull()) {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setImage(selection);
+    }
+}
+
+
+void PaintModel::cut() {
+    QImage selection = m_user.getCurrentTool()->getEditable(m_canvas.getCanvas(), m_user.getColor(1), true);
+
+    if (!selection.isNull()) {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setImage(selection);
+        m_canvas.getTempCanvas()->fill(Qt::transparent);
+        m_canvas.repaint();
+    }
+}
+
+// paste into the canvas
+void PaintModel::paste() {
+    const QClipboard *clipboard = QGuiApplication::clipboard();
+    const QMimeData *mimedata = clipboard->mimeData();
+
+    if (mimedata->hasImage()) {
+        m_user.getCurrentTool()->setEditable(qvariant_cast<QImage>(mimedata->imageData()), m_canvas.getCanvas(), m_canvas.getTempCanvas());
+    }
 }
 
 /**/

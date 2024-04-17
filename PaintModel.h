@@ -58,6 +58,10 @@ public:
 public slots:
     void openFile();
 
+    void saveFile();
+
+    void saveNewFile();
+
     // update one of the settings of the current tool
     void updateToolSetting(const int a_settingid, const int a_newValue);
 
@@ -66,6 +70,15 @@ public slots:
 
     // redo within the canvas
     void redo();
+
+    // copy a selection of the canvas
+    void copy();
+
+    // cut a selection from the canvas
+    void cut();
+
+    // paste into the canvas
+    void paste();
 
     // add to the undo history
     void updateHistory(QImage a_canvas);
@@ -83,6 +96,8 @@ private:
 
     User m_user;                // The user's chosen tool and colors
     CanvasWidget m_canvas;      // The canvas widget that is to be displayed
+
+    QString m_fileName;       // The name of the file
 
     int m_historyPos;   // tracks the undos and redos of the history
     QList<QImage> m_history;    // the limited history of the canvas

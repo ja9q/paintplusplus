@@ -19,6 +19,10 @@ public:
     // reset the editor (remove any uncommited shapes)
     void resetEditor();
 
+    QImage getEditable(QImage* a_canvas = NULL, const QColor a_color = QColor(), bool a_cuts = false);
+
+    void setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas);
+
     // react to a click
     int processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
 
@@ -40,7 +44,6 @@ protected:
 
     // whether to remove the background from the selection or not
     bool m_maskBack;
-
 
     virtual void drawSelection(QImage* a_canvas);
 

@@ -40,6 +40,51 @@ void SelectTool::resetEditor() {
     m_selectArea.reset();
 }
 
+QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) {
+    if(m_selectArea.isEditing() && (m_selectArea.getEditMode() == Editable::EditMode::END || m_selectArea.getEditMode() == Editable::EditMode::NONE)) {
+        QImage temp = m_selection;
+
+        // scale the shape first because it displaces the center + has to be before rotation
+        temp = temp.transformed(QTransform().scale(m_selectArea.getScale().x(), m_selectArea.getScale().y()));
+
+        // rotate the shape with the new center
+        temp = temp.transformed(QTransform().rotate(m_selectArea.getRotation()));
+
+        if (a_cuts) {
+            QPainter painter(a_canvas);
+            painter.setPen(Qt::transparent);
+            painter.setBrush(a_color);
+            painter.drawPolygon(m_selectArea.getShape());
+            painter.end();
+        }
+
+        return temp;
+    }
+    return QImage();
+}
+
+void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) {
+    if(!m_selectArea.isEditing() || m_selectArea.getEditMode() == Editable::EditMode::END || m_selectArea.getEditMode() == Editable::EditMode::NONE) {
+        if (m_selectArea.isEditing()) {
+            processDoubleClick(a_canvas, a_tempCanvas, NULL, QColor(), QColor());
+        }
+
+        resetEditor();
+
+        m_selection = a_image;
+
+        QRect shape(QPoint(0,0), a_image.size());
+        m_selectArea.setShape(QPolygon(shape));
+        m_selectArea.initBoundingRect();
+        m_selectArea.setIsEditing(true);
+
+
+        drawSelection(a_tempCanvas);
+        m_selectArea.drawBoundingRect(a_tempCanvas);
+    }
+}
+
+
 // react to a click
 int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void)a_canvas;
