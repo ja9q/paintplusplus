@@ -85,10 +85,14 @@ RETURNS
 /**/
 void CanvasWidget::setCanvas(QImage a_newCanvas) {
     m_tempCanvas.fill(QColor(Qt::transparent));
-    if (a_newCanvas.height() != m_canvas.height() || a_newCanvas.width() != m_canvas.width()) {
-        resize(a_newCanvas.width(), a_newCanvas.height());
-    }
+
     m_canvas = a_newCanvas;
+
+    if (a_newCanvas.height() != height() || a_newCanvas.width() != width()) {
+        resize(a_newCanvas.width(), a_newCanvas.height());
+        a_newCanvas.fill(Qt::transparent);
+        m_tempCanvas = a_newCanvas;
+    }
 
     update();
 }

@@ -20,6 +20,7 @@ SOURCES += \
     LineTool.cpp \
     PaintModel.cpp \
     PolygonTool.cpp \
+    ResizeDialog.cpp \
     SelectTool.cpp \
     ShapeTool.cpp \
     SquareSelectTool.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     LineTool.h \
     PaintModel.h \
     PolygonTool.h \
+    ResizeDialog.h \
     SelectTool.h \
     ShapeTool.h \
     SquareSelectTool.h \

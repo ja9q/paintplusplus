@@ -7,6 +7,7 @@
 #include "CanvasWidget.h"
 #include "ColorWidget.h"
 #include "ToolSettingWidget.h"
+#include "ResizeDialog.h"
 #include <QVBoxLayout>
 #include <QDockWidget>
 #include <QScrollArea>
@@ -300,5 +301,12 @@ void MainWindow::setupMenu() {
     pasteAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_V));
     connect(pasteAction, &QAction::triggered, this, [=](){changeToolType((int)PaintModel::ToolType::SELECTTOOL); m_model->paste();});
     m_editMenu->addAction(pasteAction);
+
+    m_editMenu->addSeparator();
+
+    QAction* resizeAction = new QAction(tr("&Resize Canvas"));
+    resizeAction->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_C));
+    connect(resizeAction, &QAction::triggered, this, [=](){m_model->setCanvasSize(ResizeDialog::promptUser(m_model->getCanvas()->size(), this));});
+    m_editMenu->addAction(resizeAction);
 
 }

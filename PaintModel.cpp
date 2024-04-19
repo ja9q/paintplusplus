@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QClipboard>
+#include <QPainter>
 #include <QMimeData>
 
 #include "DrawTool.h"
@@ -225,6 +226,22 @@ void PaintModel::setToolType(int a_typeId) {
     m_canvas.flushTemp();
     m_currentToolType = (ToolType)a_typeId;
     m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
+}
+
+// change the canvas's size
+void PaintModel::setCanvasSize(QSize a_size) {
+
+    QImage newCanvas(a_size, QImage::Format_ARGB32_Premultiplied);
+    newCanvas.fill(Qt::white);
+
+    QPainter painter(&newCanvas);
+    painter.drawPixmap(0,0, QPixmap::fromImage(*(m_canvas.getCanvas())));
+    painter.end();
+
+    m_canvas.setCanvas(newCanvas);
+
+    updateHistory(newCanvas);
+
 }
 
 /**/

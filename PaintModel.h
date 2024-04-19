@@ -49,6 +49,9 @@ public:
     // set the toolType
     void setToolType(int a_typeId);
 
+    // change the canvas's size
+    void setCanvasSize(QSize a_size);
+
     // fill the canvas with the first color
     void fillCanvas();
 
