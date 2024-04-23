@@ -51,15 +51,14 @@ ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     connect(this, &ColorWidget::valueChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});
 
     // Set up a layout
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    m_layout = new QVBoxLayout(this);
 
     resize(m_colorPicker->width(), m_colorPicker->height()+100);
 
 
-    // Add the color picker and the layout
-    layout->addWidget(m_colorPicker);
-    layout->addWidget(createRgbEdit());
-
+    // Add the color picker and rgb control to the layout
+    m_layout->addWidget(m_colorPicker);
+    m_layout->addWidget(createRgbEdit());
 
     update();
 }
@@ -104,6 +103,16 @@ void ColorWidget::updateColor(QColor a_newColor, bool a_noSignal) {
 void ColorWidget::swapColor(int a_newColor) {
     m_whichColor = a_newColor;
     updateColor(m_model->getColor(a_newColor));
+}
+
+void ColorWidget::resizeEvent(QResizeEvent *event) {
+
+    if (event->size().height() > m_colorPicker->height()+80) {
+        m_layout->removeItem(m_layout->itemAt(2));
+        m_layout->addSpacing(event->size().height() - (m_colorPicker->height()+100));
+    }
+
+
 }
 
 QWidget* ColorWidget::createRgbEdit() {

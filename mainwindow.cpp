@@ -67,6 +67,8 @@ MainWindow::MainWindow(QWidget *parent)
     setupToolSelector();
     setupToolSettings();
 
+
+
     m_model->getCanvas()->setFocus();
 
 }
@@ -123,8 +125,7 @@ void MainWindow::setupColorPicker() {
     colorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, colorDock);
 
-    m_colorPicker = new ColorWidget(m_model);
-    colorDock->setWidget(m_colorPicker);
+    m_colorPicker = new ColorWidget(m_model, colorDock);
 
     // connect the interactables
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});

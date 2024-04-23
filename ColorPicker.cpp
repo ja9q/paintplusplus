@@ -37,14 +37,12 @@ RETURNS
 /**/
 ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
     : QWidget{parent}, m_model(a_model), m_cursor(generateCursor()),
-    m_colorWheel(QImage(LENGTH, LENGTH, QImage::Format_ARGB32)),
-    m_colorSquare(QImage(LENGTH-82, LENGTH-82, QImage::Format_ARGB32)),
+    m_colorWheel(QImage(200, 200, QImage::Format_ARGB32)),
+    m_colorSquare(QImage(118, 118, QImage::Format_ARGB32)),
     m_whichColor(0)
 {
-
-    resize(LENGTH,LENGTH);
-
-    setMinimumHeight(LENGTH);
+    resize(200,200);
+    setMinimumHeight(200);
 
     renderColorWheel();
     calculateWheelPos(QColor(Qt::red));
@@ -119,6 +117,9 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
     int mouseX = event->pos().x();
     int mouseY = event->pos().y();
 
+    const int squarePos = (m_colorWheel.width() - m_colorSquare.width())/2;
+    const int squareCurOff = squarePos-5;
+
     // if this is a left click
     if(event->buttons() & Qt::LeftButton){
         // if this is a click on the color wheel, then change the color of the square
@@ -129,18 +130,19 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
 
             // update the color square + change the color in the outer widget and model
             renderColorSquare(m_colorWheel.pixelColor(event->pos()));
-            emit changedColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37), true);
-            m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37), m_whichColor);
+            emit changedColor(m_colorSquare.pixelColor(m_squarePos.x()-squareCurOff, m_squarePos.y()-squareCurOff), true);
+            m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-squareCurOff, m_squarePos.y()-squareCurOff), m_whichColor);
 
             // rerender + set the flag
             repaint();
         }
         // if the color square was clicked
-        else if (mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
+        else if (mouseX >= squarePos && mouseY >= squarePos && mouseX<height()-20 && mouseY <height()-20) {
+
             m_editFlag = EditFlag::EDITSQUARE;
             // change the color in the outer widget and model
-            emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), true);
-            m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
+            emit changedColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), true);
+            m_model->setColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), m_whichColor);
 
             // update the position of the square cursor, rerender, and set flag
             m_squarePos = QPointF(mouseX-5, mouseY-5);
@@ -182,39 +184,44 @@ RETURNS
 */
 /**/
 void ColorPicker::mouseMoveEvent(QMouseEvent *event) {
+    const int length = height();
+
     int mouseX = event->pos().x();
     int mouseY = event->pos().y();
 
+    const int squarePos = (m_colorWheel.width() - m_colorSquare.width())/2;
+    const int squareCurOff = squarePos-5;
+
     // if this is a left click within the range of the widget
-    if((event->buttons() & Qt::LeftButton) && mouseX >=0 && mouseX < LENGTH && mouseY >=0 && mouseY < LENGTH){
+    if((event->buttons() & Qt::LeftButton) && mouseX >=0 && mouseX < length && mouseY >=0 && mouseY < length){
         if (m_editFlag == EditFlag::EDITWHEEL) {
             calculateWheelPos(event->pos());
             renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
-            emit changedColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37), true);
-            m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-37, m_squarePos.y()-37), m_whichColor);
+            emit changedColor(m_colorSquare.pixelColor(m_squarePos.x()-squareCurOff, m_squarePos.y()-squareCurOff), true);
+            m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-squareCurOff, m_squarePos.y()-squareCurOff), m_whichColor);
             repaint();
         }
-        else if (m_editFlag == EditFlag::EDITSQUARE && mouseX >= 42 && mouseY >= 42 && mouseX<160 && mouseY <160) {
-            emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), true);
-            m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
+        else if (m_editFlag == EditFlag::EDITSQUARE && mouseX >= squarePos && mouseY >= squarePos && mouseX< (length-squarePos-2) && mouseY < (length-squarePos-2)) {
+            emit changedColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), true);
+            m_model->setColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), m_whichColor);
             m_squarePos = QPointF(mouseX-5, mouseY-5);
             repaint();
-        } else if (m_editFlag == EditFlag::EDITSQUARE && (mouseX < 42 || mouseY < 42 || mouseX >= 160 || mouseY >= 160)) {
-            if (mouseX < 42) {
-                mouseX = 42;
+        } else if (m_editFlag == EditFlag::EDITSQUARE && (mouseX < squarePos || mouseY < squarePos || mouseX >= (length-squarePos-2) || mouseY >= (length-squarePos-2))) {
+            if (mouseX < squarePos) {
+                mouseX = squarePos;
             }
-            else if (mouseX >= 160 ) {
-                mouseX = 159;
+            else if (mouseX >= length-squarePos-2 ) {
+                mouseX = length-squarePos-2;
             }
-            if (mouseY < 42) {
-                mouseY = 42;
+            if (mouseY < squarePos) {
+                mouseY = squarePos;
             }
-            else if (mouseY >= 160 ) {
-                mouseY = 159;
+            else if (mouseY >= length-squarePos-2 ) {
+                mouseY = length-squarePos-2;
             }
 
-            emit changedColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), true);
-            m_model->setColor(m_colorSquare.pixelColor(mouseX-42, mouseY-42), m_whichColor);
+            emit changedColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), true);
+            m_model->setColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), m_whichColor);
             m_squarePos = QPointF(mouseX-5, mouseY-5);
             repaint();
         }
@@ -279,8 +286,11 @@ void ColorPicker::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
     QPainter painter(this);
 
+    // calculate the position of the wheel
+    int squarePos = (m_colorWheel.width() - m_colorSquare.width())/2;
+
     // draw the square and wheel
-    painter.drawPixmap(42, 42,QPixmap::fromImage(m_colorSquare));
+    painter.drawPixmap(squarePos, squarePos, QPixmap::fromImage(m_colorSquare));
     painter.drawPixmap(0,0,QPixmap::fromImage(m_colorWheel));
 
     // draw the two cursors
@@ -289,18 +299,42 @@ void ColorPicker::paintEvent(QPaintEvent *event) {
 
     // draw the two color squares
     if (m_whichColor == 1) {
-        painter.fillRect(15,180,20,20, QColor(Qt::black));
+        painter.fillRect(15,height()-20,20,20, QColor(Qt::black));
     } else {
-        painter.fillRect(15,180,20,20, QColor(Qt::darkGray));
+        painter.fillRect(15,height()-20,20,20, QColor(Qt::darkGray));
     }
-    painter.fillRect(17,182,16,16, m_model->getColor(1));
+    painter.fillRect(17,height()-18,16,16, m_model->getColor(1));
 
     if (m_whichColor == 0) {
-        painter.fillRect(2,167,20,20, QColor(Qt::black));
+        painter.fillRect(2,height()-33,20,20, QColor(Qt::black));
     } else {
-        painter.fillRect(2,167,20,20, QColor(Qt::darkGray));
+        painter.fillRect(2,height()-33,20,20, QColor(Qt::darkGray));
     }
-    painter.fillRect(4,169,16,16, m_model->getColor(0));
+    painter.fillRect(4,height()-31,16,16, m_model->getColor(0));
+}
+
+void ColorPicker::resizeEvent(QResizeEvent *event) {
+    (void) event;
+
+    int length = (parentWidget()->height()-80 < parentWidget()->width()-20) ? parentWidget()->height()-80 : parentWidget()->width()-20;
+    if (length < 200) {
+        length = 200;
+    }
+    resize(length,length);
+    setMinimumHeight(length);
+
+    m_colorWheel = QImage(length, length, QImage::Format_ARGB32_Premultiplied);
+    m_colorWheel.fill(Qt::transparent);
+
+    // calculate the size of the color square
+    int squareLen = sqrt(((length-36)*(length-36))/2);
+
+    m_colorSquare = QImage(squareLen, squareLen, QImage::Format_ARGB32_Premultiplied);
+    m_colorSquare.fill(Qt::transparent);
+    calculateWheelPos(m_model->getColor(m_whichColor));
+    calculateSquarePos(m_model->getColor(m_whichColor));
+    renderColorWheel();
+    renderColorSquare();
 }
 
 /**/
@@ -332,7 +366,7 @@ void ColorPicker::renderColorWheel() {
     m_colorWheel.fill(qRgba(0,0,0,0));
 
     // generate the rainbow gradient
-    QConicalGradient hueGradient((LENGTH/2),(LENGTH/2),90);
+    QConicalGradient hueGradient((width()/2),(width()/2),90);
     hueGradient.setColorAt(0.0, QColor(255,255,0));
     hueGradient.setColorAt((1.0/6), QColor(255,0,0));
     hueGradient.setColorAt((2.0/6), QColor(255,0,255));
@@ -344,7 +378,7 @@ void ColorPicker::renderColorWheel() {
     // draw a circle using the colors of the rainbow gradient
     QPainter painter(&m_colorWheel);
     painter.setPen(QPen(hueGradient, 16, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter.drawEllipse(8, 8, 184,184);
+    painter.drawEllipse(8, 8, height()-16,height()-16);
 
     painter.end();
 }
@@ -376,31 +410,43 @@ RETURNS
 */
 /**/
 void ColorPicker::renderColorSquare(QColor a_hue) {
+    const int len = m_colorSquare.height();
+
+    if (a_hue == QColor(Qt::black)) {
+        a_hue = m_model->getColor(m_whichColor);
+        a_hue.toHsv();
+        a_hue.setHsv(a_hue.hue(), 255, 255);
+        if (a_hue.hue() == -1) {
+            a_hue.setHsv(0, 255, 255);
+        }
+    }
+
     // form the gradient that goes from hue->black
-    QLinearGradient hueGradient(1,1,0,117);
+    QLinearGradient hueGradient(1,1,0,len);
     hueGradient.setColorAt(0.0, a_hue);
     hueGradient.setColorAt(0.001, a_hue);
     hueGradient.setColorAt(1.0, Qt::black);
 
     // apply the gradient to the main square
     QPainter painter(&m_colorSquare);
-    painter.fillRect(0,0,118,118, hueGradient);
+    painter.fillRect(0,0,len-1,len-1, hueGradient);
 
     // form the gradient that goes from white->black
-    QImage monoSlice = QImage(1, 118,  QImage::Format_ARGB32);
-    QLinearGradient monoGradient(1,1,0,117);
+    QImage monoSlice = QImage(1, len-1,  QImage::Format_ARGB32);
+    QLinearGradient monoGradient(1,1,0, len);
     monoGradient.setColorAt(0.0, Qt::white);
     hueGradient.setColorAt(0.001, Qt::white);
     monoGradient.setColorAt(1.0, Qt::black);
 
     // apply this gradient to a 1-pixel wide slice of the square
     QPainter tempPainter(&monoSlice);
-    tempPainter.fillRect(0,0,1,118, monoGradient);
+    tempPainter.fillRect(0,0,1,len-1, monoGradient);
     tempPainter.end();
 
     // draw this gradient slice at decreasing opacity into the main square
-    for(int i = 0; i < 117; i++) {
-        painter.setOpacity((118-i)/118.0);
+    qreal temp = len-1;
+    for(int i = 0; i < len; i++) {
+        painter.setOpacity((len-1-i)/temp);
         painter.drawImage(i,0,monoSlice);
     }
 
@@ -473,7 +519,7 @@ RETURNS
 /**/
 void ColorPicker::calculateWheelPos(QPointF a_pos) {
     // the center/radius of the circle the cursor wants to place itself on
-    const qreal CENTER = (LENGTH/2.0);
+    const qreal CENTER = (width()/2.0);
 
 
     // translate these points so the center of the circle is 0,0
@@ -523,7 +569,7 @@ RETURNS
 /**/
 void ColorPicker::calculateWheelPos(QColor a_color){
     // the center/radius of the circle the cursor wants to place itself on
-    const qreal CENTER = (LENGTH/2.0);
+    const qreal CENTER = (width()/2.0);
 
 
     a_color = a_color.toHsv();
@@ -578,12 +624,14 @@ RETURNS
 void ColorPicker::calculateSquarePos(QColor a_color){
     a_color = a_color.toHsv();
 
+    const int squarePos = ((m_colorWheel.width() - m_colorSquare.width())/2)-5;
+
     // set the values proportionate to a 0-118 range.
     // also invert the X because more saturation should be farther away
-    qreal newX = (a_color.saturationF() * 117);
-    qreal newY = 117-(a_color.valueF() * 117);
+    qreal newX = a_color.saturationF() * m_colorSquare.width();
+    qreal newY = m_colorSquare.width()-(a_color.valueF() * m_colorSquare.width());
 
 
     // translate these values onto the square + adjust for cursor position
-    m_squarePos = QPointF(newX + 37, newY + 37);
+    m_squarePos = QPointF(newX + squarePos, newY + squarePos);
 }

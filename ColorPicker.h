@@ -12,8 +12,6 @@ class ColorPicker : public QWidget
 {
     Q_OBJECT
 public:
-    static const int LENGTH = 200;
-
     explicit ColorPicker(PaintModel *a_model, QWidget *parent = nullptr);
 
 public slots:
@@ -32,6 +30,8 @@ protected:
 
     // React to when something is painted
     void paintEvent(QPaintEvent *event);
+
+    void resizeEvent(QResizeEvent *event);
 
 signals:
     // alert other components that the current color values is different
@@ -68,8 +68,9 @@ private:
 
     // Draw the color wheel (happens once when intializing)
     void renderColorWheel();
+
     // Draw the color square (happens every time wheel is clicked/ hue changes)
-    void renderColorSquare(QColor a_hue);
+    void renderColorSquare(QColor a_hue = QColor(Qt::black));
 
     // Draw the cursor for the wheel and square
     QImage generateCursor();

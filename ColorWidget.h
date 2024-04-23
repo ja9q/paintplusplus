@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QSpinBox>
+#include <QVBoxLayout>
 #include "PaintModel.h"
 
 #include "ColorPicker.h"
@@ -32,6 +33,9 @@ signals:
     // Alert other objects when the color has changed
     void valueChanged(QColor a_newColor, int a_whichColor);
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 private:
 
     static const int RGB_SIZE = 3; // The number of color parameters
@@ -50,6 +54,8 @@ private:
 
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];
+
+    QVBoxLayout* m_layout;
 
     // Set up the text fields that manually the RGB values
     QWidget* createRgbEdit();

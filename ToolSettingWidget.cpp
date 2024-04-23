@@ -20,7 +20,6 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
     : QWidget{parent}
 {
     initSettingData();
-
     resize(225,250);
 
     m_container = new QWidget();
@@ -34,6 +33,7 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 
     m_spacer = new QVBoxLayout(m_container);
     m_spacer->addLayout(m_layout);
+
 
     generateSettings(a_tool);
 
@@ -50,6 +50,7 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 void ToolSettingWidget::generateSettings(BaseTool* a_tool)
 {
     clearSettings();
+    m_spacer->removeItem(m_spacer->itemAt(1));
 
     int row = 0;
     int currentValue = 0;
@@ -61,7 +62,7 @@ void ToolSettingWidget::generateSettings(BaseTool* a_tool)
         row++;
     }
 
-    m_container->setMinimumHeight(row*50);
+    m_container->setMinimumHeight(row*60);
 
     if (m_container->minimumHeight() < height()) {
         m_spacer->removeItem(m_spacer->itemAt(1));
