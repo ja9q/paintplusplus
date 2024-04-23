@@ -98,11 +98,17 @@ RETURNS
 
 */
 /**/
-void ColorWidget::updateColor(QColor a_newColor) {
+void ColorWidget::updateColor(QColor a_newColor, bool a_noSignal) {
     // Copy over the red, green, and blue values from the given color
+    if (a_noSignal) {
+        m_isEmitting = false;
+    }
+
     m_rgbEdit[RED]->setValue(a_newColor.red());
     m_rgbEdit[GREEN]->setValue(a_newColor.green());
     m_rgbEdit[BLUE]->setValue(a_newColor.blue());
+
+    m_isEmitting = true;
 }
 
 void ColorWidget::swapColor(int a_newColor) {
@@ -130,7 +136,7 @@ QWidget* ColorWidget::createRgbEdit() {
         layout->addWidget(m_rgbEdit[i], 0, (2*i)+1, 1, 1);
 
         // Connect the text field to update the color
-        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){emit valueChanged(getColor(), m_whichColor);});
+        connect(m_rgbEdit[i], &QSpinBox::valueChanged, this, [=](){if(m_isEmitting) {emit valueChanged(getColor(), m_whichColor);}});
     }
 
 

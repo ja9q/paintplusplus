@@ -35,7 +35,7 @@ protected:
 
 signals:
     // alert other components that the current color values is different
-    void changedColor(QColor a_color);
+    void changedColor(QColor a_color, bool a_blockSignal);
 
     // alert other components that the current color is different (e.g. now using color2)
     void swappedColor(int a_whichColor);

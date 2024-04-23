@@ -22,7 +22,7 @@ public:
 
 public slots:
     // React to when a color has been changed elsewhere.
-    void updateColor(QColor a_newColor);
+    void updateColor(QColor a_newColor, bool a_noSignal = false);
 
 private slots:
     // react to when the color picker switches current color (e.g. switching to color2)
@@ -45,6 +45,8 @@ private:
     PaintModel* m_model; // the model it displays for
 
     int m_whichColor; // the color mode it is displaying
+
+    bool m_isEmitting; // whether to emit to the canvas or not;
 
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];

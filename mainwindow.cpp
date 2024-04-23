@@ -127,7 +127,7 @@ void MainWindow::setupColorPicker() {
     colorDock->setWidget(m_colorPicker);
 
     // connect the interactables
-    connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorWidget::updateColor);
+    connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});
 }
 
 void MainWindow::setupToolSelector() {
