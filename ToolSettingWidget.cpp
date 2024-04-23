@@ -6,6 +6,7 @@
 
 #include <QWidget>
 #include <QFontDatabase>
+#include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QSlider>
@@ -20,15 +21,19 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
 {
     initSettingData();
 
-    setMinimumSize(225,100);
-    setMaximumSize(225,300);
     resize(225,250);
 
-    m_container = new QWidget(this);
+    m_container = new QWidget();
 
-    m_layout = new QGridLayout(m_container);
-    m_layout->setVerticalSpacing(4);
-    m_layout->setContentsMargins(5,5,30,5);
+    setContentsMargins(0,0,0,0);
+    QVBoxLayout* area = new QVBoxLayout(this);
+    area->setContentsMargins(0,0,0,0);
+
+    m_layout = new QGridLayout();
+    m_layout->setContentsMargins(5,5,25,5);
+
+    m_spacer = new QVBoxLayout(m_container);
+    m_spacer->addLayout(m_layout);
 
     generateSettings(a_tool);
 
@@ -38,8 +43,7 @@ ToolSettingWidget::ToolSettingWidget(BaseTool* a_tool, QWidget *parent)
     scrollArea->setWidgetResizable(false);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setWidget(m_container);
-
-    m_container->resize(225, height());
+    area->addWidget(scrollArea);
 
 }
 
@@ -57,11 +61,21 @@ void ToolSettingWidget::generateSettings(BaseTool* a_tool)
         row++;
     }
 
-    if (row*2 < 10) {
-        m_layout->addWidget(new QLabel(), row*2, 1, 10-(row*2),1 );
-    }
+    m_container->setMinimumHeight(row*50);
 
-    m_container->resize(225, height());
+    if (m_container->minimumHeight() < height()) {
+        m_spacer->removeItem(m_spacer->itemAt(1));
+        m_spacer->addSpacing(height() - m_container->minimumHeight() - 10);
+    }
+}
+
+void ToolSettingWidget::resizeEvent(QResizeEvent *event) {
+    m_container->resize(event->size().width(), event->size().height()-5);
+
+    if (m_container->minimumHeight() < height()) {
+        m_spacer->removeItem(m_spacer->itemAt(1));
+        m_spacer->addSpacing(height() - m_container->minimumHeight() - 10);
+    }
 }
 
 void ToolSettingWidget::initSettingData() {

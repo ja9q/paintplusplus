@@ -44,6 +44,8 @@ ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
 
     resize(LENGTH,LENGTH);
 
+    setMinimumHeight(LENGTH);
+
     renderColorWheel();
     calculateWheelPos(QColor(Qt::red));
     calculateSquarePos(QColor(Qt::black));

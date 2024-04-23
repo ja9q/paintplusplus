@@ -44,31 +44,21 @@ RETURNS
 ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     : QWidget{parent}, m_model(a_model), m_whichColor(0)
 {
-    // Set the width (height has to be adjusted in the main window)
-    setMinimumWidth(220);
-    setMaximumWidth(220);
 
-    QWidget *container = new QWidget(this);
-    container->resize(220, 290);
-
-
-    // Create the color picker and its container
-    QWidget *pickerContainer = new QWidget();
-    m_colorPicker = new ColorPicker(a_model, pickerContainer);
+    m_colorPicker = new ColorPicker(a_model);
     connect(m_colorPicker, &ColorPicker::changedColor, this, &ColorWidget::updateColor);
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, &ColorPicker::updateColor);
     connect(this, &ColorWidget::valueChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});
 
     // Set up a layout
-    QVBoxLayout *layout = new QVBoxLayout(container);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    resize(m_colorPicker->width(), m_colorPicker->height()+100);
 
 
     // Add the color picker and the layout
-    layout->addWidget(pickerContainer);
+    layout->addWidget(m_colorPicker);
     layout->addWidget(createRgbEdit());
-
-    layout->setStretch(0,3);
-    layout->setStretch(1,1);
 
 
     update();

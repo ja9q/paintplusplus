@@ -24,6 +24,9 @@ signals:
     // alert other components when a setting has been updated
     updateSetting(const int a_setting, int a_newValue);
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 private:
 
     struct ToolSetting {
@@ -43,6 +46,7 @@ private:
 
     QVector<ToolSetting> m_settings; // information about each setting the widget can display
 
+    QVBoxLayout* m_spacer;  // the major format to es
     QGridLayout* m_layout;  // the widget's layout
     QWidget* m_container;   // the widget's container
 

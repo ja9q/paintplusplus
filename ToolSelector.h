@@ -1,14 +1,14 @@
 #ifndef TOOLSELECTOR_H
 #define TOOLSELECTOR_H
 
-#include <QWidget>
+#include <QListWidget>
 #include <QList>
 #include <QPushButton>
 #include <QVBoxLayout>
 
 #include "BaseTool.h"
 
-class ToolSelector : public QWidget
+class ToolSelector : public QListWidget
 {
     Q_OBJECT
 public:
