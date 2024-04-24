@@ -50,9 +50,10 @@ private:
     QMenu *m_fileMenu;    // The File section of the file menu bar
     QMenu *m_editMenu;    // The Edit section of the file menu bar
 
-    void setupColorPicker();    // Prepare the color picker and its interactions
-    void setupToolSelector();   // Prepare the tool selector and its interactions
-    void setupToolSettings();   // Prepare the tool settings and its interactions
+    QDockWidget* setupColorPicker();    // Prepare the color picker and its interactions
+    QDockWidget* setupToolSelector();   // Prepare the tool selector and its interactions
+    QDockWidget* setupToolSettings();   // Prepare the tool settings and its interactions
+
     void setupToolBar();        // Prepare the tool bar and its interactions
     void setupMenu();           // Prepare the file menu bar and its interactions
 

@@ -53,7 +53,7 @@ ColorWidget::ColorWidget(PaintModel *a_model, QWidget *parent)
     // Set up a layout
     m_layout = new QVBoxLayout(this);
 
-    resize(m_colorPicker->width(), m_colorPicker->height()+100);
+    resize(200,200);
 
 
     // Add the color picker and rgb control to the layout
@@ -106,6 +106,7 @@ void ColorWidget::swapColor(int a_newColor) {
 }
 
 void ColorWidget::resizeEvent(QResizeEvent *event) {
+    setMaximumHeight(event->size().height()+10);
 
     if (event->size().height() > m_colorPicker->height()+80) {
         m_layout->removeItem(m_layout->itemAt(2));

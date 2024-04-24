@@ -137,7 +137,7 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
             repaint();
         }
         // if the color square was clicked
-        else if (mouseX >= squarePos && mouseY >= squarePos && mouseX<height()-20 && mouseY <height()-20) {
+        else if (mouseX >= squarePos && mouseY >= squarePos && mouseX<height()-squarePos && mouseY <height()-squarePos) {
 
             m_editFlag = EditFlag::EDITSQUARE;
             // change the color in the outer widget and model
@@ -211,13 +211,14 @@ void ColorPicker::mouseMoveEvent(QMouseEvent *event) {
                 mouseX = squarePos;
             }
             else if (mouseX >= length-squarePos-2 ) {
-                mouseX = length-squarePos-2;
+                mouseX = length-squarePos-3;
             }
             if (mouseY < squarePos) {
                 mouseY = squarePos;
             }
             else if (mouseY >= length-squarePos-2 ) {
                 mouseY = length-squarePos-2;
+
             }
 
             emit changedColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), true);
@@ -422,31 +423,30 @@ void ColorPicker::renderColorSquare(QColor a_hue) {
     }
 
     // form the gradient that goes from hue->black
-    QLinearGradient hueGradient(1,1,0,len);
+    QLinearGradient hueGradient(1,1,0,len-2);
     hueGradient.setColorAt(0.0, a_hue);
     hueGradient.setColorAt(0.001, a_hue);
     hueGradient.setColorAt(1.0, Qt::black);
 
     // apply the gradient to the main square
     QPainter painter(&m_colorSquare);
-    painter.fillRect(0,0,len-1,len-1, hueGradient);
+    painter.fillRect(0,0,len,len, hueGradient);
 
     // form the gradient that goes from white->black
-    QImage monoSlice = QImage(1, len-1,  QImage::Format_ARGB32);
-    QLinearGradient monoGradient(1,1,0, len);
+    QImage monoSlice = QImage(1, len,  QImage::Format_ARGB32);
+    QLinearGradient monoGradient(1,1,0, len-1);
     monoGradient.setColorAt(0.0, Qt::white);
-    hueGradient.setColorAt(0.001, Qt::white);
     monoGradient.setColorAt(1.0, Qt::black);
 
     // apply this gradient to a 1-pixel wide slice of the square
     QPainter tempPainter(&monoSlice);
-    tempPainter.fillRect(0,0,1,len-1, monoGradient);
+    tempPainter.fillRect(0,0,1,len, monoGradient);
     tempPainter.end();
 
     // draw this gradient slice at decreasing opacity into the main square
-    qreal temp = len-1;
-    for(int i = 0; i < len; i++) {
-        painter.setOpacity((len-1-i)/temp);
+    qreal temp = len;
+    for(int i = 0; i < len-1; i++) {
+        painter.setOpacity((len-i)/temp);
         painter.drawImage(i,0,monoSlice);
     }
 

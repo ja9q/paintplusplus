@@ -63,9 +63,9 @@ MainWindow::MainWindow(QWidget *parent)
     // set up the other GUI components
     setupToolBar();
     setupMenu();
-    setupColorPicker();
-    setupToolSelector();
-    setupToolSettings();
+
+
+    resizeDocks({setupColorPicker(), setupToolSelector(), setupToolSettings()}, {300,300,300}, Qt::Vertical);
 
 
 
@@ -118,7 +118,7 @@ RETURNS
 
 */
 /**/
-void MainWindow::setupColorPicker() {
+QDockWidget* MainWindow::setupColorPicker() {
     // Make the dock for the color widget
     QDockWidget* colorDock = new QDockWidget(tr("Color"), this);
     colorDock->setFeatures((QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable));
@@ -126,12 +126,15 @@ void MainWindow::setupColorPicker() {
     addDockWidget(Qt::LeftDockWidgetArea, colorDock);
 
     m_colorPicker = new ColorWidget(m_model, colorDock);
+    colorDock->setWidget(m_colorPicker);
 
     // connect the interactables
     connect((m_model->getCanvas()), &CanvasWidget::colorChanged, m_colorPicker, [=](QColor a_color){m_colorPicker->updateColor(a_color);});
+
+    return colorDock;
 }
 
-void MainWindow::setupToolSelector() {
+QDockWidget* MainWindow::setupToolSelector() {
     // Make the dock for the settings dock
     QDockWidget* selectorDock = new QDockWidget(tr("Tools"), this);
     selectorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -144,6 +147,8 @@ void MainWindow::setupToolSelector() {
 
     connect(this, &MainWindow::changedToolType, m_toolSelector, &ToolSelector::generateTools);
     connect(m_toolSelector, &ToolSelector::updateTool, this, &MainWindow::changeTool);
+
+    return selectorDock;
 }
 
 /**/
@@ -168,7 +173,7 @@ RETURNS
 
 */
 /**/
-void MainWindow::setupToolSettings() {
+QDockWidget* MainWindow::setupToolSettings() {
     // Make the dock for the settings dock
     QDockWidget* settingsDock = new QDockWidget(tr("Tool Settings"), this);
     settingsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -185,6 +190,8 @@ void MainWindow::setupToolSettings() {
 
     connect(m_toolSettings, &ToolSettingWidget::updateSetting, m_model, &PaintModel::updateToolSetting);
     connect(this, &MainWindow::changedCurrentTool, m_toolSettings, &ToolSettingWidget::generateSettings);
+
+    return settingsDock;
 }
 
 /**/

@@ -165,6 +165,10 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     m_lastPoint = a_event->position();
     m_shape.setPrevPoint(m_lastPoint.toPoint());
 
+    if (m_shape.getEditMode() == Editable::EditMode::END) {
+        m_shape.setEditMode(Editable::EditMode::NONE);
+    }
+
     if (m_shape.isEditing()) {
         m_shape.identifyEdit();
     }
