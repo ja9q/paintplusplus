@@ -45,6 +45,9 @@ protected:
     // whether to remove the background from the selection or not
     bool m_maskBack;
 
+    // whether the editable is from a selection or from the clipboard
+    bool m_fromCanvas;
+
     virtual void drawSelection(QImage* a_canvas);
 
     // Draw the bounds on the temporary canvas

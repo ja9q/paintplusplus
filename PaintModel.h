@@ -44,6 +44,9 @@ public:
     // Getter for the current tool id
     int getCurrentToolInd() const;
 
+    // Getter for if the canvas needs to be saved or not
+    bool isSaved() const;
+
     void setTool(int a_newTool);
 
     // set the toolType
@@ -61,9 +64,9 @@ public:
 public slots:
     void openFile();
 
-    void saveFile();
+    bool saveFile();
 
-    void saveNewFile();
+    bool saveNewFile();
 
     // update one of the settings of the current tool
     void updateToolSetting(const int a_settingid, const int a_newValue);
@@ -104,6 +107,8 @@ private:
 
     int m_historyPos;   // tracks the undos and redos of the history
     QList<QImage> m_history;    // the limited history of the canvas
+
+    bool m_saved;   // whether to trigger a save warning upon closing the program
 
     void initTools();   // initialize all the tools that the user can use
 };

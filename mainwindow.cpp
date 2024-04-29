@@ -13,6 +13,7 @@
 #include <QScrollArea>
 #include <QHBoxLayout>
 #include <QScrollArea>
+#include <QMessageBox>
 #include <QShortcut>
 #include <QMenuBar>
 #include <QToolBar>
@@ -76,6 +77,14 @@ MainWindow::MainWindow(QWidget *parent)
 // Destructor
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if (saveCheck()) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 
 void MainWindow::changeToolType(const int a_newType) {
@@ -262,7 +271,7 @@ void MainWindow::setupMenu() {
 
     QAction* openAction = new QAction(tr("&Open"));
     openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
-    connect(openAction, &QAction::triggered, m_model, &PaintModel::openFile);
+    connect(openAction, &QAction::triggered, m_model, [=](){if(saveCheck()) m_model->openFile();});
     m_fileMenu->addAction(openAction);
 
     QAction* saveAction = new QAction(tr("&Save"));
@@ -317,4 +326,16 @@ void MainWindow::setupMenu() {
     connect(resizeAction, &QAction::triggered, this, [=](){m_model->setCanvasSize(ResizeDialog::promptUser(m_model->getCanvas()->size(), this));});
     m_editMenu->addAction(resizeAction);
 
+}
+
+bool MainWindow::saveCheck() {
+    if (!m_model->isSaved()) {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(this, tr("Scribble"), tr("The image has unsaved changes.\n" "Do you want to save?"), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        if (ret == QMessageBox::Save)
+            return m_model->saveFile();
+        else if (ret == QMessageBox::Cancel)
+            return false;
+    }
+    return true;
 }

@@ -4,7 +4,7 @@
 #include <QBitmap>
 
 SelectTool::SelectTool(QString a_name, QVector<int> a_moreProperties):
-    BaseTool(a_name, {(int)ToolProperty::MASKBACK}), m_selectArea(), m_maskBack(false)
+    BaseTool(a_name, {(int)ToolProperty::MASKBACK}), m_selectArea(), m_maskBack(false), m_fromCanvas(true)
 {
     addProperties(a_moreProperties);
 }
@@ -38,6 +38,7 @@ int SelectTool::setProperty(const int a_propId, const int a_newValue) {
 // reset the editor (remove any uncommited shapes)
 void SelectTool::resetEditor() {
     m_selectArea.reset();
+    m_fromCanvas = true;
 }
 
 QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) {
@@ -78,6 +79,7 @@ void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCan
         m_selectArea.initBoundingRect();
         m_selectArea.setIsEditing(true);
 
+        m_fromCanvas = false;
 
         drawSelection(a_tempCanvas);
         m_selectArea.drawBoundingRect(a_tempCanvas);
@@ -122,7 +124,9 @@ int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     else {
         m_selectArea.processEdit(a_event);
 
-        drawBounds(a_tempCanvas, a_color2);
+        if (m_fromCanvas) {
+            drawBounds(a_tempCanvas, a_color2);
+        }
         drawSelection(a_tempCanvas);
     }
 

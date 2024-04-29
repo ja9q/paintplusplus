@@ -42,6 +42,6 @@ QSize ResizeDialog::promptUser(QSize a_size, QWidget *a_parent) {
         return QSize(temp->m_fields[WIDTH]->value(),temp->m_fields[HEIGHT]->value());
     }
 
-    return QSize();
+    return a_size;
 
 }

@@ -25,6 +25,9 @@ public:
     // destructor
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private slots:
 
     // React to when the tool type has changed
@@ -56,6 +59,8 @@ private:
 
     void setupToolBar();        // Prepare the tool bar and its interactions
     void setupMenu();           // Prepare the file menu bar and its interactions
+
+    bool saveCheck();   // Check if the user wants to save unsaved changes
 
 };
 #endif // MAINWINDOW_H

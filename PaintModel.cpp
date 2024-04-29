@@ -51,7 +51,8 @@ PaintModel::PaintModel(QWidget *parent) :
     m_user(nullptr),
     m_canvas(CanvasWidget(&m_user, parent)),
     m_fileName(""),
-    m_historyPos(0)
+    m_historyPos(0),
+    m_saved(true)
 {
     initTools();
     m_user.setCurrentTool(m_tools[(int)ToolType::DRAWTOOL][0]);
@@ -167,6 +168,10 @@ RETURNS
 /**/
 int PaintModel::getCurrentToolInd() const {
     return m_currentTool[(int)m_currentToolType];
+}
+
+bool PaintModel::isSaved() const {
+    return m_saved;
 }
 
 /**/
@@ -367,25 +372,29 @@ void PaintModel::openFile() {
     m_canvas.setCanvas(file);
 }
 
-void PaintModel::saveFile() {
+bool PaintModel::saveFile() {
     if(m_fileName != "") {
         QImage canvas = *(m_canvas.getCanvas());
         canvas.save(m_fileName);
+        m_saved = true;
     } else {
-        saveNewFile();
+        return saveNewFile();
     }
+    return true;
 }
 
-void PaintModel::saveNewFile() {
+bool PaintModel::saveNewFile() {
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save File"), tr("./"), tr("Images (*.png *.jpg)"));
     if (fileName.isEmpty()) {
-        return;
+        return false;
     }
 
     QImage canvas = *(m_canvas.getCanvas());
 
     m_fileName = fileName;
     canvas.save(m_fileName);
+    m_saved = true;
+    return true;
 }
 
 // copy a selection of the canvas
@@ -546,6 +555,8 @@ RETURNS
 */
 /**/
 void PaintModel::updateHistory(QImage a_canvas) {
+    m_saved = false;
+
     // if there are possible redos to flush out, remove them and reset the history position
     while (m_historyPos != 0) {
         m_history.removeFirst();
