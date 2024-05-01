@@ -2,69 +2,411 @@
 
 #include <QPainter>
 
+/**/
+/*
+Editable::Editable()
+
+NAME
+
+    Editable::Editable() - constructor
+
+SYNOPSIS
+
+    Editable::Editable();
+
+DESCRIPTION
+
+    constructor for an editable object
+
+RETURNS
+
+    The constructed editable
+
+*/
+/**/
 Editable::Editable() :
     m_shape(), m_isEditing(false), m_editMode(EditMode::NONE), m_translation(0,0), m_rotation(0), m_scale(1.0,1.0)
 {}
 
+/**/
+/*
+QPolygon Editable::getShape()
+
+NAME
+
+    Editable::getShape() - getter for the shape
+
+SYNOPSIS
+
+    QPolygon Editable::getShape();
+
+DESCRIPTION
+
+    getter for the shape that the editable manipulates (with no transformations)
+
+RETURNS
+
+    The raw shape of the editable
+
+*/
+/**/
 QPolygon Editable::getShape() {
     return m_shape;
 }
 
+/**/
+/*
+bool Editable::isEditing()
+
+NAME
+
+    Editable::isEditing() - getter for if object is editing something
+
+SYNOPSIS
+
+    bool Editable::isEditing();
+
+DESCRIPTION
+
+    getter for if the object is editing something and the initial shape has been
+    defined already
+
+RETURNS
+
+    if the editable is editing
+
+*/
+/**/
 bool Editable::isEditing() {
     return m_isEditing;
 }
 
+/**/
+/*
+Editable::EditMode Editable::getEditMode()
+
+NAME
+
+    Editable::getEditMode() - getter for the edit mode
+
+SYNOPSIS
+
+    Editable::EditMode Editable::getEditMode();
+
+DESCRIPTION
+
+    getter for the edit mode; irrelevant when the object is not editing, but
+    refers to the type of transformation the user wants to perform (e.g. rotation, nothing, translation)
+
+RETURNS
+
+    the current edit mode of the object
+
+*/
+/**/
 Editable::EditMode Editable::getEditMode() {
     return m_editMode;
 }
 
+/**/
+/*
+QPolygon Editable::getTransformedShape()
+
+NAME
+
+    Editable::getTransformedShape() - getter for the transformed shape
+
+SYNOPSIS
+
+    QPolygon Editable::getTransformedShape();
+
+DESCRIPTION
+
+    returns the shape as it has been transformed
+
+RETURNS
+
+    the transformed polygon
+
+*/
+/**/
 QPolygon Editable::getTransformedShape() {
     return transformShape(m_shape);
 }
 
+/**/
+/*
+QPolygon Editable::getTransformedBoundRect()
+
+NAME
+
+    Editable::getTransformedBoundRect() - getter for the transformed object's bounding rectangle
+
+SYNOPSIS
+
+    QPolygon Editable::getTransformedBoundRect();
+
+DESCRIPTION
+
+    getter for the transformed object's bounding rectangle. more specifically, the bounding
+    rectangle after being transformed, which is different from calling boundingRect() on the
+    transformed shape
+
+RETURNS
+
+    The shape's bounding rectangle, transformed
+
+*/
+/**/
 QPolygon Editable::getTransformedBoundRect() {
     return transformShape(m_boundRect);
 }
 
+/**/
+/*
+QPoint Editable::getTranslation()
+
+NAME
+
+    Editable::getTranslation() - getter for the shape's translation
+
+SYNOPSIS
+
+    QPoint Editable::getTranslation();
+
+DESCRIPTION
+
+    getter for the translation of the shape
+
+RETURNS
+
+    The x and y offset of the shape
+
+*/
+/**/
 QPoint Editable::getTranslation() {
     return m_translation;
 }
 
+/**/
+/*
+qreal Editable::getRotation()
+
+NAME
+
+    Editable::getRotation() - getter for rotation
+
+SYNOPSIS
+
+    qreal Editable::getRotation();
+
+DESCRIPTION
+
+    getter for the shape's rotation
+
+RETURNS
+
+    the shape's rotation in degrees
+
+*/
+/**/
 qreal Editable::getRotation() {
     return m_rotation;
 }
 
+/**/
+/*
+QPointF Editable::getScale()
+
+NAME
+
+    Editable::getScale() - getter for the scaling dimensions
+
+SYNOPSIS
+
+    QPointF Editable::getScale();
+
+DESCRIPTION
+
+    getter for the shape's scaling dimensions
+
+RETURNS
+
+    the x and y scaling factors for the shape; 1.0 means no scaling
+
+*/
+/**/
 QPointF Editable::getScale() {
     return m_scale;
 }
 
+/**/
+/*
+void Editable::setIsEditing(bool a_mode)
+
+NAME
+
+    Editable::setIsEditing(bool a_mode) - setter for if the editor is editing
+
+SYNOPSIS
+
+    void Editable::setIsEditing(bool a_mode);
+        a_mode --> whether the editor is editing or not
+
+DESCRIPTION
+
+    setter for if the shape is editing or not
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::setIsEditing(bool a_mode) {
     m_isEditing = a_mode;
 }
 
+/**/
+/*
+void Editable::setEditMode(EditMode a_mode)
+
+NAME
+
+    Editable::setEditMode(EditMode a_mode) - setter for the editing mode
+
+SYNOPSIS
+
+    void Editable::setEditMode(EditMode a_mode);
+        a_mode --> the editing mode the user set
+
+DESCRIPTION
+
+    setter for the editing mode (e.g. rotation, translation)
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::setEditMode(EditMode a_mode) {
     m_editMode = a_mode;
 }
 
+/**/
+/*
+void Editable::setShape(QPolygon a_shape)
+
+NAME
+
+    Editable::setShape(QPolygon a_shape) - setter for the shape
+
+SYNOPSIS
+
+    void Editable::setShape(QPolygon a_shape);
+        a_shape --> the editor's new shape
+
+DESCRIPTION
+
+    setter for the editor's shape.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::setShape(QPolygon a_shape) {
     m_shape = a_shape;
 }
 
+/**/
+/*
+void Editable::setPrevPoint(QPoint a_point)
+
+NAME
+
+    Editable::setPrevPoint(QPoint a_point) - setter for the previous point
+
+SYNOPSIS
+
+    void Editable::setPrevPoint(QPoint a_point);
+        a_point --> the new previous point
+
+DESCRIPTION
+
+    setter for the previous point; needed for calculating some transformations
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::setPrevPoint(QPoint a_point) {
     m_prevEditPoint = a_point;
 }
 
+/**/
+/*
+void Editable::initBoundingRect()
+
+NAME
+
+    Editable::initBoundingRect() - initialize the bounding rectangle
+
+SYNOPSIS
+
+    void Editable::initBoundingRect();
+
+DESCRIPTION
+
+    initialize the bounding rectangle from the current shape
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::initBoundingRect() {
     QRect tempRect = m_shape.boundingRect();
     m_boundRect.clear();
 
+    // define the midsections of the bounding rectangle
     int midHeight = (tempRect.bottom() + tempRect.top()) / 2;
     int midWidth = (tempRect.right() + tempRect.left()) / 2;
 
+    // construct the bounding rectangle while adding midsections between each corner
     m_boundRect.append({tempRect.topLeft(), QPoint(midWidth, tempRect.top()), tempRect.topRight(), QPoint(tempRect.right(), midHeight)});
     m_boundRect.append({tempRect.bottomRight(), QPoint(midWidth, tempRect.bottom()), tempRect.bottomLeft(), QPoint(tempRect.left(), midHeight)});
 }
 
+/**/
+/*
+void Editable::drawBoundingRect(QImage* a_canvas)
+
+NAME
+
+    Editable::drawBoundingRect(QImage* a_canvas) - draw the bounding rectangle
+
+SYNOPSIS
+
+    void Editable::drawBoundingRect(QImage* a_canvas);
+        a_canvas --> the image to draw the bounding rectangle on
+
+DESCRIPTION
+
+    draw the bounding rectangle on the given canvas. This includes the pivots
+    that mark where to trigger scaling
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::drawBoundingRect(QImage* a_canvas) {
     // create a painter and set it up to draw the rectangle
     QPainter painter(a_canvas);
@@ -90,6 +432,28 @@ void Editable::drawBoundingRect(QImage* a_canvas) {
 
 }
 
+/**/
+/*
+void Editable::identifyEdit()
+
+NAME
+
+    Editable::identifyEdit() - use the previous point to identify the current edit
+
+SYNOPSIS
+
+    void Editable::identifyEdit();
+
+DESCRIPTION
+
+    uses the previous point to determine the type of transformation to calculate.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::identifyEdit() {
     QPolygon transformedRect = transformShape(m_boundRect);
 
@@ -119,7 +483,32 @@ void Editable::identifyEdit() {
     }
 }
 
+/**/
+/*
+void Editable::processEdit(const QMouseEvent *a_event)
+
+NAME
+
+    Editable::processEdit(const QMouseEvent *a_event) - calculate a transformation based off of the
+        current edit mode and the given mouse event
+
+SYNOPSIS
+
+    void Editable::processEdit(const QMouseEvent *a_event);
+        a_event --> the mouse event to process; this is almost always a drag
+
+DESCRIPTION
+
+    calculates a transformation determined by the current transformation mode.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::processEdit(const QMouseEvent *a_event) {
+    // calculate the transformation based on the edit mode
     switch(m_editMode) {
     case EditMode::ROTATE:
         rotate(a_event);
@@ -135,6 +524,28 @@ void Editable::processEdit(const QMouseEvent *a_event) {
     }
 }
 
+/**/
+/*
+void Editable::reset()
+
+NAME
+
+    Editable::reset() - reset the editor's parameters
+
+SYNOPSIS
+
+    void Editable::reset();
+
+DESCRIPTION
+
+    resets the editor's shape and transformation parameters
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::reset() {
     // reset the shape
     m_shape.clear();
@@ -149,13 +560,37 @@ void Editable::reset() {
 }
 
 
-// Move the shape
+/**/
+/*
+void Editable::translate(const QMouseEvent* a_event)
+
+NAME
+
+    Editable::translate(const QMouseEvent* a_event) - move the shape
+
+SYNOPSIS
+
+    void Editable::translate(const QMouseEvent* a_event);
+        a_event --> the mouse event that triggered the translation
+
+DESCRIPTION
+
+    moves the shape based off of the mouse's current position
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::translate(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
 
+    // calculate the offset
     int offsetX = (eventPos.x() > m_prevEditPoint.x()) ? eventPos.x() - m_prevEditPoint.x() :  -(m_prevEditPoint.x() - eventPos.x());
     int offsetY = (eventPos.y() > m_prevEditPoint.y()) ? eventPos.y() - m_prevEditPoint.y() :  -(m_prevEditPoint.y() - eventPos.y());
 
+    // add this offset to the current translation
     m_translation.rx() += offsetX;
     m_translation.ry() += offsetY;
 

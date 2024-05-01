@@ -1,3 +1,7 @@
+//
+// A select tool that only defines rectangular shapes
+//
+
 #ifndef SQUARESELECTTOOL_H
 #define SQUARESELECTTOOL_H
 
@@ -10,6 +14,7 @@ public:
     SquareSelectTool(QString a_name, QVector<int> a_moreProperties = {});
 
 protected:
+    // draw the selection
     virtual void drawSelection(QImage* a_canvas);
 
     // Draw the bounds on the temporary canvas

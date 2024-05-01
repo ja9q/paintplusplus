@@ -415,6 +415,9 @@ void PaintModel::cut() {
         QClipboard *clipboard = QGuiApplication::clipboard();
         clipboard->setImage(selection);
         m_canvas.getTempCanvas()->fill(Qt::transparent);
+
+        updateHistory(*m_canvas.getCanvas());
+
         m_canvas.repaint();
     }
 }
@@ -482,11 +485,12 @@ RETURNS
 */
 /**/
 void PaintModel::undo() {
-
-    m_user.getCurrentTool()->resetEditor();
-
-    // replace the canvas with the next most recent part of the history and remove it
-    if (m_history.length() > m_historyPos+1 && m_historyPos < UNDO_LIMIT-1) {
+    // if the tool is editing something, then just cancel the editing rather than actually undoing something
+    if (!(m_user.getCurrentTool()->getEditable().isNull())) {
+        m_user.getCurrentTool()->resetEditor();
+        m_canvas.setCanvas(m_history[m_historyPos]);
+    } else if (m_history.length() > m_historyPos+1 && m_historyPos < UNDO_LIMIT-1) {
+        m_user.getCurrentTool()->resetEditor();
         // update the history position;
         m_historyPos++;
         // set the canvas to the current part of history

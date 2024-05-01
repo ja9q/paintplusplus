@@ -47,15 +47,59 @@ CanvasWidget::CanvasWidget(User* user, QWidget *parent)
     m_tempCanvas = QImage(width(), height(), QImage::Format_ARGB32);
 
     // make the temporary canvas clear and the actual canvas white
-    m_tempCanvas.fill(QColor(Qt::transparent));
+    flushTemp();
     m_canvas.fill(QColor(Qt::white));
     update();
 }
 
+/**/
+/*
+QImage* CanvasWidget::getCanvas()
+
+NAME
+
+    CanvasWidget::getCanvas() - getter for the permanent canvas
+
+SYNOPSIS
+
+    QImage* CanvasWidget::getCanvas();
+
+DESCRIPTION
+
+    getter for the canvas (not to be confused with the temporary canvas
+
+RETURNS
+
+    A pointer to the canvas
+
+*/
+/**/
 QImage* CanvasWidget::getCanvas() {
     return &m_canvas;
 }
 
+/**/
+/*
+QImage* CanvasWidget::getTempCanvas()
+
+NAME
+
+    CanvasWidget::getTempCanvas() - getter for the temporary canvas
+
+SYNOPSIS
+
+    QImage* CanvasWidget::getTempCanvas();
+
+DESCRIPTION
+
+    getter for the temporary canvas
+
+RETURNS
+
+    A pointer to the temporary canvas
+
+*/
+/**/
 QImage* CanvasWidget::getTempCanvas() {
     return &m_tempCanvas;
 }
@@ -75,7 +119,7 @@ SYNOPSIS
 
 DESCRIPTION
 
-    updates the canvas. This is called by the undo action
+    updates the canvas to be a separate image
 
 RETURNS
 
@@ -84,10 +128,13 @@ RETURNS
 */
 /**/
 void CanvasWidget::setCanvas(QImage a_newCanvas) {
-    m_tempCanvas.fill(QColor(Qt::transparent));
+    // blank out the temporary canvas
+    flushTemp();
 
+    // change the canvas
     m_canvas = a_newCanvas;
 
+    // if the new canvas has different dimensions, change the dimensions of the canvas
     if (a_newCanvas.height() != height() || a_newCanvas.width() != width()) {
         resize(a_newCanvas.width(), a_newCanvas.height());
         a_newCanvas.fill(Qt::transparent);
@@ -126,6 +173,28 @@ void CanvasWidget::fillCanvas(QColor a_color) {
     emit canvasChanged(m_canvas);
 }
 
+/**/
+/*
+void CanvasWidget::flushTemp()
+
+NAME
+
+    CanvasWidget::flushTemp() - clear out the temporary canvas;
+
+SYNOPSIS
+
+    void CanvasWidget::flushTemp();
+
+DESCRIPTION
+
+    clears out the temporary canvas. this is necessary for rerendering it with new contents.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void CanvasWidget::flushTemp() {
     m_tempCanvas.fill(Qt::transparent);
     update();
@@ -156,7 +225,9 @@ RETURNS
 */
 /**/
 void CanvasWidget::mousePressEvent(QMouseEvent *event) {
+    // set the keyboard focus (needed for keyboard shortcuts)
     setFocus();
+
     if(event->buttons() & Qt::LeftButton){
         // If this was a left mouse click, send the event, canvas, and colors to the current tool
         BaseTool* currentTool = m_user->getCurrentTool();
@@ -246,6 +317,29 @@ void CanvasWidget::mouseReleaseEvent(QMouseEvent *event){
     }
 }
 
+/**/
+/*
+void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event)
+
+NAME
+
+    CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) - react to a doubleclick
+
+SYNOPSIS
+
+    void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event);
+        event --> the mouse event that happened, a doubleclick
+
+DESCRIPTION
+
+    description
+
+RETURNS
+
+    None
+
+*/
+/**/
 void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     // some other tools might have different behaviors (e.g. select and shapes) so tell the tool to deal with it
     if(event->button() == Qt::LeftButton){

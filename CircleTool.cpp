@@ -36,24 +36,22 @@ CircleTool::CircleTool(QString a_name, int a_color, QVector<int> a_morePropertie
 
 /**/
 /*
-void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2)
 
 NAME
 
-    CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - draws the shape
+    CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) - draws the shape
 
 SYNOPSIS
 
-    void SquareTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+    void CircleTool::drawShape(QImage* a_canvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
         a_canvas --> the canvas where the shape is drawn; this is always the temporary canvas
-        a_event  --> the related mouse event; contains the position of the other corner and modifier keys
         a_color1 --> the user's color 1
         a_color2 --> the user's color 2
 
 DESCRIPTION
 
-    Draws the circle onto the temporary canvas. The corners of the circle is determined by the position of the initial click
-    and the position of the current drag. If the drag happened while the shift key is held, then a perfect circle is drawn
+    Draws the circle onto the temporary canvas.
 
 RETURNS
 
@@ -93,6 +91,7 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
 
     }
 
+    // Make the circle a painterpath in order to apply transformations
     QPainterPath ellipse;
     ellipse.addEllipse(m_shape.getShape().boundingRect());
 
@@ -111,9 +110,33 @@ void CircleTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor
 }
 
 
-void CircleTool::calcShape(const QMouseEvent* a_event){
+/**/
+/*
+void CircleTool::calcShape(const QMouseEvent* a_event)
 
+NAME
+
+    CircleTool::calcShape(const QMouseEvent* a_event) - calculate the circle based off of the mouse
+
+SYNOPSIS
+
+    void CircleTool::calcShape(const QMouseEvent* a_event);
+        a_event --> the mouse drag that triggered this event.
+
+DESCRIPTION
+
+    The user defines the initial dimensions of the circle by clicking and dragging. This
+    function calculates these dimensions.
+
+RETURNS
+
+    None
+
+*/
+/**/
+void CircleTool::calcShape(const QMouseEvent* a_event){
     // if the shift button is held down, then make this a perfect circle; otherwise, draw the ellipse as is
+    // the ellipse is stored as a rectangle with the same corners.
     if (a_event->modifiers() & Qt::ShiftModifier) {
         QPoint fixedPoint = a_event->position().toPoint();
         int x_distance = qFabs(fixedPoint.x()-m_lastPoint.x());

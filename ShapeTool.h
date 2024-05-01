@@ -1,3 +1,7 @@
+//
+// An abstract class for tools that want to draw a shape with multiple points
+//
+
 #ifndef SHAPETOOL_H
 #define SHAPETOOL_H
 
@@ -38,14 +42,14 @@ protected:
         NOFILL, FILLC1, FILLC2
     };
 
+    // how to fill the shape
     FillMode m_fillMode;
 
+    // whether to outline the shape or not
     bool m_outline;
 
     // the points of the shape
     Editable m_shape;
-
-
 
     // Calculate the shape as it is first being dragged by the mouse
     virtual void calcShape(const QMouseEvent* a_event) = 0;

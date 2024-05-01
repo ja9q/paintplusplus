@@ -14,7 +14,31 @@
 #include <QPainterPath>
 #include "BaseTool.h"
 
-// parametric constructor
+/**/
+/*
+DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties)
+
+NAME
+
+    DrawTool::DrawTool(a_name, int a_color, QVector<int> a_moreProperties) - parametric constructor
+
+SYNOPSIS
+
+    DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties);
+        a_name --> The name of the tool
+        a_color --> Which color the tool uses
+        a_moreProperties --> additional properties the user can edit
+
+DESCRIPTION
+
+    The parametric constructor for all draw tools
+
+RETURNS
+
+    The constructed draw tool
+
+*/
+/**/
 DrawTool::DrawTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     BaseTool(a_name, {(int)ToolProperty::SIZE, (int)ToolProperty::OPACITY}),
     m_size(10), m_color(a_color), m_opacity(100), m_masksColor(false) {

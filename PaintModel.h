@@ -47,6 +47,7 @@ public:
     // Getter for if the canvas needs to be saved or not
     bool isSaved() const;
 
+    // setter for the user's tool
     void setTool(int a_newTool);
 
     // set the toolType
@@ -62,10 +63,13 @@ public:
     void clearCanvas();
 
 public slots:
+    // open a file
     void openFile();
 
+    // save a file
     bool saveFile();
 
+    // save a new file with a specified name and path
     bool saveNewFile();
 
     // update one of the settings of the current tool

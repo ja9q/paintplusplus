@@ -25,11 +25,13 @@ signals:
     updateSetting(const int a_setting, int a_newValue);
 
 protected:
+    // react to when the widget is resized
     void resizeEvent(QResizeEvent *event);
 
 private:
-
+    // a tool setting
     struct ToolSetting {
+        // the ways a setting can be displayed
         enum class DisplayType {
             SLIDER, TOGGLE, DROPDOWN
         };

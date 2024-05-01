@@ -1,3 +1,7 @@
+//
+// A shape tool that draws squares
+//
+
 #ifndef SQUARETOOL_H
 #define SQUARETOOL_H
 

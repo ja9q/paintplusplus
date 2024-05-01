@@ -18,12 +18,13 @@ ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
 
 NAME
 
-    *a_model, QWidget *parent) - the parameter constructor
+    ColorPicker::ColorPicker(*a_model, QWidget *parent) - the parameter constructor
 
 SYNOPSIS
 
     ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent);
-        a_model -->
+        a_model --> the paint model the object will reference and manipulate
+        parent --> the parent widget that the
 
 DESCRIPTION
 
@@ -41,9 +42,11 @@ ColorPicker::ColorPicker(PaintModel *a_model, QWidget *parent)
     m_colorSquare(QImage(118, 118, QImage::Format_ARGB32)),
     m_whichColor(0)
 {
+    // set dimensions + a minimum height so the outer widget renders correctly
     resize(200,200);
     setMinimumHeight(200);
 
+    // initialize the visual components
     renderColorWheel();
     calculateWheelPos(QColor(Qt::red));
     calculateSquarePos(QColor(Qt::black));
@@ -76,14 +79,19 @@ RETURNS
 */
 /**/
 void ColorPicker::updateColor(QColor a_color) {
+    // only recalculate the square/wheel positions if the user isn't
+    // actively editing them already (prevent signal loops)
     if (m_editFlag != EditFlag::EDITWHEEL) {
         calculateSquarePos(a_color);
     }
     if (m_editFlag != EditFlag::EDITSQUARE) {
         calculateWheelPos(a_color);
     }
+
+    // Rerender the color square with the new hue
     renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
 
+    // update the color in the model for the case the signal is from the outer widget
     m_model->setColor(a_color, m_whichColor);
 
     repaint();
@@ -117,7 +125,9 @@ void ColorPicker::mousePressEvent(QMouseEvent *event) {
     int mouseX = event->pos().x();
     int mouseY = event->pos().y();
 
+    // calculate the position of the color square
     const int squarePos = (m_colorWheel.width() - m_colorSquare.width())/2;
+    // the color the cursor refers to
     const int squareCurOff = squarePos-5;
 
     // if this is a left click
@@ -194,6 +204,7 @@ void ColorPicker::mouseMoveEvent(QMouseEvent *event) {
 
     // if this is a left click within the range of the widget
     if((event->buttons() & Qt::LeftButton) && mouseX >=0 && mouseX < length && mouseY >=0 && mouseY < length){
+        // if the user is editing the wheel, recalculate the wheel cursor and update the color accordingly
         if (m_editFlag == EditFlag::EDITWHEEL) {
             calculateWheelPos(event->pos());
             renderColorSquare(m_colorWheel.pixelColor(QPoint(m_wheelPos.x()+5, m_wheelPos.y()+5)));
@@ -201,11 +212,13 @@ void ColorPicker::mouseMoveEvent(QMouseEvent *event) {
             m_model->setColor(m_colorSquare.pixelColor(m_squarePos.x()-squareCurOff, m_squarePos.y()-squareCurOff), m_whichColor);
             repaint();
         }
+        // if the user is editing the square and is within the bounds of the square, then update the color and square cursor position
         else if (m_editFlag == EditFlag::EDITSQUARE && mouseX >= squarePos && mouseY >= squarePos && mouseX< (length-squarePos-2) && mouseY < (length-squarePos-2)) {
             emit changedColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), true);
             m_model->setColor(m_colorSquare.pixelColor(mouseX-squarePos, mouseY-squarePos), m_whichColor);
             m_squarePos = QPointF(mouseX-5, mouseY-5);
             repaint();
+        // if the user is editing the square, but is out of bounds of the actual color square, then adjust the position before calculating the new color/cursor
         } else if (m_editFlag == EditFlag::EDITSQUARE && (mouseX < squarePos || mouseY < squarePos || mouseX >= (length-squarePos-2) || mouseY >= (length-squarePos-2))) {
             if (mouseX < squarePos) {
                 mouseX = squarePos;
@@ -314,23 +327,54 @@ void ColorPicker::paintEvent(QPaintEvent *event) {
     painter.fillRect(4,height()-31,16,16, m_model->getColor(0));
 }
 
+/**/
+/*
+void ColorPicker::resizeEvent(QResizeEvent *event)
+
+NAME
+
+    ColorPicker::resizeEvent(QResizeEvent *event) - react to when the widget is resized
+
+SYNOPSIS
+
+    void ColorPicker::resizeEvent(QResizeEvent *event);
+        event --> the resize event to react to
+
+DESCRIPTION
+
+    resize the widget according to the new given dimensions
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ColorPicker::resizeEvent(QResizeEvent *event) {
     (void) event;
 
+    // don't use the event because it gives an inaccurate height. instead use the dimensions of the parent widget
+    // find the length of the widget based off of the free vertical/horizontal space (choose the smaller of the two)
     int length = (parentWidget()->height()-80 < parentWidget()->width()-20) ? parentWidget()->height()-80 : parentWidget()->width()-20;
+
+    // have a minimum height of 200
     if (length < 200) {
         length = 200;
     }
+
+    // resize the actual widget
     resize(length,length);
     setMinimumHeight(length);
 
+    // resize the color wheel
     m_colorWheel = QImage(length, length, QImage::Format_ARGB32_Premultiplied);
     m_colorWheel.fill(Qt::transparent);
 
-    // calculate the size of the color square
+    // calculate the size of the color square and resize it
     int squareLen = sqrt(((length-36)*(length-36))/2);
-
     m_colorSquare = QImage(squareLen, squareLen, QImage::Format_ARGB32_Premultiplied);
+
+    // rerender the widget
     m_colorSquare.fill(Qt::transparent);
     calculateWheelPos(m_model->getColor(m_whichColor));
     calculateSquarePos(m_model->getColor(m_whichColor));
@@ -395,7 +439,8 @@ NAME
 SYNOPSIS
 
     void ColorPicker::renderColorSquare(QColor a_hue);
-        a_hue - the color of the new color square
+        a_hue --> the color of the new color square; this is black by default to flag
+            that the color should be based off of the model
 
 DESCRIPTION
 
@@ -413,6 +458,7 @@ RETURNS
 void ColorPicker::renderColorSquare(QColor a_hue) {
     const int len = m_colorSquare.height();
 
+    // if the color is black (default), then use the color from the model
     if (a_hue == QColor(Qt::black)) {
         a_hue = m_model->getColor(m_whichColor);
         a_hue.toHsv();
@@ -482,6 +528,7 @@ QImage ColorPicker::generateCursor() {
 
     cursor.fill(QColor(Qt::transparent));
 
+    // draw the cursor by making a white circle around a black circle
     QPainter painter(&cursor);
     painter.setPen(QPen(QColor(Qt::white), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.drawEllipse(0, 0, 10,10);
@@ -626,7 +673,7 @@ void ColorPicker::calculateSquarePos(QColor a_color){
 
     const int squarePos = ((m_colorWheel.width() - m_colorSquare.width())/2)-5;
 
-    // set the values proportionate to a 0-118 range.
+    // set the values proportionate to the color square's width.
     // also invert the X because more saturation should be farther away
     qreal newX = a_color.saturationF() * m_colorSquare.width();
     qreal newY = m_colorSquare.width()-(a_color.valueF() * m_colorSquare.width());

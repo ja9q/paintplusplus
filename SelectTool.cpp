@@ -161,7 +161,9 @@ int SelectTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, cons
 // react to a double click
 int SelectTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     a_tempCanvas->fill(Qt::transparent);
-    drawBounds(a_tempCanvas, a_color2);
+    if (m_fromCanvas) {
+        drawBounds(a_tempCanvas, a_color2);
+    }
     drawSelection(a_tempCanvas);
 
     resetEditor();

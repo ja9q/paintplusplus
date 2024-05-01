@@ -4,6 +4,31 @@
 #include <QPainter>
 
 
+/**/
+/*
+FillTool::FillTool(QString a_name, int a_color, QVector<int> a_moreProperties)
+
+NAME
+
+    FillTool::FillTool(a_name, int a_color, QVector<int> a_moreProperties) - constructor
+
+SYNOPSIS
+
+    FillTool::FillTool(QString a_name, int a_color, QVector<int> a_moreProperties);
+        a_name --> The name of the tool
+        a_color --> The color the tool uses
+        a_moreProperties --> additional properties
+
+DESCRIPTION
+
+    constructor for the fill tool
+
+RETURNS
+
+    None
+
+*/
+/**/
 FillTool::FillTool(QString a_name, int a_color, QVector<int> a_moreProperties) :
     BaseTool(a_name, {(int)ToolProperty::OPACITY}),
     m_color(a_color), m_opacity(100) {

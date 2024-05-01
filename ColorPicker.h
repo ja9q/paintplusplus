@@ -12,9 +12,11 @@ class ColorPicker : public QWidget
 {
     Q_OBJECT
 public:
+    // constructor
     explicit ColorPicker(PaintModel *a_model, QWidget *parent = nullptr);
 
 public slots:
+    // setter for color
     void updateColor(QColor a_color);
 
 protected:
@@ -31,6 +33,7 @@ protected:
     // React to when something is painted
     void paintEvent(QPaintEvent *event);
 
+    // React to when the widget is resized
     void resizeEvent(QResizeEvent *event);
 
 signals:

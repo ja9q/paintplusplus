@@ -1,3 +1,7 @@
+//
+// A widget that lets the user choose a tool within a tool type
+//
+
 #ifndef TOOLSELECTOR_H
 #define TOOLSELECTOR_H
 

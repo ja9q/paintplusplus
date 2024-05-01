@@ -10,7 +10,7 @@
 TextTool::TextTool(QString a_name, CanvasWidget* a_canvas, QVector<int> a_moreProperties):
     BaseTool(a_name, {(int)ToolProperty::FONT_SIZE, (int)ToolProperty::FONT, (int)ToolProperty::TEXT_BOLD, (int)ToolProperty::TEXT_ITALIC,
                         (int)ToolProperty::TEXT_UNDERLINE}),
-    m_textbox(), m_bounds(), m_timer(), m_canvas(a_canvas), m_isActive(false), m_isOpaque(false), m_bgColor(QColor(Qt::white))
+    m_textbox(), m_bounds(), m_canvas(a_canvas), m_isActive(false), m_isOpaque(false), m_bgColor(QColor(Qt::white))
 {
     FONTS = QFontDatabase::families().toList();
 
@@ -31,7 +31,6 @@ TextTool::TextTool(QString a_name, CanvasWidget* a_canvas, QVector<int> a_morePr
 
     QWidget::connect(&m_textbox, &QTextEdit::textChanged, &m_textbox, [=](){drawText(a_canvas->getTempCanvas());});
     QWidget::connect(&m_textbox, &QTextEdit::cursorPositionChanged, &m_textbox, [=](){drawText(a_canvas->getTempCanvas());});
-    QWidget::connect(&m_timer, &QTimer::timeout, &m_textbox, [=](){drawText(a_canvas->getTempCanvas());});
 
 
 }
@@ -103,7 +102,6 @@ int TextTool::setProperty(const int a_propId, const int a_newValue) {
 }
 
 void TextTool::resetEditor() {
-    m_timer.stop();
     m_isActive = false;
     m_textbox.setText("");
     m_textbox.resize(500,m_textbox.fontPointSize()*2.5);
@@ -113,6 +111,9 @@ void TextTool::resetEditor() {
 
 // React to a click on the canvas
 int TextTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
+    (void)a_canvas;
+    (void)a_tempCanvas;
+    (void)a_color1;
 
     if (m_bgColor != a_color2) {
         m_bgColor = a_color2;
@@ -135,6 +136,7 @@ int TextTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
 int TextTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_color1;
+    (void) a_color2;
 
     // clear the temp canvas from any previous marks (e.g. the previous rectangle)
     a_tempCanvas->fill(Qt::transparent);
@@ -157,13 +159,16 @@ int TextTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEv
 
 // React to when the mouse is no longer clicking/dragging on the canvas
 int TextTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
+    (void)a_canvas;
+    (void)a_color1;
+    (void)a_color2;
+
     if (m_bounds.getEditMode() == Editable::EditMode::END) {
         m_bounds.setEditMode(Editable::EditMode::NONE);
         // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle + define the selected area
     }else if (!m_isActive && !m_bounds.isEditing()) {
         m_bounds.setShape(QPolygon(QRect(a_event->position().toPoint(), m_textbox.size())));
         m_bounds.initBoundingRect();
-        m_timer.start(500);
         m_isActive = true;
         m_textbox.grabKeyboard();
         m_bounds.setIsEditing(true);
@@ -238,9 +243,5 @@ void TextTool::drawText(QImage* a_canvas, bool a_renderBounds) {
         m_canvas->repaint();
 
     }
-}
-
-void TextTool::adjustSize() {
-
 }
 

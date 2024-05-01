@@ -6,13 +6,57 @@
 #include <QDebug>
 #include <QPainter>
 
-// Parametric constructor for the base tool; called in the constructors of
-// derived classes
+/**/
+/*
+BaseTool::BaseTool(QString a_name, QVector<int> a_properties)
+
+NAME
+
+    a_name, QVector<int> a_properties) - parametric constructor
+
+SYNOPSIS
+
+    BaseTool::BaseTool(QString a_name, QVector<int> a_properties);
+        a_name --> the name of the tool
+        a_properties --> the properties of the tool that the user can edit
+
+DESCRIPTION
+
+    Constructs a base tool
+
+RETURNS
+
+    The constructed BaseTool
+
+*/
+/**/
 BaseTool::BaseTool(QString a_name, QVector<int> a_properties):
     m_name(a_name),
     m_properties(a_properties)
 {}
 
+/**/
+/*
+QString BaseTool::getName() const
+
+NAME
+
+    BaseTool::getName() const - getter for the name
+
+SYNOPSIS
+
+    QString BaseTool::getName() const;
+
+DESCRIPTION
+
+    Getter for the tool's name
+
+RETURNS
+
+    the tool's name
+
+*/
+/**/
 QString BaseTool::getName() const {
     return m_name;
 }
@@ -45,17 +89,96 @@ QVector<int> BaseTool::getProperties() const {
     return m_properties;
 }
 
-void BaseTool::resetEditor() {}
+/**/
+/*
+void BaseTool::resetEditor()
 
+NAME
+
+    BaseTool::resetEditor() - reset the editor (if there is one)
+
+SYNOPSIS
+
+    void BaseTool::resetEditor();
+
+DESCRIPTION
+
+    If the tool has an editable (e.g. a shape tool or select tool), reset the editor if it is active
+
+RETURNS
+
+    None
+
+*/
+/**/
+void BaseTool::resetEditor() {
+    // do nothing because there is no editable
+}
+
+/**/
+/*
+QImage BaseTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts)
+
+NAME
+
+    BaseTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) -
+        (for tools with editors, get the edited item)
+
+SYNOPSIS
+
+    QImage BaseTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts);
+        a_canvas --> (if this is a cut) the canvas to draw the cut area on
+        a_color --> (if this is a cut) the color to draw the cut area with
+        a_cuts --> whether this operation will cut out the editable from the canvas
+
+DESCRIPTION
+
+    Grabs the edited shape that a shape is currently editing (if there is one)
+
+RETURNS
+
+    The currently edited shape or a null shape if there is none
+
+*/
+/**/
 QImage BaseTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) {
+    // do nothing because there is no editable
     (void)a_canvas;
     (void)a_color;
     (void)a_cuts;
     return QImage();
 }
 
+/**/
+/*
+void BaseTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas)
+
+NAME
+
+    BaseTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) - setter for the editor (if there is one)
+
+SYNOPSIS
+
+    void BaseTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas);
+        a_image --> the new image to edit
+        a_canvas --> needed to reset the editor if needed
+        a_tempCanvas --> needed to reset the editor if needed
+
+DESCRIPTION
+
+    setter for the editor's image. It is only called in the context that the current shape is a SelectTool
+
+RETURNS
+
+    None
+
+*/
+/**/
 void BaseTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) {
+    // do nothing because there is no editable
     (void)a_image;
+    (void)a_canvas;
+    (void)a_tempCanvas;
 }
 
 /**/
@@ -74,7 +197,7 @@ SYNOPSIS
         a_tempCanvas - a temporary canvas; changes to the canvas are temporarily displayed here before they are commited
         a_event - the related mouse event; stores position and active modifier keys
         a_color1 - the current color 1; from the PaintModel
-        a_color - the current color 2; from the PaintModel
+        a_color2 - the current color 2; from the PaintModel
 
 DESCRIPTION
 
@@ -117,7 +240,7 @@ SYNOPSIS
         a_tempCanvas - a temporary canvas; changes to the canvas are temporarily displayed here before they are commited
         a_event - the related mouse event; stores position and active modifier keys
         a_color1 - the current color 1; from the PaintModel
-        a_color - the current color 2; from the PaintModel
+        a_color2 - the current color 2; from the PaintModel
 
 DESCRIPTION
 
@@ -126,7 +249,7 @@ DESCRIPTION
 
 RETURNS
 
-    0 if the canvas doesn't have to do any further work (tentative; might turn to void)
+    0 if the canvas doesn't have to do any further work
 
 */
 /**/

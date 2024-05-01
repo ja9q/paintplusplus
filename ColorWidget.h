@@ -34,6 +34,7 @@ signals:
     void valueChanged(QColor a_newColor, int a_whichColor);
 
 protected:
+    // React to when the widget is resized
     void resizeEvent(QResizeEvent *event);
 
 private:
@@ -55,6 +56,7 @@ private:
     // Three text fields that allow for the color to be changed
     QSpinBox* m_rgbEdit[RGB_SIZE];
 
+    // The layout of the widget's elements
     QVBoxLayout* m_layout;
 
     // Set up the text fields that manually the RGB values

@@ -27,6 +27,7 @@ public:
     // Fills the canvas with one color
     void fillCanvas(QColor a_color);
 
+    // clear out the temporary canvas
     void flushTemp();
 
 protected:

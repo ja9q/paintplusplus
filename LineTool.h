@@ -1,3 +1,7 @@
+//
+// A line that can be drawn and edited by the user
+//
+
 #ifndef LINETOOL_H
 #define LINETOOL_H
 
@@ -46,10 +50,12 @@ protected:
     // the type of transformation that is being performed on the shape
     EditMode m_editMode;
 
+    // parameters of the transformation
     QPoint m_translation;
     qreal m_rotation;
     QPointF m_scale;
 
+    // which point of the line should stay still when "scaling" it
     int m_pivot;
 
     // Draw the line on the temporary canvas

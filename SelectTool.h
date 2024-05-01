@@ -1,3 +1,8 @@
+//
+// A lasso-select tool. A user-drawn shape defines a portion
+// of the canvas to be edited
+//
+
 #ifndef SELECTTOOL_H
 #define SELECTTOOL_H
 
@@ -19,8 +24,10 @@ public:
     // reset the editor (remove any uncommited shapes)
     void resetEditor();
 
+    // get the current selection
     QImage getEditable(QImage* a_canvas = NULL, const QColor a_color = QColor(), bool a_cuts = false);
 
+    // change the current selection
     void setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas);
 
     // react to a click
@@ -40,6 +47,7 @@ protected:
     // the selected part of the canvas
     QImage m_selection;
 
+    // the editor for the selection
     Editable m_selectArea;
 
     // whether to remove the background from the selection or not
@@ -48,6 +56,7 @@ protected:
     // whether the editable is from a selection or from the clipboard
     bool m_fromCanvas;
 
+    // draw the selection
     virtual void drawSelection(QImage* a_canvas);
 
     // Draw the bounds on the temporary canvas
@@ -56,6 +65,7 @@ protected:
     // Calculate the border of the selection as it is being drawn by the mouse
     virtual void calcBounds(const QMouseEvent* a_event);
 
+    // generate the selection the user defines the selection area
     void renderSelection(QImage* a_canvas, const QColor a_color);
 
 };
