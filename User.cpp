@@ -8,7 +8,29 @@
 #include "DrawTool.h"
 #include <QColor>
 
-// parametric constructor
+/**/
+/*
+User::User(BaseTool* a_tool)
+
+NAME
+
+    User(BaseTool* a_tool) - parametric constructor
+
+SYNOPSIS
+
+    User::User(BaseTool* a_tool);
+        a_tool --> the starting tool the user will start with
+
+DESCRIPTION
+
+    parametric constructor for the user object
+
+RETURNS
+
+    The constructed user
+
+*/
+/**/
 User::User(BaseTool* a_tool) {
     m_colors[0] = QColor(Qt::black);
     m_colors[1] = QColor(Qt::white);

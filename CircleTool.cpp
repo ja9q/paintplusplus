@@ -1,3 +1,7 @@
+//
+// Implementation for the CircleTool class
+//
+
 #include "CircleTool.h"
 
 #include <QPainter>

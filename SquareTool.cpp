@@ -1,3 +1,7 @@
+//
+// Implementation for the SquareTool class
+//
+
 #include "SquareTool.h"
 
 #include <QPainter>

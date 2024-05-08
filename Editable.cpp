@@ -1,3 +1,7 @@
+//
+// Implementation for the Editable class
+//
+
 #include "Editable.h"
 
 #include <QPainter>
@@ -598,7 +602,29 @@ void Editable::translate(const QMouseEvent* a_event) {
 
 }
 
-// rotate the shape
+/**/
+/*
+void Editable::rotate(const QMouseEvent* a_event)
+
+NAME
+
+    Editable::rotate(const QMouseEvent* a_event) - rotate the shape
+
+SYNOPSIS
+
+    void Editable::rotate(const QMouseEvent* a_event);
+        a_event --> the mouse event that triggered the rotation
+
+DESCRIPTION
+
+    rotates the shaped based ont he mouse's movement
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::rotate(const QMouseEvent* a_event) {
 
     // get the required points
@@ -614,6 +640,7 @@ void Editable::rotate(const QMouseEvent* a_event) {
 
     m_rotation += (angle-oldAngle);
 
+    // keep the rotation within the bounds of -360 - 360
     if (m_rotation > 360) {
         m_rotation -= 360;
     } else if (m_rotation < -360) {
@@ -624,7 +651,30 @@ void Editable::rotate(const QMouseEvent* a_event) {
 
 }
 
-// Resize the shape
+/**/
+/*
+void Editable::scale(const QMouseEvent* a_event)
+
+NAME
+
+    Editable::scale(const QMouseEvent* a_event) - scale the shape
+
+SYNOPSIS
+
+    void Editable::scale(const QMouseEvent* a_event);
+        a_event --> the mouse event that the scaling is based off of
+
+DESCRIPTION
+
+    changes the x and y scaling of the shape based on the mouse's movement.
+    this also translates the shape such that a certain pivot point looks stationary
+
+RETURNS
+
+    None
+
+*/
+/**/
 void Editable::scale(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
     QPoint oldAnchor = transformShape(m_boundRect).at(m_anchor);
@@ -672,6 +722,29 @@ void Editable::scale(const QMouseEvent* a_event) {
     m_prevEditPoint = eventPos;
 }
 
+/**/
+/*
+QPolygon Editable::transformShape(QPolygon a_shape)
+
+NAME
+
+    Editable::transformShape(QPolygon a_shape) - transform a given polygon
+
+SYNOPSIS
+
+    QPolygon Editable::transformShape(QPolygon a_shape);
+        a_shape --> the polygon to transform
+
+DESCRIPTION
+
+    Apply all of the editable's recorded transformations onto a polygon
+
+RETURNS
+
+    The transformed polygon
+
+*/
+/**/
 QPolygon Editable::transformShape(QPolygon a_shape) {
     QPolygon shape = a_shape;
 

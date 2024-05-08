@@ -32,12 +32,6 @@ private:
     QVBoxLayout* m_layout;  // layout for the components
     QList<QPushButton*> m_tools;    // the generated components
 
-    // change the current tool
-    void changeTool(const int a_newTool);
-
-    // remove all the current tools
-    void clearTools();
-
 };
 
 #endif // TOOLSELECTOR_H

@@ -1,13 +1,64 @@
+//
+// Implementation for the SquareSelectTool class
+//
+
 #include "SquareSelectTool.h"
 
 #include <QPainter>
 
+/**/
+/*
+SquareSelectTool::SquareSelectTool(QString a_name, QVector<int> a_moreProperties)
+
+NAME
+
+    SquareSelectTool::SquareSelectTool(a_name, QVector<int> a_moreProperties) - parametric constructor
+
+SYNOPSIS
+
+    SquareSelectTool::SquareSelectTool(QString a_name, QVector<int> a_moreProperties);
+        a_name --> the name of the tool
+        a_moreProperties --> additional properties
+
+DESCRIPTION
+
+    parametric constructor
+
+RETURNS
+
+    The constructed SquareSelectTool
+
+*/
+/**/
 SquareSelectTool::SquareSelectTool(QString a_name, QVector<int> a_moreProperties):
     SelectTool(a_name)
 {
     addProperties(a_moreProperties);
 }
 
+/**/
+/*
+void SquareSelectTool::drawSelection(QImage* a_canvas)
+
+NAME
+
+    SquareSelectTool::drawSelection(QImage* a_canvas) - draw the selection on the canvas
+
+SYNOPSIS
+
+    void SquareSelectTool::drawSelection(QImage* a_canvas);
+        a_canvas --> the canvas to draw it on
+
+DESCRIPTION
+
+    draw the selection on the canvas;
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SquareSelectTool::drawSelection(QImage* a_canvas) {
     QImage temp = m_selection;
 
@@ -24,7 +75,30 @@ void SquareSelectTool::drawSelection(QImage* a_canvas) {
     painter.drawPixmap(extraOffset.left(), extraOffset.top(), QPixmap::fromImage(temp));
 }
 
-// Draw the bounds on the temporary canvas
+/**/
+/*
+void SquareSelectTool::drawBounds(QImage* a_canvas, const QColor a_color)
+
+NAME
+
+    SquareSelectTool::drawBounds(QImage* a_canvas, const QColor a_color) - draw the bounds or selection area
+
+SYNOPSIS
+
+    void SquareSelectTool::drawBounds(QImage* a_canvas, const QColor a_color);
+        a_canvas --> the canvas to draw the bounds on
+        a_color --> the color to cover the selection area with
+
+DESCRIPTION
+
+    if the bounds are still being defined, the draw them, otherwise, cover the initial selection area
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SquareSelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
     QPainter painter(a_canvas);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
@@ -43,7 +117,30 @@ void SquareSelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
 
 }
 
-// Calculate the border of the selection as it is being drawn by the mouse
+/**/
+/*
+void SquareSelectTool::calcBounds(const QMouseEvent* a_event)
+
+NAME
+
+    SquareSelectTool::calcBounds(const QMouseEvent* a_event) - calculate the bounds of the selection area
+
+SYNOPSIS
+
+    void SquareSelectTool::calcBounds(const QMouseEvent* a_event);
+        a_event --> The mouse event (drag) that triggered this
+
+DESCRIPTION
+
+    calculate the bounds of the selection area, which is always a rectangle
+
+RETURNS
+
+    None
+
+*/
+/**/
+
 void SquareSelectTool::calcBounds(const QMouseEvent* a_event) {
     QPolygon shape = m_selectArea.getShape();
 

@@ -1,3 +1,7 @@
+//
+// Implementation for the ShapeTool class
+//
+
 #include "ShapeTool.h"
 #include "DrawTool.h"
 
@@ -181,7 +185,7 @@ int ShapeTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
 int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
 NAME
 
-    ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) -
+    ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a drag
 
 SYNOPSIS
 
@@ -218,7 +222,32 @@ int ShapeTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
     return 0;
 }
 
-// react to a mouse release
+/**/
+/*
+int ShapeTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+NAME
+
+    ShapeTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a mouse release
+
+SYNOPSIS
+
+    int ShapeTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the canvas where the drawing is eventually applied; this is used by some tools as a reference for colors, but not this one
+        a_tempCanvas --> the canvas where the stroke is temporarily applied; this is to ensure the opacity works well
+        a_event --> the related mouse event; contains the position and modifier keys
+        a_color1 --> the user's first color
+        a_color2 --> the user's second color
+
+DESCRIPTION
+
+    reacts to a mouse release. if the polygon is not editing, then start editing. Otherwise, set the edit mode to none.
+
+RETURNS
+
+    0 because the canvas doesn't have to do any further work
+
+*/
+/**/
 int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_event;
@@ -242,6 +271,32 @@ int ShapeTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const
     return 0;
 }
 
+/**/
+/*
+int ShapeTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+NAME
+
+    ShapeTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a double click
+
+SYNOPSIS
+
+    int ShapeTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the canvas where the drawing is eventually applied; this is used by some tools as a reference for colors, but not this one
+        a_tempCanvas --> the canvas where the stroke is temporarily applied; this is to ensure the opacity works well
+        a_event --> the related mouse event; contains the position and modifier keys
+        a_color1 --> the user's first color
+        a_color2 --> the user's second color
+
+DESCRIPTION
+
+    reacts to a double click. if the polygon is editing, commit the polygon to the final canvas.
+
+RETURNS
+
+    1 because the canvas needs to update the undo history
+
+*/
+/**/
 int ShapeTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     a_tempCanvas->fill(Qt::transparent);
     drawShape(a_tempCanvas, a_color1, a_color2);
@@ -254,6 +309,31 @@ int ShapeTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const 
     return 1;
 }
 
+/**/
+/*
+void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) - draw the shape on a given canvas
+
+SYNOPSIS
+
+    void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the canvas to draw the shape on
+        a_color1 --> the user's first color
+        a_color2 --> the user's second color
+
+DESCRIPTION
+
+    draw the transformed shape on the given canvas with the provided settings
+
+RETURNS
+
+    None
+
+*/
+/**/
 void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
     // set the user-set color to the brush color and opacity
     QColor drawColor = (m_color == 0) ? a_color1 : a_color2;

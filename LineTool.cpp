@@ -1,6 +1,35 @@
+//
+// Implementation for the LineTool class
+//
+
 #include "LineTool.h"
 #include <QPainter>
 
+/**/
+/*
+LineTool::LineTool(QString a_name, int a_color, QVector<int> a_moreProperties)
+
+NAME
+
+    LineTool(a_name, int a_color, QVector<int> a_moreProperties) - parameter constructor
+
+SYNOPSIS
+
+    LineTool::LineTool(QString a_name, int a_color, QVector<int> a_moreProperties);
+        a_name --> the name of the tool
+        a_color --> the color the tool uses
+        a_moreProperties --> additional properties
+
+DESCRIPTION
+
+    constructs the line tool
+
+RETURNS
+
+    The constructed line tool
+
+*/
+/**/
 LineTool::LineTool(QString a_name, int a_color, QVector<int> a_moreProperties):
     DrawTool(a_name, a_color, {}), m_line(), m_isEditing(false), m_editMode(EditMode::NONE),
    m_translation(0,0), m_rotation(0), m_scale(1.0,1.0)
@@ -8,18 +37,28 @@ LineTool::LineTool(QString a_name, int a_color, QVector<int> a_moreProperties):
     addProperties(a_moreProperties);
 }
 
-int LineTool::getProperty(const int a_propId) {
-    if (DrawTool::getProperty(a_propId) != -1) {
-        return DrawTool::getProperty(a_propId);
-    }
+/**/
+/*
+void LineTool::resetEditor()
 
-    return -1;
-}
+NAME
 
-int LineTool::setProperty(const int a_propId, const int a_newValue) {
-    return DrawTool::setProperty(a_propId, a_newValue);
-}
+    LineTool::resetEditor() - reset the editing parameters
 
+SYNOPSIS
+
+    void LineTool::resetEditor();
+
+DESCRIPTION
+
+    reset the line and any edits it saved
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::resetEditor() {
     // reset the line
     m_line = QLine();
@@ -32,12 +71,41 @@ void LineTool::resetEditor() {
     m_isEditing = false;
 }
 
+/**/
+/*
+int LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a click
+
+SYNOPSIS
+
+    int LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas where marks are placed before they are committed
+        a_event --> the mouse event that triggered the click
+        a_color1 --> the user's color 1
+        a_color2 --> the user's color 2
+
+DESCRIPTION
+
+    React to a click and record the position.
+    If there is a line to be edited, identify the type of edit to perform
+
+RETURNS
+
+    0 to not commit the changes just yet
+
+*/
+/**/
 int LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void)a_canvas;
     (void)a_tempCanvas;
     (void)a_color1;
     (void)a_color2;
 
+    // the point needs to be recorded for both initializing the line + doing edits
     m_lastPoint = a_event->position();
 
     if (m_isEditing) {
@@ -51,6 +119,33 @@ int LineTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
     return 0;
 }
 
+/**/
+/*
+int LineTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    LineTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a drag
+
+SYNOPSIS
+
+    int LineTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas where marks are placed before they are committed
+        a_event --> the mouse event that triggered the drag
+        a_color1 --> the user's color 1
+        a_color2 --> the user's color 2
+
+DESCRIPTION
+
+    If the user is not editing, draw out the line; Otherwise, perform the required edit based on the drag
+
+RETURNS
+
+    0 to not commit the changes just yet
+
+*/
+/**/
 int LineTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     // draw out the shape if the user is still dragging it for the first time (i.e. not in edit mode)
@@ -76,11 +171,38 @@ int LineTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEv
 
     // clear the temp canvas from any previous marks (e.g. the previous rectangle)
     a_tempCanvas->fill(Qt::transparent);
-
+    // rerender the line to show its new position
     drawLine(a_tempCanvas, a_color1, a_color2);
     return 0;
 }
 
+/**/
+/*
+int LineTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    LineTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a mouse release
+
+SYNOPSIS
+
+    int LineTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas where marks are placed before they are committed
+        a_event --> the mouse event that triggered the drag
+        a_color1 --> the user's color 1
+        a_color2 --> the user's color 2
+
+DESCRIPTION
+
+    If the user was drawing a line, make that line editable. Otherwise, stop editing and show the pivots
+
+RETURNS
+
+    0 to not commit the changes just yet
+
+*/
+/**/
 int LineTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_event;
@@ -104,6 +226,33 @@ int LineTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const 
     return 0;
 }
 
+/**/
+/*
+int LineTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    LineTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a mouse release
+
+SYNOPSIS
+
+    int LineTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas where marks are placed before they are committed
+        a_event --> the mouse event that triggered the drag
+        a_color1 --> the user's color 1
+        a_color2 --> the user's color 2
+
+DESCRIPTION
+
+    Draw the final line into the permanent canvas
+
+RETURNS
+
+    1 to commit the changes into the undo history
+
+*/
+/**/
 int LineTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     a_tempCanvas->fill(Qt::transparent);
     drawLine(a_tempCanvas, a_color1, a_color2);
@@ -116,6 +265,31 @@ int LineTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const Q
     return 1;
 }
 
+/**/
+/*
+void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_color2) - draw the line on the provided canvas
+
+SYNOPSIS
+
+    void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the canvas to draw the line on
+        a_color1 --> the user's color1
+        a_color2 --> the user's second selected color
+
+DESCRIPTION
+
+    Draw the line on the canvas
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_color2) {
     if (m_line.isNull()) {
         return;
@@ -138,13 +312,62 @@ void LineTool::drawLine(QImage* a_canvas, const QColor a_color1, const QColor a_
     painter.drawLine(m_line);
 }
 
+/**/
+/*
+void LineTool::calcLine(const QMouseEvent* a_event)
+
+NAME
+
+    LineTool::calcLine(const QMouseEvent* a_event) - calculate the line's points
+
+SYNOPSIS
+
+    void LineTool::calcLine(const QMouseEvent* a_event);
+        a_event --> the mouse event to base the line on
+
+DESCRIPTION
+
+    Defines the points of the initial line as the user is dragging the mouse
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::calcLine(const QMouseEvent* a_event) {
+    // if the line doesn't exist yet, also record the first point
     if (m_line.isNull()) {
         m_line.setP1(m_lastPoint.toPoint());
     }
 
+    // set this point to the second point of the line
     m_line.setP2(a_event->position().toPoint());
 }
+
+/**/
+/*
+void LineTool::drawPivots(QImage* a_canvas)
+
+NAME
+
+    LineTool::drawPivots(QImage* a_canvas) - draw the line's pivots (on the endpoints)
+
+SYNOPSIS
+
+    void LineTool::drawPivots(QImage* a_canvas);
+        a_canvas --> the canvas to draw the pivots on
+
+DESCRIPTION
+
+    draw the pivots of the line onto a canvas.
+
+RETURNS
+
+    None
+
+*/
+/**/
 
 void LineTool::drawPivots(QImage* a_canvas) {
     // create a painter and set it up to draw the rectangle
@@ -161,6 +384,29 @@ void LineTool::drawPivots(QImage* a_canvas) {
     painter.drawRect(pivot);
 }
 
+/**/
+/*
+void LineTool::identifyEdit(QImage* a_canvas)
+
+NAME
+
+    LineTool::identifyEdit(QImage* a_canvas) - identify the edit the user wants to perform
+
+SYNOPSIS
+
+    void LineTool::identifyEdit(QImage* a_canvas);
+        a_canvas --> the canvas where the line+its pivots are drawn on
+
+DESCRIPTION
+
+    determines the edit the user wants to do based on the mouse position
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::identifyEdit(QImage* a_canvas) {
 
     // if this click was outside of the bounding rectangle, then this is a rotation
@@ -168,7 +414,7 @@ void LineTool::identifyEdit(QImage* a_canvas) {
         m_editMode = EditMode::ROTATE;
         return;
     } else {
-        // otherwise, check if the click was on one of the pivots
+        // otherwise, check if the click was on one of the pivots (making it a scaling)
 
         QRect pivot = QRect(0,0,12,12);
 
@@ -191,20 +437,66 @@ void LineTool::identifyEdit(QImage* a_canvas) {
     }
 }
 
-// translate the shape
+/**/
+/*
+void LineTool::translate(const QMouseEvent* a_event)
+
+NAME
+
+    LineTool::translate(const QMouseEvent* a_event) - translate the line
+
+SYNOPSIS
+
+    void LineTool::translate(const QMouseEvent* a_event);
+        a_event --> the mouse event that triggered the translation
+
+DESCRIPTION
+
+    calculate the needed translation and translate the line
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::translate(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
 
+    // calculate the offset
     int offsetX = (eventPos.x() > m_lastPoint.x()) ? eventPos.x() - m_lastPoint.x() :  -(m_lastPoint.x() - eventPos.x());
     int offsetY = (eventPos.y() > m_lastPoint.y()) ? eventPos.y() - m_lastPoint.y() :  -(m_lastPoint.y() - eventPos.y());
 
+    // move the line by this offset
     m_line.translate(offsetX, offsetY);
 
     m_lastPoint = eventPos;
 
 }
 
-// rotate the shape
+/**/
+/*
+void LineTool::rotate(const QMouseEvent* a_event)
+
+NAME
+
+    LineTool::rotate(const QMouseEvent* a_event) - rotate the line
+
+SYNOPSIS
+
+    void LineTool::rotate(const QMouseEvent* a_event);
+        a_event --> the mouse event that triggered the rotation
+
+DESCRIPTION
+
+    calculate the needed rotation and rotate the line
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::rotate(const QMouseEvent* a_event) {
 
     // get the required points
@@ -218,14 +510,36 @@ void LineTool::rotate(const QMouseEvent* a_event) {
     angle = qRadiansToDegrees(angle);
     oldAngle = qRadiansToDegrees(oldAngle);
 
-
+    // rotate the line
     m_line = QTransform().translate(center.x(), center.y()).rotate(angle-oldAngle).translate(-center.x(), -center.y()).map(m_line);
 
     m_lastPoint = newPos;
 
 }
 
-// Resize the shape
+/**/
+/*
+void LineTool::scale(const QMouseEvent* a_event)
+
+NAME
+
+    LineTool::scale(const QMouseEvent* a_event) - scale the line
+
+SYNOPSIS
+
+    void LineTool::scale(const QMouseEvent* a_event);
+        a_event --> the mouse event that triggered the rotation
+
+DESCRIPTION
+
+    "scale" the line by changing the position o the current lien
+
+RETURNS
+
+    None
+
+*/
+/**/
 void LineTool::scale(const QMouseEvent* a_event) {
     QPoint eventPos = a_event->position().toPoint();
 

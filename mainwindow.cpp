@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Paint++"));
 
     // initialize the paint model and display its canvas
-    m_model = new PaintModel();
+    m_model = new PaintModel(this);
 
     QScrollArea* scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(false);
@@ -65,20 +65,65 @@ MainWindow::MainWindow(QWidget *parent)
     setupToolBar();
     setupMenu();
 
-
     resizeDocks({setupColorPicker(), setupToolSelector(), setupToolSettings()}, {300,300,300}, Qt::Vertical);
-
 
 
     m_model->getCanvas()->setFocus();
 
 }
 
-// Destructor
+/**/
+/*
+MainWindow::~MainWindow()
+
+NAME
+
+    MainWindow::~MainWindow() - destructor
+
+SYNOPSIS
+
+    MainWindow::~MainWindow();
+
+DESCRIPTION
+
+    Destroys the main window
+
+RETURNS
+
+    None
+
+*/
+/**/
 MainWindow::~MainWindow()
 {
+    // note that although there are many  pointer items with dynamically allocated memory,
+    // they are displayed on the window or have a parent/child relationship with this window.
+    // because of this, they are naturally deleted when the main window is closed
 }
 
+/**/
+/*
+void MainWindow::closeEvent(QCloseEvent *event)
+
+NAME
+
+    MainWindow::closeEvent(QCloseEvent *event) - react to when the window is closed
+
+SYNOPSIS
+
+    void MainWindow::closeEvent(QCloseEvent *event);
+        event --> the event to handle by accepting or ignoring it
+
+DESCRIPTION
+
+    Before the window closes, check if there are unsaved changes and ask them if they should be performed
+
+RETURNS
+
+    None
+
+*/
+/**/
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (saveCheck()) {
         event->accept();
@@ -87,19 +132,68 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
+/**/
+/*
+void MainWindow::changeToolType(const int a_newType)
+
+NAME
+
+    MainWindow::changeToolType(const int a_newType) - change the tool type in the model and update the ui as needed
+
+SYNOPSIS
+
+    void MainWindow::changeToolType(const int a_newType);
+        a_newType --> the id of the new tool type
+
+DESCRIPTION
+
+    changes the tool type and updates the UI to show the settings and available tools
+
+RETURNS
+
+    None
+
+*/
+/**/
 void MainWindow::changeToolType(const int a_newType) {
+
+    // make the button appear to be pressed
     for (int i = 0; i < PaintModel::TOOLCOUNT; i++) {
         m_toolButtons[i]->setChecked(false);
     }
-
     m_toolButtons[a_newType]->setChecked(true);
+
+    // update the tooltype in the model
     m_model->setToolType(a_newType);
 
+    // alert other widgets that the tool changed
     emit changedToolType(m_model->getToolSet(), m_model->getCurrentToolInd());
-
     emit changedCurrentTool(m_model->getCurrentTool());
 }
 
+/**/
+/*
+void MainWindow::changeTool(const int a_newTool)
+
+NAME
+
+    MainWindow::changeTool(const int a_newTool) - change the tool type and update the ui as needed
+
+SYNOPSIS
+
+    void MainWindow::changeTool(const int a_newTool);
+        a_newTool --> id of the new tool
+
+DESCRIPTION
+
+    change the current tool of the model and update the tool settings widget
+
+RETURNS
+
+    None
+
+*/
+/**/
 void MainWindow::changeTool(const int a_newTool) {
     m_model->setTool(a_newTool);
     emit changedCurrentTool(m_model->getCurrentTool());
@@ -143,6 +237,28 @@ QDockWidget* MainWindow::setupColorPicker() {
     return colorDock;
 }
 
+/**/
+/*
+void MainWindow::setupToolSelector()
+
+NAME
+
+    MainWindow::setupToolSelector() - Set up the tool selector.
+
+SYNOPSIS
+
+    void MainWindow::setupToolSelector();
+
+DESCRIPTION
+
+    Initialize the tool selector, insert it, and connect it to other components
+
+RETURNS
+
+    None
+
+*/
+/**/
 QDockWidget* MainWindow::setupToolSelector() {
     // Make the dock for the settings dock
     QDockWidget* selectorDock = new QDockWidget(tr("Tools"), this);
@@ -269,6 +385,7 @@ void MainWindow::setupMenu() {
     m_fileMenu = menuBar()->addMenu(tr("&File"));
     m_editMenu = menuBar()->addMenu(tr("&Edit"));
 
+    // fill out the file menu
     QAction* openAction = new QAction(tr("&Open"));
     openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
     connect(openAction, &QAction::triggered, m_model, [=](){if(saveCheck()) m_model->openFile();});
@@ -284,7 +401,7 @@ void MainWindow::setupMenu() {
     connect(saveAsAction, &QAction::triggered, m_model, &PaintModel::saveNewFile);
     m_fileMenu->addAction(saveAsAction);
 
-
+    // fill out the edit menu
     QAction* clearAction = new QAction(tr("&Clear Canvas"));
     clearAction->setShortcut(QKeySequence::Delete);
     connect(clearAction, &QAction::triggered, this, [=](){m_model->clearCanvas();});
@@ -325,9 +442,30 @@ void MainWindow::setupMenu() {
     resizeAction->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_C));
     connect(resizeAction, &QAction::triggered, this, [=](){m_model->setCanvasSize(ResizeDialog::promptUser(m_model->getCanvas()->size(), this));});
     m_editMenu->addAction(resizeAction);
-
 }
 
+/**/
+/*
+bool MainWindow::saveCheck()
+
+NAME
+
+    MainWindow::saveCheck() - if the model has unsaved changes, check if the user wants to save them
+
+SYNOPSIS
+
+    bool MainWindow::saveCheck();
+
+DESCRIPTION
+
+    if the model has unsaved changes, create a dialog that checks if the user wants to save or discard these changes.
+
+RETURNS
+
+    None
+
+*/
+/**/
 bool MainWindow::saveCheck() {
     if (!m_model->isSaved()) {
         QMessageBox::StandardButton ret;

@@ -1,14 +1,65 @@
+//
+// Implementation for the SelectTool class
+//
+
 #include "SelectTool.h"
 #include <QPainter>
 #include <QRegion>
 #include <QBitmap>
 
+/**/
+/*
+SelectTool::SelectTool(QString a_name, QVector<int> a_moreProperties)
+
+NAME
+
+    SelectTool::SelectTool(a_name, QVector<int> a_moreProperties) - constructor
+
+SYNOPSIS
+
+    SelectTool::SelectTool(QString a_name, QVector<int> a_moreProperties);
+        a_name --> the name of the tool
+        a_moreProperties --> additional properties
+
+DESCRIPTION
+
+    parametric constructor
+
+RETURNS
+
+    The constructed select tool
+
+*/
+/**/
 SelectTool::SelectTool(QString a_name, QVector<int> a_moreProperties):
     BaseTool(a_name, {(int)ToolProperty::MASKBACK}), m_selectArea(), m_maskBack(false), m_fromCanvas(true)
 {
     addProperties(a_moreProperties);
 }
 
+/**/
+/*
+int SelectTool::getProperty(const int a_propId)
+
+NAME
+
+    SelectTool::getProperty(const int a_propId) - get a certain property's value
+
+SYNOPSIS
+
+    int SelectTool::getProperty(const int a_propId);
+        a_propId --> the ID of the property the tool wants to receive
+
+DESCRIPTION
+
+    Get a tool's current property value
+
+RETURNS
+
+    The value of the requested property
+
+*/
+/**/
 // Get a tool's property
 int SelectTool::getProperty(const int a_propId) {
     switch ((ToolProperty)a_propId) {
@@ -22,7 +73,30 @@ int SelectTool::getProperty(const int a_propId) {
     return -1;
 }
 
-// Modify a tool's property (e.g. size, opacity)
+/**/
+/*
+void SelectTool::setProperty(const int a_propId, const int a_newValue)
+
+NAME
+
+    SelectTool::setProperty(const int a_propId, const int a_newValue) - set a certain property's value
+
+SYNOPSIS
+
+    void SelectTool::setProperty(const int a_propId, const int a_newValue);
+        a_propId --> the ID of the property to change
+        a_newValue --> the new value of the changed property
+
+DESCRIPTION
+
+    Changes a tool's property to a new value.
+
+RETURNS
+
+    None
+
+*/
+/**/
 int SelectTool::setProperty(const int a_propId, const int a_newValue) {
     switch ((ToolProperty)a_propId) {
     case ToolProperty::MASKBACK:
@@ -35,12 +109,59 @@ int SelectTool::setProperty(const int a_propId, const int a_newValue) {
     return -1;
 }
 
-// reset the editor (remove any uncommited shapes)
+/**/
+/*
+void SelectTool::resetEditor()
+
+NAME
+
+    SelectTool::resetEditor() - reset the editor
+
+SYNOPSIS
+
+    void SelectTool::resetEditor();
+
+DESCRIPTION
+
+    reset the editable parameters in the editable
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::resetEditor() {
     m_selectArea.reset();
     m_fromCanvas = true;
 }
 
+/**/
+/*
+QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts)
+
+NAME
+
+    SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) - get the image of the current selection
+
+SYNOPSIS
+
+    QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts);
+        a_canvas --> the canvas to cover cut area if needed; this is the permanent canvas
+        a_color --> the color used to cover the cut area if needed
+        a_cuts --> whether to cut the selection
+
+DESCRIPTION
+
+    Get the selected image if there is one. The image will also have the transformations applied to it.
+    The image can also be "cut from the canvas"
+
+RETURNS
+
+    The transformed selection
+
+*/
+/**/
 QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cuts) {
     if(m_selectArea.isEditing() && (m_selectArea.getEditMode() == Editable::EditMode::END || m_selectArea.getEditMode() == Editable::EditMode::NONE)) {
         QImage temp = m_selection;
@@ -51,6 +172,7 @@ QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cu
         // rotate the shape with the new center
         temp = temp.transformed(QTransform().rotate(m_selectArea.getRotation()));
 
+        // if the image is to be cut, then draw a shape that covers the original selection area.
         if (a_cuts) {
             QPainter painter(a_canvas);
             painter.setPen(Qt::transparent);
@@ -61,9 +183,36 @@ QImage SelectTool::getEditable(QImage* a_canvas, const QColor a_color, bool a_cu
 
         return temp;
     }
+    // if there is no selection, return a null image.
     return QImage();
 }
 
+/**/
+/*
+void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas)
+
+NAME
+
+    SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) - set the selection and
+        activate editing mode
+
+SYNOPSIS
+
+    void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas);
+        a_image --> The new selection
+        a_canvas --> The permanent canvas
+        a_tempCanvas --> The temporary canvas
+
+DESCRIPTION
+
+    Changes the selection of the tool; used when something is pasted in.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCanvas) {
     if(!m_selectArea.isEditing() || m_selectArea.getEditMode() == Editable::EditMode::END || m_selectArea.getEditMode() == Editable::EditMode::NONE) {
         if (m_selectArea.isEditing()) {
@@ -87,7 +236,33 @@ void SelectTool::setEditable(QImage a_image, QImage *a_canvas, QImage* a_tempCan
 }
 
 
-// react to a click
+/**/
+/*
+int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a click
+
+SYNOPSIS
+
+    int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas
+        a_event --> the mouse click that triggered this
+        a_color1 --> the user's color1
+        a_color2 --> the user's color2
+
+DESCRIPTION
+
+    react to a click. record the position and edit mode if needed.
+
+RETURNS
+
+    0 because it doesn't need to be recorded in the undo history
+
+*/
+/**/
 int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void)a_canvas;
     (void)a_tempCanvas;
@@ -96,6 +271,7 @@ int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMous
 
     m_selectArea.setPrevPoint(a_event->position().toPoint());
 
+    // identify the edit based on the click position if the tool is editing
     if (m_selectArea.isEditing()) {
         m_selectArea.identifyEdit();
     }
@@ -107,7 +283,33 @@ int SelectTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMous
     return 0;
 }
 
-// react to a drag
+/**/
+/*
+int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a drag
+
+SYNOPSIS
+
+    int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas
+        a_event --> the mouse click that triggered this
+        a_color1 --> the user's color1
+        a_color2 --> the user's color2
+
+DESCRIPTION
+
+    react to a drag. If not editing, update selection bounds. Otherwise, update transformation parameters
+
+RETURNS
+
+    0 because it doesn't need to be recorded in the undo history
+
+*/
+/**/
 int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_color1;
@@ -133,7 +335,33 @@ int SelectTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouse
     return 0;
 }
 
-// react to a mouse release
+/**/
+/*
+int SelectTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    SelectTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a mouse release
+
+SYNOPSIS
+
+    int SelectTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas
+        a_event --> the mouse click that triggered this
+        a_color1 --> the user's color1
+        a_color2 --> the user's color2
+
+DESCRIPTION
+
+    react to a mouse release. if bounds have been defined for the first time, turn on editing, otherwise, cancel the current edit.
+
+RETURNS
+
+    0 because it doesn't need to be recorded in the undo history
+
+*/
+/**/
 int SelectTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     (void) a_canvas;
     (void) a_event;
@@ -158,7 +386,33 @@ int SelectTool::processMouseRelease(QImage *a_canvas, QImage *a_tempCanvas, cons
     return 0;
 }
 
-// react to a double click
+/**/
+/*
+int SelectTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2)
+
+NAME
+
+    SelectTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2) - react to a double click
+
+SYNOPSIS
+
+    int SelectTool::processDoubleClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEvent* a_event, const QColor a_color1, const QColor a_color2);
+        a_canvas --> the permanent canvas
+        a_tempCanvas --> the temporary canvas
+        a_event --> the mouse click that triggered this
+        a_color1 --> the user's color1
+        a_color2 --> the user's color2
+
+DESCRIPTION
+
+    react to a double click by commiting the change to the permanent canvas
+
+RETURNS
+
+    1 to record it in the update history
+
+*/
+/**/
 int SelectTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const QMouseEvent *a_event, const QColor a_color1, const QColor a_color2) {
     a_tempCanvas->fill(Qt::transparent);
     if (m_fromCanvas) {
@@ -173,6 +427,29 @@ int SelectTool::processDoubleClick(QImage *a_canvas, QImage *a_tempCanvas, const
     return 1;
 }
 
+/**/
+/*
+void SelectTool::drawSelection(QImage* a_canvas)
+
+NAME
+
+    SelectTool::drawSelection(QImage* a_canvas) - draw the transformed selection
+
+SYNOPSIS
+
+    void SelectTool::drawSelection(QImage* a_canvas);
+        a_canvas --> where to draw the selection
+
+DESCRIPTION
+
+    Draw the transformed selection. Because this draws an image, the transformation has to be done in the function
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::drawSelection(QImage* a_canvas) {
     QImage temp = m_selection;
 
@@ -184,16 +461,43 @@ void SelectTool::drawSelection(QImage* a_canvas) {
     // rotate the shape with the new center
     temp = temp.transformed(QTransform().rotate(m_selectArea.getRotation()));
 
+    //images cannot be translated, so base it off of the position of the editable's bounding rectangle
+
     QRect extraOffset = m_selectArea.getTransformedBoundRect().boundingRect();
 
     painter.drawPixmap(extraOffset.left(), extraOffset.top(), QPixmap::fromImage(temp));
 }
 
-// Draw the bounds on the temporary canvas
+/**/
+/*
+void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color)
+
+NAME
+
+    SelectTool::drawBounds(QImage* a_canvas, const QColor a_color) -
+
+SYNOPSIS
+
+    void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color);
+        a_canvas --> the canvas to draw the bounds on
+        a_color --> the color to cover the previous selection area
+
+DESCRIPTION
+
+    draw the current selection border if the user is still drawing it out.
+    if the tool is otherwise in editing mode, then block out the original selected area
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
     QPainter painter(a_canvas);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
 
+    // if not editing, draw out the bounds
     if (!m_selectArea.isEditing()) {
         painter.setPen(Qt::white);
         painter.drawPolyline(m_selectArea.getShape().translated(-1,-1));
@@ -201,6 +505,7 @@ void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
         painter.setPen(Qt::black);
         painter.drawPolyline(m_selectArea.getShape());
     } else {
+        // otherwise, draw the original shape in a apaque blob
         painter.setPen(Qt::transparent);
         painter.setBrush(a_color);
         painter.drawPolygon(m_selectArea.getShape());
@@ -208,15 +513,41 @@ void SelectTool::drawBounds(QImage* a_canvas, const QColor a_color) {
 
 }
 
-// Calculate the border of the selection as it is being drawn by the mouse
+/**/
+/*
+void SelectTool::calcBounds(const QMouseEvent* a_event)
+
+NAME
+
+    SelectTool::calcBounds(const QMouseEvent* a_event) - calculate the bounds as they are being drawn
+
+SYNOPSIS
+
+    void SelectTool::calcBounds(const QMouseEvent* a_event);
+        a_event --> The mouse event that triggered this function
+
+DESCRIPTION
+
+    calculate the outline of the selection as it is being drawn out
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::calcBounds(const QMouseEvent* a_event) {
     QPolygon shape = m_selectArea.getShape();
 
+    // if the shape is empty or the mouse moved from the last position in the shape,
+    // add it to the original shape
     if (shape.isEmpty() || shape.back() != a_event->position().toPoint()) {
         shape.append(a_event->position().toPoint());
     }
 
 
+    // if there are 3+ in the shape, then check if the two newest sides have the same
+    // slope. if they do, then merge them.
     if (shape.size() > 2) {
         QLine oldSide = QLine(shape.at(shape.size()-3), shape.at(shape.size()-2));
         QLine newSide = QLine(shape.at(shape.size()-2), shape.back());
@@ -234,6 +565,32 @@ void SelectTool::calcBounds(const QMouseEvent* a_event) {
     m_selectArea.setShape(shape);
 }
 
+/**/
+/*
+void SelectTool::renderSelection(QImage* a_canvas, const QColor a_color)
+
+NAME
+
+    SelectTool::renderSelection(QImage* a_canvas, const QColor a_color) - initialize the selection
+        after the bounds are first defined
+
+SYNOPSIS
+
+    void SelectTool::renderSelection(QImage* a_canvas, const QColor a_color);
+        a_canvas --> the canvas from where to grab the selection from
+        a_color --> the color to mask out (if required)
+
+DESCRIPTION
+
+    using the bounds defined by the user, create a copy of that region into the tool
+    so it can be edited later. mask out the second color if it was required.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void SelectTool::renderSelection(QImage* a_canvas, const QColor a_color) {
     QRect boundingRect = m_selectArea.getShape().boundingRect();
 
@@ -263,6 +620,7 @@ void SelectTool::renderSelection(QImage* a_canvas, const QColor a_color) {
     painter.drawPixmap(QPoint(0,0), QPixmap::fromImage(*a_canvas), boundingRect);
     painter.end();
 
+    // if the settings want to remove the back color, draw a version without the color into the selection
     if(m_maskBack) {
         QPainter finalPainter(&m_selection);
         finalPainter.drawPixmap(0,0, QPixmap::fromImage(temp));

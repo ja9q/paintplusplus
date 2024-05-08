@@ -14,12 +14,6 @@ public:
     // parametric constructor
     LineTool(QString a_name, int a_color, QVector<int> a_moreProperties = {});
 
-    // Get a tool's property
-    int getProperty(const int a_propId);
-
-    // Modify a tool's property (e.g. size, opacity)
-    int setProperty(const int a_propId, const int a_newValue);
-
     // reset the editor (remove any uncommited shapes)
     void resetEditor();
 

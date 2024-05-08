@@ -57,11 +57,36 @@ PaintModel::PaintModel(QWidget *parent) :
     initTools();
     m_user.setCurrentTool(m_tools[(int)ToolType::DRAWTOOL][0]);
 
+    // set it such that when the canvas says it updated, the model updates its history
     connect(&m_canvas, &CanvasWidget::canvasChanged, this, &PaintModel::updateHistory);
+    // thus, a blank white canvas becomes the first part of the history
     m_canvas.fillCanvas(QColor(Qt::white));
+
+    // but, this is not an unsaved change (or any change at all), so reset that the canvas is "saved"
+    m_saved = true;
 }
 
-// Destructor
+/**/
+/*
+PaintModel::~PaintModel()
+
+NAME
+
+    PaintModel::~PaintModel() - Destructor
+
+SYNOPSIS
+
+    PaintModel::~PaintModel()
+DESCRIPTION
+
+    Destructs the PaintModel.
+
+RETURNS
+
+    None
+
+*/
+/**/
 PaintModel::~PaintModel()
 {
 }
@@ -170,6 +195,29 @@ int PaintModel::getCurrentToolInd() const {
     return m_currentTool[(int)m_currentToolType];
 }
 
+/**/
+/*
+bool PaintModel::isSaved() const
+
+NAME
+
+    PaintModel::isSaved() const - getter for if the model is saved
+
+SYNOPSIS
+
+    bool PaintModel::isSaved() const;
+
+DESCRIPTION
+
+    getter for if the model is saved; used for checking for unsaved changes
+    when the window is closed.
+
+RETURNS
+
+    Whether the model is saved or not
+
+*/
+/**/
 bool PaintModel::isSaved() const {
     return m_saved;
 }
@@ -179,16 +227,16 @@ bool PaintModel::isSaved() const {
 void PaintModel::setTool(int a_newTool)
 NAME
 
-    PaintModel::setTool(int a_newTool) -
+    PaintModel::setTool(int a_newTool) -setter for tools
 
 SYNOPSIS
 
     void PaintModel::setTool(int a_newTool);
-        a_newTool -->
+        a_newTool --> the id of the new tool
 
 DESCRIPTION
 
-    description
+    changes the new tool
 
 RETURNS
 
@@ -197,8 +245,11 @@ RETURNS
 */
 /**/
 void PaintModel::setTool(int a_newTool) {
+    // reset the editor of the current tool to ensure no changes are left behind
     m_user.getCurrentTool()->resetEditor();
+    // clear out the temporary canvas
     m_canvas.flushTemp();
+
     m_currentTool[(int)m_currentToolType] = a_newTool;
     m_user.setCurrentTool(m_tools[(int)m_currentToolType][m_currentTool[(int)m_currentToolType]]);
 }
@@ -230,15 +281,40 @@ void PaintModel::setToolType(int a_typeId) {
     m_user.getCurrentTool()->resetEditor();
     m_canvas.flushTemp();
     m_currentToolType = (ToolType)a_typeId;
+    // because the tool type changed, the current tool also changed so update accordingly
     m_user.setCurrentTool(m_tools[a_typeId][m_currentTool[a_typeId]]);
 }
 
-// change the canvas's size
+/**/
+/*
+void PaintModel::setCanvasSize(QSize a_size)
+
+NAME
+
+    PaintModel::setCanvasSize(QSize a_size) - resize the canvas
+
+SYNOPSIS
+
+    void PaintModel::setCanvasSize(QSize a_size);
+        a_size --> the canvas's new size
+
+DESCRIPTION
+
+    change the canvas's size. the scaling is anchored in the top-left,
+    so material is added/removed from the bottom and the right sides
+
+RETURNS
+
+    None
+
+*/
+/**/
 void PaintModel::setCanvasSize(QSize a_size) {
 
     QImage newCanvas(a_size, QImage::Format_ARGB32_Premultiplied);
     newCanvas.fill(Qt::white);
 
+    // redraw the old canvas into the new canvas
     QPainter painter(&newCanvas);
     painter.drawPixmap(0,0, QPixmap::fromImage(*(m_canvas.getCanvas())));
     painter.end();
@@ -246,7 +322,6 @@ void PaintModel::setCanvasSize(QSize a_size) {
     m_canvas.setCanvas(newCanvas);
 
     updateHistory(newCanvas);
-
 }
 
 /**/
@@ -353,6 +428,28 @@ void PaintModel::clearCanvas() {
     m_canvas.fillCanvas(m_user.getColor(1));
 }
 
+/**/
+/*
+void PaintModel::openFile()
+
+NAME
+
+    PaintModel::openFile() - prompt the user to choose a file and open it
+
+SYNOPSIS
+
+    void PaintModel::openFile();
+
+DESCRIPTION
+
+    Creates a file dialog to let the user choose a file to open. Then open that file.
+
+RETURNS
+
+    None
+
+*/
+/**/
 void PaintModel::openFile() {
 
     QString fileName = QFileDialog::getOpenFileName(NULL, tr("Open File"), tr("./"), tr("Images (*.png *.jpg)"));
@@ -372,6 +469,29 @@ void PaintModel::openFile() {
     m_canvas.setCanvas(file);
 }
 
+/**/
+/*
+bool PaintModel::saveFile()
+
+NAME
+
+    PaintModel::saveFile() - Save the file
+
+SYNOPSIS
+
+    bool PaintModel::saveFile();
+
+DESCRIPTION
+
+    If the file already has a name, save that named file.
+    Otherwise, save this file as a new file.
+
+RETURNS
+
+    True if the file was sucessfully saved
+
+*/
+/**/
 bool PaintModel::saveFile() {
     if(m_fileName != "") {
         QImage canvas = *(m_canvas.getCanvas());
@@ -383,6 +503,29 @@ bool PaintModel::saveFile() {
     return true;
 }
 
+/**/
+/*
+bool PaintModel::saveFile()
+
+NAME
+
+    PaintModel::saveNewFile() - Save the file as a new file
+
+SYNOPSIS
+
+    bool PaintModel::saveNewFile();
+
+DESCRIPTION
+
+    Open a dialog for the user to choose the file's name and location.
+    Save the file under those parameters.
+
+RETURNS
+
+    True if the file was sucessfully saved (i.e. false when the user cancels the prompt)
+
+*/
+/**/
 bool PaintModel::saveNewFile() {
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save File"), tr("./"), tr("Images (*.png *.jpg)"));
     if (fileName.isEmpty()) {
@@ -397,18 +540,62 @@ bool PaintModel::saveNewFile() {
     return true;
 }
 
-// copy a selection of the canvas
+/**/
+/*
+void PaintModel::copy()
+
+NAME
+
+    PaintModel::copy() - copy a tool's selection
+
+SYNOPSIS
+
+    void PaintModel::copy();
+
+DESCRIPTION
+
+    if the tool has a non-blank selection, copy it to the clipboard
+
+RETURNS
+
+    None
+
+*/
+/**/
 void PaintModel::copy() {
     QImage selection = m_user.getCurrentTool()->getEditable();
 
+    // if the selection is not empty, copy it to the clipboard
     if (!selection.isNull()) {
         QClipboard *clipboard = QGuiApplication::clipboard();
         clipboard->setImage(selection);
     }
 }
 
+/**/
+/*
+void PaintModel::cut()
 
+NAME
+
+    PaintModel::cut() - cut a tool's selection from the canvas
+
+SYNOPSIS
+
+    void PaintModel::cut();
+
+DESCRIPTION
+
+    if the tool has a non-blank selection, copy it to the clipboard and remove it from the canvas
+
+RETURNS
+
+    None
+
+*/
+/**/
 void PaintModel::cut() {
+    // cut the selection from the canvas
     QImage selection = m_user.getCurrentTool()->getEditable(m_canvas.getCanvas(), m_user.getColor(1), true);
 
     if (!selection.isNull()) {
@@ -416,17 +603,40 @@ void PaintModel::cut() {
         clipboard->setImage(selection);
         m_canvas.getTempCanvas()->fill(Qt::transparent);
 
+        // this is a change to the canvas, so update the history
         updateHistory(*m_canvas.getCanvas());
 
         m_canvas.repaint();
     }
 }
 
-// paste into the canvas
+/**/
+/*
+void PaintModel::paste()
+
+NAME
+
+    PaintModel::paste() - paste the clipboard's contents into the canvas
+
+SYNOPSIS
+
+    void PaintModel::paste();
+
+DESCRIPTION
+
+    pastes the clipboards contents into the canvas. Assumes the tool is already the select tool
+
+RETURNS
+
+    None
+
+*/
+/**/
 void PaintModel::paste() {
     const QClipboard *clipboard = QGuiApplication::clipboard();
     const QMimeData *mimedata = clipboard->mimeData();
 
+    // only update the editable, if the item in the clipboard is an image
     if (mimedata->hasImage()) {
         m_user.getCurrentTool()->setEditable(qvariant_cast<QImage>(mimedata->imageData()), m_canvas.getCanvas(), m_canvas.getTempCanvas());
     }
