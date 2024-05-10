@@ -10,7 +10,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "BaseTool.h"
+#include "./../toolClasses/BaseTool.h"
 
 class ToolSelector : public QListWidget
 {

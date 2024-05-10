@@ -84,4 +84,3 @@ void SquareTool::calcShape(const QMouseEvent* a_event){
     }
 
 }
-

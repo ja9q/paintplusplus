@@ -14,7 +14,7 @@
 #include <QCheckBox>
 #include <QScrollArea>
 #include <QComboBox>
-#include "BaseTool.h"
+#include "./../toolClasses/BaseTool.h"
 
 /**/
 /*

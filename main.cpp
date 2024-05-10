@@ -1,7 +1,7 @@
 // Main function that is run to boot up the application.
 
-#include "mainwindow.h"
-#include "PaintModel.h"
+#include "./miscClasses/mainwindow.h"
+#include "./miscClasses/PaintModel.h"
 
 #include <QApplication>
 

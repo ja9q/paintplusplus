@@ -7,7 +7,7 @@
 
 #include <QWidget>
 #include <QGridLayout>
-#include "BaseTool.h"
+#include "./../toolClasses/BaseTool.h"
 
 class ToolSettingWidget : public QWidget
 {

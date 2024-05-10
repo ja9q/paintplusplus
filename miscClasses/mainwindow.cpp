@@ -4,9 +4,9 @@
 
 #include "mainwindow.h"
 #include "PaintModel.h"
-#include "CanvasWidget.h"
-#include "ColorWidget.h"
-#include "ToolSettingWidget.h"
+#include "./../widgetClasses/CanvasWidget.h"
+#include "./../widgetClasses/ColorWidget.h"
+#include "./../widgetClasses/ToolSettingWidget.h"
 #include "ResizeDialog.h"
 #include <QVBoxLayout>
 #include <QDockWidget>

@@ -9,51 +9,51 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    BaseTool.cpp \
-    CanvasWidget.cpp \
-    CircleTool.cpp \
-    ColorPicker.cpp \
-    ColorWidget.cpp \
-    DrawTool.cpp \
-    Editable.cpp \
-    FillTool.cpp \
-    LineTool.cpp \
-    PaintModel.cpp \
-    PolygonTool.cpp \
-    ResizeDialog.cpp \
-    SelectTool.cpp \
-    ShapeTool.cpp \
-    SquareSelectTool.cpp \
-    SquareTool.cpp \
-    TextTool.cpp \
-    ToolSelector.cpp \
-    ToolSettingWidget.cpp \
-    User.cpp \
     main.cpp \
-    mainwindow.cpp
+    miscClasses/PaintModel.cpp \
+    miscClasses/ResizeDialog.cpp \
+    miscClasses/User.cpp \
+    miscClasses/mainwindow.cpp \
+    toolClasses/BaseTool.cpp \
+    toolClasses/CircleTool.cpp \
+    toolClasses/DrawTool.cpp \
+    toolClasses/Editable.cpp \
+    toolClasses/FillTool.cpp \
+    toolClasses/LineTool.cpp \
+    toolClasses/PolygonTool.cpp \
+    toolClasses/SelectTool.cpp \
+    toolClasses/ShapeTool.cpp \
+    toolClasses/SquareSelectTool.cpp \
+    toolClasses/SquareTool.cpp \
+    toolClasses/TextTool.cpp \
+    widgetClasses/CanvasWidget.cpp \
+    widgetClasses/ColorPicker.cpp \
+    widgetClasses/ColorWidget.cpp \
+    widgetClasses/ToolSelector.cpp \
+    widgetClasses/ToolSettingWidget.cpp
 
 HEADERS += \
-    BaseTool.h \
-    CanvasWidget.h \
-    CircleTool.h \
-    ColorPicker.h \
-    ColorWidget.h \
-    DrawTool.h \
-    Editable.h \
-    FillTool.h \
-    LineTool.h \
-    PaintModel.h \
-    PolygonTool.h \
-    ResizeDialog.h \
-    SelectTool.h \
-    ShapeTool.h \
-    SquareSelectTool.h \
-    SquareTool.h \
-    TextTool.h \
-    ToolSelector.h \
-    ToolSettingWidget.h \
-    User.h \
-    mainwindow.h
+    miscClasses/PaintModel.h \
+    miscClasses/ResizeDialog.h \
+    miscClasses/User.h \
+    miscClasses/mainwindow.h \
+    toolClasses/BaseTool.h \
+    toolClasses/CircleTool.h \
+    toolClasses/DrawTool.h \
+    toolClasses/Editable.h \
+    toolClasses/FillTool.h \
+    toolClasses/LineTool.h \
+    toolClasses/PolygonTool.h \
+    toolClasses/SelectTool.h \
+    toolClasses/ShapeTool.h \
+    toolClasses/SquareSelectTool.h \
+    toolClasses/SquareTool.h \
+    toolClasses/TextTool.h \
+    widgetClasses/CanvasWidget.h \
+    widgetClasses/ColorPicker.h \
+    widgetClasses/ColorWidget.h \
+    widgetClasses/ToolSelector.h \
+    widgetClasses/ToolSettingWidget.h
 
 FORMS +=
 
@@ -62,5 +62,4 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    resources.qrc
+RESOURCES +=

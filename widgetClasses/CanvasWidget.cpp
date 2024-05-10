@@ -4,8 +4,8 @@
 
 #include "CanvasWidget.h"
 
-#include "User.h"
-#include "BaseTool.h"
+#include "./../miscClasses/User.h"
+#include "./../toolClasses/BaseTool.h"
 
 #include <QDebug>
 #include <QMouseEvent>

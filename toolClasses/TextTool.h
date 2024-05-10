@@ -11,7 +11,7 @@
 #include <QTimer>
 #include <QFontDatabase>
 #include "Editable.h"
-#include "CanvasWidget.h"
+#include "./../widgetClasses/CanvasWidget.h"
 
 class TextTool : public BaseTool
 {

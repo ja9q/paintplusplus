@@ -10,7 +10,7 @@
 #include <QImage>
 #include <QSpinBox>
 #include <QVBoxLayout>
-#include "PaintModel.h"
+#include "./../miscClasses/PaintModel.h"
 
 #include "ColorPicker.h"
 

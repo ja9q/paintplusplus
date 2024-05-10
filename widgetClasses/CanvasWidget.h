@@ -6,7 +6,7 @@
 #define CANVASWIDGET_H
 
 #include <QWidget>
-#include "User.h"
+#include "./../miscClasses/User.h"
 
 class CanvasWidget : public QWidget
 {

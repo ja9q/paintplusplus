@@ -6,9 +6,9 @@
 #ifndef PAINTMODEL_H
 #define PAINTMODEL_H
 
-#include "CanvasWidget.h"
+#include "./../widgetClasses/CanvasWidget.h"
+#include "./../toolClasses/BaseTool.h"
 #include "User.h"
-#include "BaseTool.h"
 #include <QList>
 #include <QImage>
 

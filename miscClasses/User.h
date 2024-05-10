@@ -5,7 +5,7 @@
 #ifndef USER_H
 #define USER_H
 
-#include "BaseTool.h"
+#include "./../toolClasses/BaseTool.h"
 #include <QColor>
 
 class User

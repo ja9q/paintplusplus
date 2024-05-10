@@ -285,5 +285,3 @@ int DrawTool::processDrag(QImage* a_canvas, QImage* a_tempCanvas, const QMouseEv
 
     return 0;
 }
-
-

@@ -365,5 +365,3 @@ void ShapeTool::drawShape(QImage* a_canvas, const QColor a_color1, const QColor 
     // draw the shape
     painter.drawPolygon(m_shape.getTransformedShape());
 }
-
-

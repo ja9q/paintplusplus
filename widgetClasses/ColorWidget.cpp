@@ -16,7 +16,7 @@
 #include <QLabel>
 
 #include "ColorPicker.h"
-#include "PaintModel.h"
+#include "./../miscClasses/PaintModel.h"
 
 /**/
 /*

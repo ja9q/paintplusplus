@@ -4,8 +4,8 @@
 
 #include "User.h"
 
-#include "BaseTool.h"
-#include "DrawTool.h"
+#include "./../toolClasses/BaseTool.h"
+#include "./../toolClasses/DrawTool.h"
 #include <QColor>
 
 /**/

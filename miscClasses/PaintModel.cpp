@@ -10,15 +10,15 @@
 #include <QPainter>
 #include <QMimeData>
 
-#include "DrawTool.h"
-#include "SelectTool.h"
-#include "SquareSelectTool.h"
-#include "SquareTool.h"
-#include "CircleTool.h"
-#include "PolygonTool.h"
-#include "LineTool.h"
-#include "FillTool.h"
-#include "TextTool.h"
+#include "./../toolClasses/DrawTool.h"
+#include "./../toolClasses/SelectTool.h"
+#include "./../toolClasses/SquareSelectTool.h"
+#include "./../toolClasses/SquareTool.h"
+#include "./../toolClasses/CircleTool.h"
+#include "./../toolClasses/PolygonTool.h"
+#include "./../toolClasses/LineTool.h"
+#include "./../toolClasses/FillTool.h"
+#include "./../toolClasses/TextTool.h"
 #include "User.h"
 
 /**/

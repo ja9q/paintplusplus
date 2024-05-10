@@ -468,4 +468,3 @@ void TextTool::drawText(QImage* a_canvas, bool a_renderBounds) {
 
     }
 }
-

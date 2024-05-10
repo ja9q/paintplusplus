@@ -8,11 +8,11 @@
 #include <QMainWindow>
 #include <QToolBar>
 #include <QMenu>
-#include "PaintModel.h"
-#include "ColorWidget.h"
-#include "ToolSettingWidget.h"
-#include "ToolSelector.h"
-#include "BaseTool.h"
+#include "./../miscClasses/PaintModel.h"
+#include "./../widgetClasses/ColorWidget.h"
+#include "./../widgetClasses/ToolSettingWidget.h"
+#include "./../widgetClasses/ToolSelector.h"
+#include "./../toolClasses/BaseTool.h"
 
 class MainWindow : public QMainWindow
 {

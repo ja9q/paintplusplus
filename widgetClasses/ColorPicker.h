@@ -6,7 +6,7 @@
 #define COLORWHEEL_H
 
 #include <QWidget>
-#include "PaintModel.h"
+#include "./../miscClasses/PaintModel.h"
 
 class ColorPicker : public QWidget
 {
