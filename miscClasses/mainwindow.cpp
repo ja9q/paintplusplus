@@ -469,7 +469,7 @@ RETURNS
 bool MainWindow::saveCheck() {
     if (!m_model->isSaved()) {
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(this, tr("Scribble"), tr("The image has unsaved changes.\n" "Do you want to save?"), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        ret = QMessageBox::warning(this, tr("Unsaved Changes"), tr("The image has unsaved changes.\n" "Do you want to save?"), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if (ret == QMessageBox::Save)
             return m_model->saveFile();
         else if (ret == QMessageBox::Cancel)

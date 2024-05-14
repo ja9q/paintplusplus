@@ -45,6 +45,9 @@ private:
     // the textbox the user will be using
     QTextEdit m_textbox;
 
+    // stores the parameters of the text separate from the textbox
+    QFont m_font;
+
     // the editor for the textbox and its dimensions
     Editable m_bounds;
 
@@ -56,6 +59,9 @@ private:
 
     // if the background of the textbox is opaque or not
     bool m_isOpaque;
+
+    // the color of the text
+    QColor m_textColor;
 
     // the background color for the textbox
     QColor m_bgColor;

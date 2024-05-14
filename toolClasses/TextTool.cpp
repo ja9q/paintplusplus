@@ -39,7 +39,7 @@ RETURNS
 TextTool::TextTool(QString a_name, CanvasWidget* a_canvas, QVector<int> a_moreProperties):
     BaseTool(a_name, {(int)ToolProperty::FONT_SIZE, (int)ToolProperty::FONT, (int)ToolProperty::TEXT_BOLD, (int)ToolProperty::TEXT_ITALIC,
                         (int)ToolProperty::TEXT_UNDERLINE}),
-    m_textbox(), m_bounds(), m_canvas(a_canvas), m_isActive(false), m_isOpaque(false), m_bgColor(QColor(Qt::white))
+    m_textbox(), m_font(), m_bounds(), m_canvas(a_canvas), m_isActive(false), m_isOpaque(false), m_textColor(QColor(Qt::black)), m_bgColor(QColor(Qt::white))
 {
     // grab all of the fonts the system provides
     FONTS = QFontDatabase::families().toList();
@@ -54,8 +54,9 @@ TextTool::TextTool(QString a_name, CanvasWidget* a_canvas, QVector<int> a_morePr
     m_textbox.setPalette(palette);
 
     // set the default font and size
-    m_textbox.setFontFamily(FONTS[0]);
-    m_textbox.setFontPointSize(12);
+    m_font.setFamily(FONTS[0]);
+    m_font.setPointSize(12);
+    m_textbox.setFont(m_font);
     m_textbox.resize(500,30);
     m_textbox.setAttribute(Qt::WA_TranslucentBackground);
     m_textbox.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -93,19 +94,19 @@ RETURNS
 int TextTool::getProperty(const int a_propId) {
     switch ((ToolProperty)a_propId) {
     case ToolProperty::FONT_SIZE:
-        return m_textbox.fontPointSize();
+        return m_font.pointSize();
         break;
     case ToolProperty::FONT:
-        return FONTS.indexOf(m_textbox.fontFamily());
+        return FONTS.indexOf(m_font.family());
         break;
     case ToolProperty::TEXT_BOLD:
-        return (m_textbox.fontWeight() == QFont::Bold);
+        return (m_font.weight() == QFont::Bold);
         break;
     case ToolProperty::TEXT_ITALIC:
-        return m_textbox.fontItalic();
+        return m_font.italic();
         break;
     case ToolProperty::TEXT_UNDERLINE:
-        return m_textbox.fontUnderline();
+        return m_font.underline();
         break;
     default:
         break;
@@ -141,35 +142,39 @@ RETURNS
 /**/
 int TextTool::setProperty(const int a_propId, const int a_newValue) {
 
-    QTextCursor temp = m_textbox.textCursor();
-    m_textbox.selectAll();
+
 
     switch ((ToolProperty)a_propId) {
     case ToolProperty::FONT_SIZE:
-        m_textbox.setFontPointSize(a_newValue);
+        m_font.setPointSize(a_newValue);
         break;
     case ToolProperty::FONT:
-        m_textbox.setFontFamily(FONTS[a_newValue]);
+        m_font.setFamily(FONTS[a_newValue]);
         break;
     case ToolProperty::TEXT_BOLD:
         if (a_newValue == 0) {
-            m_textbox.setFontWeight(QFont::Normal);
+            m_font.setWeight(QFont::Normal);
         } else {
-            m_textbox.setFontWeight(QFont::Bold);
+            m_font.setWeight(QFont::Bold);
         }
         break;
     case ToolProperty::TEXT_ITALIC:
-        m_textbox.setFontItalic(a_newValue);
+        m_font.setItalic(a_newValue);
         break;
     case ToolProperty::TEXT_UNDERLINE:
-        m_textbox.setFontUnderline(a_newValue);
+        m_font.setUnderline(a_newValue);
         break;
     default:
         return -1;
         break;
     }
 
+    QTextCursor temp = m_textbox.textCursor();
+    m_textbox.selectAll();
+    m_textbox.setFont(m_font);
     m_textbox.setTextCursor(temp);
+
+    drawText(m_canvas->getTempCanvas());
 
     return 0;
 
@@ -237,6 +242,15 @@ int TextTool::processClick(QImage* a_canvas, QImage* a_tempCanvas, const QMouseE
     (void)a_canvas;
     (void)a_tempCanvas;
     (void)a_color1;
+
+    if (m_textbox.textColor() != a_color1) {
+        QTextCursor temp = m_textbox.textCursor();
+        m_textbox.selectAll();
+        m_textbox.setTextColor(a_color1);
+        m_textColor = a_color1;
+        m_textbox.setTextCursor(temp);
+    }
+
 
     if (m_bgColor != a_color2) {
         m_bgColor = a_color2;
@@ -342,9 +356,12 @@ int TextTool::processMouseRelease(QImage* a_canvas, QImage* a_tempCanvas, const 
         m_bounds.setEditMode(Editable::EditMode::NONE);
         // if the polygon is not empty and the tool is not editing, turn on editing mode + draw the bounding rectangle + define the selected area
     }else if (!m_isActive && !m_bounds.isEditing()) {
+        m_textbox.resize(500,30);
         m_bounds.setShape(QPolygon(QRect(a_event->position().toPoint(), m_textbox.size())));
         m_bounds.initBoundingRect();
         m_isActive = true;
+        m_textbox.setTextColor(a_color1);
+        m_textColor = a_color1;
         m_textbox.grabKeyboard();
         m_bounds.setIsEditing(true);
 
@@ -432,6 +449,7 @@ RETURNS
 /**/
 void TextTool::drawText(QImage* a_canvas, bool a_renderBounds) {
     if (m_isActive && !m_bounds.getShape().isEmpty()) {
+
         QImage box = QImage(m_textbox.size(), QImage::Format_ARGB32);
 
         box.fill(Qt::transparent);
@@ -455,8 +473,6 @@ void TextTool::drawText(QImage* a_canvas, bool a_renderBounds) {
         a_canvas->fill(Qt::transparent);
         QPainter painter(a_canvas);
         painter.drawPixmap(m_bounds.getTransformedBoundRect().boundingRect().topLeft(), QPixmap::fromImage(box));
-
-
 
         painter.end();
 
