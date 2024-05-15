@@ -1,0 +1,55 @@
+/paintplusplus - contains Paint++'s source code
+    index.txt - a briefing of the /paintplusplus directory and its contents
+    main.cpp - the C++ code the program is set to first run
+    paintplusplus.pro - a Qt project file that describes Paint++ and all the files it needs
+    paintplusplus.pro.user - a per-user project file that is updated every time it is compiled.
+    
+    /miscClasses - contains the headers and implementations for miscellaneous classes
+        mainwindow.cpp - the implementation of the MainWindow class
+        mainwindow.h - describes the application's entire window
+        PaintModel.cpp - the implementation of the PaintModel class
+        PaintModel.h - describes the application's model and its needed information
+        ResizeDialog.cpp - the implementation of the ResizeDialog class
+        ResizeDialog.h - describes the pop-up that is triggered when resizing the canvas
+        User.cpp - the implementation of the User class
+        User.h - describes the user's "active choices"
+        
+    /toolClasses - contains the headers and implementations for tool classes
+        BaseTool.cpp - the implementation of the BaseTool class
+        BaseTool.h - describes an abstract class for a Paint++ tool
+        CircleTool.cpp - the implementation of the CircleTool class
+        CircleTool.h - describes a tool that can draw circles
+        DrawTool.cpp - the implementation of the DrawTool class
+        DrawTool.h - describes a tool that can draw lines
+        Editable.cpp - the implementation of the Editable class
+        Editable.h - describes a shape that can be translated, rotated, and scaled
+        FillTool.cpp - the implementation of the FillTool class
+        FillTool.h - describes a tool that can fill a region with a single color
+        LineTool.cpp - the implementation of the LineTool class
+        LineTool.h - describes a tool that can draw a straight line
+        PolygonTool.cpp - the implementation of the PolygonTool class
+        PolygonTool.h - describes a tool that can draw a free polygon
+        SelectTool.cpp - the implementation of the SelectTool class
+        SelectTool.h - describes a tool that can select and transform a part of the image
+        ShapeTool.cpp - the implementation of the ShapeTool class
+        ShapeTool.h - describes an abstract tool that can draw a shape
+        SquareSelectTool.cpp - the implementation of the SquareSelectTool class
+        SquareSelectTool.h - describes a tool that can select and transform a square part of
+                             the image
+        SquareTool.cpp - the implementation of the SquareTool class
+        SquareTool.h - describes a tool that can draw a square
+        TextTool.cpp - the implementation of the TextTool class
+        TextTool.h - describes a tool that can add text to the image
+    
+    /widgetClasses - contains the headers and implementations for widget classes
+        CanvasWidget.cpp - the implementation of the CanvasWidget class
+        CanvasWidget.h - describes a widget that displays and takes input for the image
+        ColorPicker.cpp - the implementation of the ColorPicker class
+        ColorPicker.h - describes a widget section that enables a visual way to select colors
+        ColorWidget.cpp - the implementation of the ColorWidget class
+        ColorWidget.h - describes a widget that allows for the user to select colors visually or
+                        via text
+        ToolSelector.cpp - the implementation of the ToolSelector class
+        ToolSelector.h - describes a widget that allows the user to choose a tool
+        ToolSettingWidget.cpp - the implementation of the ToolSettingWidget class
+        ToolSettingWidget.h - describes a widget that allows a user to adjust a tool's settings.
