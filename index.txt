@@ -2,7 +2,6 @@
     index.txt - a briefing of the /paintplusplus directory and its contents
     main.cpp - the C++ code the program is set to first run
     paintplusplus.pro - a Qt project file that describes Paint++ and all the files it needs
-    paintplusplus.pro.user - a per-user project file that is updated every time it is compiled.
     
     /miscClasses - contains the headers and implementations for miscellaneous classes
         mainwindow.cpp - the implementation of the MainWindow class
